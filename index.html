@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- ESTILOS GENERALES --- */
+        /* --- ESTILOS GENERALES Y PALETA DE COLORES --- */
         :root {
             --bg-principal: #0f172a;
             --bg-tarjeta: #1e293b;
@@ -42,7 +42,7 @@
             position: relative;
         }
 
-        /* --- ENCABEZADO --- */
+        /* --- ENCABEZADO Y ESTADO DE CONEXIÓN --- */
         header {
             text-align: center;
             margin-bottom: 30px;
@@ -68,6 +68,7 @@
             font-weight: 600;
             background-color: rgba(235, 179, 8, 0.1);
             color: var(--color-advertencia);
+            transition: all 0.4s ease;
         }
 
         .estado-conexion.conectado {
@@ -83,7 +84,7 @@
             box-shadow: 0 0 10px currentColor;
         }
 
-        /* --- PESTAÑAS (TABS) --- */
+        /* --- SISTEMA DE PESTAÑAS (TABS) --- */
         .barra-pestanas {
             display: flex;
             justify-content: center;
@@ -118,16 +119,23 @@
             box-shadow: 0 4px 18px rgba(56, 189, 248, 0.35);
         }
 
+        /* --- CONTENEDOR DE CONTENIDO DE PESTAÑA --- */
         .contenido-pestana {
             display: none;
             min-height: 550px;
+            animation: fadeIn 0.4s ease-in-out forwards;
         }
 
         .contenido-pestana.activa {
             display: block;
         }
 
-        /* --- FLECHAS DE NAVEGACIÓN --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- NAVEGACIÓN POR FLECHAS LATERALES --- */
         .flecha-nav {
             position: fixed;
             top: 55%;
@@ -157,59 +165,76 @@
         .flecha-izq { left: 25px; }
         .flecha-der { right: 25px; }
 
-        /* --- PESTAÑA 1: NUEVO DISEÑO ASIMÉTRICO LIBRE --- */
+        /* --- NUEVA MAQUETACIÓN ASIMÉTRICA (FICHA TÉCNICA) --- */
         .layout-ficha-libre {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 40px;
             width: 100%;
+            min-height: 600px;
+            padding: 0 20px;
         }
 
-        /* Zona Izquierda Totalmente Limpia (Sin cuadro contenedor de fondo) */
+        /* Columna Izquierda Libre (Imagen + Proyección) */
         .columna-holograma {
-            flex: 1.2;
+            flex: 1.2; /* Toma un poco más de espacio a la izquierda */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: 40px 0;
+            height: 100%;
         }
 
         .placeholder-img-libre {
             width: 100%;
-            max-width: 560px; /* Imagen imponente y gigante */
+            max-width: 580px; /* Tamaño masivo del prototipo */
             height: auto;
             object-fit: contain;
-            z-index: 5;
-            filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.6));
-            animation: flotacionSuave 4s ease-in-out infinite;
+            z-index: 2;
+            filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.5));
+            animation: flotacionLigera 4s ease-in-out infinite;
         }
 
-        /* Base circular de contorno tecnológico abajo */
+        /* Base de Contorno de Proyección Circular (CSS Avanzado) */
         .base-holografica {
             position: absolute;
-            bottom: 20px;
-            width: 480px;
-            height: 120px;
-            background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.25) 0%, rgba(56, 189, 248, 0) 70%);
+            bottom: -20px;
+            width: 500px;
+            height: 140px;
+            background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.2) 0%, rgba(56, 189, 248, 0) 70%);
             border: 4px double rgba(56, 189, 248, 0.6);
             border-radius: 50%;
             transform: rotateX(65deg);
             z-index: 1;
-            box-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.3), inset 0 0 30px rgba(56, 189, 248, 0.2);
+            animation: rotacionBase 20s linear infinite;
         }
 
-        @keyframes flotacionSuave {
+        .base-holografica::before {
+            content: '';
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 2px dashed rgba(56, 189, 248, 0.4);
+            border-radius: 50%;
+        }
+
+        @keyframes flotacionLigera {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
             100% { transform: translateY(0px); }
         }
 
-        /* Zona Derecha: Tarjeta Ficha Técnica */
+        @keyframes rotacionBase {
+            from { transform: rotateX(65deg) rotate(0deg); }
+            to { transform: rotateX(65deg) rotate(360deg); }
+        }
+
+        /* Columna Derecha (Ficha Técnica Contenida) */
         .columna-ficha-tarjeta {
             flex: 0.9;
+            width: 100%;
         }
 
         .tarjeta-ficha {
@@ -227,6 +252,7 @@
             border-left: 5px solid var(--color-activo);
             padding-left: 15px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .tabla-spec {
@@ -266,7 +292,7 @@
             font-size: 14px;
         }
 
-        /* --- PESTAÑA 2: GRIDS DE TELEMETRÍA --- */
+        /* --- SECCIÓN DE TELEMETRÍA GRIDS --- */
         .seccion-telemetria {
             display: flex;
             flex-direction: column;
@@ -320,6 +346,7 @@
             position: relative;
         }
 
+        /* Indicadores Infrarrojos */
         .contenedor-infrarrojos {
             display: flex;
             gap: 15px;
@@ -338,6 +365,7 @@
             font-weight: bold;
             font-size: 18px;
             color: var(--texto-secundario);
+            transition: all 0.3s ease;
         }
 
         .sensor-ir.detection {
@@ -347,7 +375,7 @@
             box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
         }
 
-        /* --- PESTAÑA 3: ANALISIS MATEMÁTICO --- */
+        /* --- MAQUETACIÓN PESTAÑA 3 (CÁLCULO MATEMÁTICO) --- */
         .tarjeta-calculo {
             background: var(--bg-tarjeta);
             border: 1px solid var(--borde-tarjeta);
@@ -359,15 +387,24 @@
         }
 
         .formula-contenedor {
-            background: rgba(0, 0, 0, 0.25);
-            padding: 25px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 30px;
             border-radius: 8px;
             text-align: center;
-            margin: 25px 0;
-            font-size: 24px;
-            color: var(--texto-principal);
+            margin: 30px 0;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
+
+        .math-text {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 32px;
+            font-style: italic;
+            letter-spacing: 2px;
+        }
+
+        .math-var { color: var(--color-activo); font-weight: bold; }
+        .math-const { color: var(--texto-secundario); }
+        .math-alert { color: var(--color-alerta); font-weight: bold; }
 
         .explicacion-variables {
             margin-top: 25px;
@@ -383,7 +420,7 @@
                 width: 100% !important;
             }
             .base-holografica {
-                width: 320px;
+                width: 300px;
                 height: 90px;
             }
             .flecha-nav { display: none; }
@@ -491,20 +528,27 @@
 
         <div id="pestana-2" class="contenido-pestana">
             <div class="tarjeta-calculo">
-                <h2 style="font-size: 20px; color: var(--color-activo); margin-bottom: 18px; text-transform: uppercase;"><i class="fa-solid fa-square-root-variable"></i> Distancia de Parada Segura (ISO 3691-4)</h2>
-                <p style="color: var(--texto-secundario); font-size: 15px; line-height: 1.6;">Cálculo dinámico en base a la latencia del microcontrolador y la fricción de frenado del modelo mecánico.</p>
+                <h2 style="font-size: 20px; color: var(--color-activo); margin-bottom: 18px; text-transform: uppercase;"><i class="fa-solid fa-square-root-variable"></i> Cálculo de Parada Dinámica (ISO 3691-4)</h2>
+                <p style="color: var(--texto-secundario); font-size: 15px; line-height: 1.6;">Esta norma internacional define la distancia mínima de seguridad que debe mantener un vehículo guiado automático antes de colisionar contra un obstáculo en movimiento o fijo.</p>
                 
                 <div class="formula-contenedor">
-                    Sb = (<span id="f-vel" style="color:var(--color-activo); font-weight:bold;">0.00</span> × 0.05) + [ (<span id="f-vel2" style="color:var(--color-activo); font-weight:bold;">0.00</span>)² / 3.00 ] + 0.10 = <span id="f-res" style="color:var(--color-exito); font-weight:bold;">0.10</span> m
+                    <div class="math-text">
+                        S<sub>b</sub> = ( <span class="math-var" id="f-vel">0.00</span> · <span class="math-const">0.05</span> ) + 
+                        <div style="display: inline-block; vertical-align: middle; text-align: center; margin: 0 5px;">
+                            <span style="display: block; border-bottom: 2px solid var(--texto-principal); padding: 0 10px;">(<span class="math-var" id="f-vel2">0.00</span>)<sup>2</sup></span>
+                            <span style="display: block;"><span class="math-const">2</span> · <span class="math-alert">1.50</span></span>
+                        </div>
+                        + <span class="math-const">0.10</span> = <span class="math-var" id="f-res" style="color: var(--color-exito);">0.10</span> m
+                    </div>
                 </div>
 
                 <div class="explicacion-variables">
-                    <p style="margin-bottom: 10px; color: var(--texto-principal); font-weight: 600;">Parámetros del Algoritmo:</p>
+                    <p style="margin-bottom: 10px; color: var(--texto-principal); font-weight: 600; font-size: 16px;">Ecuación implementada en JavaScript del Navegador:</p>
                     <ul style="padding-left: 20px; line-height: 1.8;">
-                        <li><b>Velocidad (v):</b> Calculada dinámicamente en m/s desde las RPM reales.</li>
-                        <li><b>Tiempo de reacción:</b> 0.05 segundos de latencia de cómputo en el lazo maestro.</li>
-                        <li><b>Desaceleración:</b> Fricción constante asignada de 1.50 m/s².</li>
-                        <li><b>Tolerancia física:</b> 0.10 metros fijos como factor de resguardo perimetral.</li>
+                        <li><b class="math-var">v</b> = Velocidad real del carro en m/s (Calculada de las RPM).</li>
+                        <li><b class="math-const">t<sub>r</sub></b> = Tiempo de reacción del microcontrolador (0.05 segundos de latencia).</li>
+                        <li><b class="math-alert">a</b> = Desaceleración máxima por friction de llantas (1.50 m/s²).</li>
+                        <li><b class="math-const">s<sub>g</sub></b> = Margen de tolerancia física o holgura de frenado mecánico (0.10 metros fijos).</li>
                     </ul>
                 </div>
             </div>
@@ -549,14 +593,18 @@
             }
         });
 
-        const chartDistancia = new Chart(document.getElementById('chart-distancia').getContext('2d'), configGrafica('#38bdf8'));
-        const chartServo = new Chart(document.getElementById('chart-servo').getContext('2d'), configGrafica('#eab308'));
-        const chartVelocidad = new Chart(document.getElementById('chart-velocidad').getContext('2d'), configGrafica('#38bdf8'));
+        const ctxDistancia = document.getElementById('chart-distancia').getContext('2d');
+        const ctxServo = document.getElementById('chart-servo').getContext('2d');
+        const ctxVelocidad = document.getElementById('chart-velocidad').getContext('2d');
 
-        function agregarDatoGrafica(chart, valor) {
+        const chartDistancia = new Chart(ctxDistancia, configGrafica('#38bdf8'));
+        const chartServo = new Chart(ctxServo, configGrafica('#eab308'));
+        const chartVelocidad = new Chart(ctxVelocidad, configGrafica('#38bdf8'));
+
+        function agregarDatoGrafica(chart, valor, maxPuntos = 20) {
             chart.data.labels.push('');
             chart.data.datasets[0].data.push(valor);
-            if(chart.data.labels.length > 20) {
+            if(chart.data.labels.length > maxPuntos) {
                 chart.data.labels.shift();
                 chart.data.datasets[0].data.shift();
             }
@@ -575,7 +623,8 @@
                     document.getElementById('status-text').innerText = "NUBE CONECTADA EN VIVO";
                     statusBox.style.color = "#22c55e";
 
-                    const partes = data[0].value.split(',');
+                    const rawValue = data[0].value;
+                    const partes = rawValue.split(',');
 
                     if(partes.length >= 5) {
                         const distancia = parseInt(partes[0]);
@@ -596,7 +645,7 @@
                         document.getElementById('ir-der').className = ir_der === 1 ? "sensor-ir detection" : "sensor-ir";
 
                         const velocidadMS = (rpm * 0.5) / 200; 
-                        const calculoSb = (velocidadMS * 0.05) + ((velocidadMS * velocidadMS) / 3.00) + 0.10;
+                        const calculoSb = (velocidadMS * 0.05) + ((velocidadMS * velocidadMS) / (2 * 1.50)) + 0.10;
 
                         document.getElementById('f-vel').innerText = velocidadMS.toFixed(2);
                         document.getElementById('f-vel2').innerText = velocidadMS.toFixed(2);
@@ -604,7 +653,9 @@
                     }
                 }
             })
-            .catch(err => console.log("Sincronizando..."));
+            .catch(error => {
+                console.error("Error consultando Adafruit IO:", error);
+            });
         }
 
         setInterval(consultarNube, 1500);
