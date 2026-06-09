@@ -34,11 +34,11 @@
             color: var(--texto-principal);
             min-height: 100vh;
             display: block;
-            padding: 20px;
+            padding: 25px;
         }
 
         .contenedor-principal {
-            max-width: 1300px;
+            max-width: 1600px; /* Expandido para aprovechar pantallas panorámicas */
             margin: 0 auto;
             position: relative;
         }
@@ -46,26 +46,26 @@
         /* --- ENCABEZADO Y ESTADO DE CONEXIÓN --- */
         header {
             text-align: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
             border-bottom: 1px solid var(--borde-tarjeta);
         }
 
         header h1 {
-            font-size: 24px;
-            letter-spacing: 1px;
+            font-size: 28px;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
             color: var(--texto-principal);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .estado-conexion {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            padding: 6px 16px;
+            padding: 8px 20px;
             border-radius: 50px;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             background-color: rgba(235, 179, 8, 0.1);
             color: var(--color-advertencia);
@@ -78,33 +78,33 @@
         }
 
         .punto-pulso {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             background-color: currentColor;
-            box-shadow: 0 0 8px currentColor;
+            box-shadow: 0 0 10px currentColor;
         }
 
         /* --- SISTEMA DE PESTAÑAS (TABS) --- */
         .barra-pestanas {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 15px;
+            margin-bottom: 35px;
         }
 
         .btn-pestana {
             background: var(--bg-tarjeta);
             border: 1px solid var(--borde-tarjeta);
             color: var(--texto-secundario);
-            padding: 12px 24px;
+            padding: 14px 28px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             transition: all 0.3s ease;
         }
 
@@ -117,13 +117,13 @@
             background: var(--color-activo);
             color: var(--bg-principal);
             border-color: var(--color-activo);
-            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+            box-shadow: 0 4px 18px rgba(56, 189, 248, 0.35);
         }
 
         /* --- CONTENEDOR DE CONTENIDO DE PESTAÑA --- */
         .contenido-pestana {
             display: none;
-            min-height: 480px;
+            min-height: 550px;
             animation: fadeIn 0.4s ease-in-out forwards;
         }
 
@@ -144,14 +144,14 @@
             background: rgba(30, 41, 59, 0.7);
             border: 1px solid var(--borde-tarjeta);
             color: var(--texto-principal);
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 20px;
             transition: all 0.3s ease;
             backdrop-filter: blur(5px);
             z-index: 10;
@@ -163,16 +163,15 @@
             box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
         }
 
-        .flecha-izq { left: 20px; }
-        .flecha-der { right: 20px; }
+        .flecha-izq { left: 25px; }
+        .flecha-der { right: 25px; }
 
-        /* --- MAQUETACIÓN PESTAÑA 1 (VISTA MODELO BOCETO) --- */
+        /* --- MAQUETACIÓN PESTAÑA 1 (FICHA AMPLIFICADA) --- */
         .layout-ficha {
             display: table;
             width: 100%;
             table-layout: fixed;
-            border-spacing: 25px 0;
-            margin-top: -10px;
+            border-spacing: 30px 0;
         }
 
         .columna-imagen, .columna-tabla {
@@ -181,51 +180,56 @@
         }
 
         .columna-imagen {
-            width: 55%;
+            width: 50%;
             text-align: center;
         }
 
         .columna-tabla {
-            width: 45%;
+            width: 50%;
         }
 
         .contenedor-imagen-car {
             background: var(--bg-tarjeta);
             border: 1px solid var(--borde-tarjeta);
-            border-radius: 12px;
-            padding: 30px;
-            min-height: 400px;
+            border-radius: 16px;
+            padding: 40px;
+            min-height: 540px; /* Mayor espacio vertical para la imagen */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.35);
         }
 
         .placeholder-img {
             width: 100%;
-            max-width: 380px;
+            max-width: 500px; /* Escalado a un tamaño mucho más dominante */
             height: auto;
-            opacity: 0.8;
-            filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.2));
+            opacity: 0.9;
+            filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.3));
         }
 
-        /* Ficha Técnica (Cuadro Gris/Oscuro Estilizado) */
+        /* Ficha Técnica Rediseñada para ocupar todo el espacio */
         .tarjeta-ficha {
             background: var(--bg-tarjeta);
             border: 1px solid var(--borde-tarjeta);
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 40px;
+            min-height: 540px; /* Sincronizado en altura con el contenedor izquierdo */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.35);
         }
 
         .tarjeta-ficha h2 {
-            font-size: 18px;
+            font-size: 22px;
             color: var(--color-activo);
-            margin-bottom: 20px;
-            border-left: 4px solid var(--color-activo);
-            padding-left: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid var(--color-activo);
+            padding-left: 15px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .tabla-especificaciones {
@@ -242,14 +246,14 @@
         }
 
         .tabla-especificaciones td {
-            padding: 14px 10px;
-            font-size: 14px;
+            padding: 18px 12px; /* Mayor espaciado interno para rellenar el bloque */
+            font-size: 16px; /* Fuentes más grandes y legibles */
         }
 
         .tabla-especificaciones td.propiedad {
             color: var(--texto-secundario);
             font-weight: 500;
-            width: 40%;
+            width: 45%;
         }
 
         .tabla-especificaciones td.valor {
@@ -261,9 +265,9 @@
         .badge-micro {
             background: rgba(56, 189, 248, 0.15);
             color: var(--color-activo);
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 12px;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 14px;
         }
 
         /* --- MAQUETACIÓN PESTAÑA 2 (TELEMETRÍA) --- */
@@ -271,7 +275,7 @@
             display: table;
             width: 100%;
             table-layout: fixed;
-            border-spacing: 20px;
+            border-spacing: 25px;
         }
 
         .fila-grid {
@@ -283,21 +287,16 @@
             background: var(--bg-tarjeta);
             border: 1px solid var(--borde-tarjeta);
             border-radius: 12px;
-            padding: 20px;
+            padding: 25px;
             vertical-align: top;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        .tarjeta-ancha {
-            width: 66%;
-        }
-
-        .tarjeta-angosta {
-            width: 34%;
-        }
+        .tarjeta-ancha { width: 65%; }
+        .tarjeta-angosta { width: 35%; }
 
         .tarjeta-titulo {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--texto-secundario);
             text-transform: uppercase;
             font-weight: bold;
@@ -308,21 +307,21 @@
         }
 
         .tarjeta-valor {
-            font-size: 38px;
+            font-size: 42px;
             font-weight: bold;
             color: var(--color-activo);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .tarjeta-valor span {
-            font-size: 18px;
+            font-size: 20px;
             color: var(--texto-secundario);
             margin-left: 5px;
         }
 
         .canvas-contenedor {
             width: 100%;
-            height: 140px;
+            height: 160px;
             position: relative;
         }
 
@@ -330,7 +329,7 @@
         .contenedor-infrarrojos {
             display: table;
             width: 100%;
-            height: 140px;
+            height: 160px;
             border-spacing: 15px 0;
             margin-top: 15px;
         }
@@ -343,12 +342,12 @@
             vertical-align: middle;
             text-align: center;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 18px;
             color: var(--texto-secundario);
             transition: all 0.3s ease;
         }
 
-        .sensor-ir.deteccion {
+        .sensor-ir.detection {
             background: rgba(239, 68, 68, 0.15);
             border-color: var(--color-alerta);
             color: var(--color-alerta);
@@ -360,24 +359,24 @@
             background: var(--bg-tarjeta);
             border: 1px solid var(--borde-tarjeta);
             border-radius: 12px;
-            padding: 35px;
-            max-width: 800px;
+            padding: 40px;
+            max-width: 900px;
             margin: 0 auto;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
 
         .formula-contenedor {
             background: rgba(0, 0, 0, 0.2);
-            padding: 25px;
+            padding: 30px;
             border-radius: 8px;
             text-align: center;
-            margin: 25px 0;
+            margin: 30px 0;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .math-text {
             font-family: 'Times New Roman', Times, serif;
-            font-size: 28px;
+            font-size: 32px;
             font-style: italic;
             letter-spacing: 2px;
         }
@@ -387,21 +386,19 @@
         .math-alert { color: var(--color-alerta); font-weight: bold; }
 
         .explicacion-variables {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
-            font-size: 14px;
+            margin-top: 25px;
+            font-size: 15px;
             color: var(--texto-secundario);
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1024px) {
             .columna-imagen, .columna-tabla, .celda-tarjeta {
                 display: block !important;
                 width: 100% !important;
-                margin-bottom: 20px;
+                margin-bottom: 25px;
             }
             .layout-ficha { border-spacing: 0; }
+            .contenedor-imagen-car, .tarjeta-ficha { min-height: auto; }
             .flecha-nav { display: none; }
         }
     </style>
@@ -443,7 +440,7 @@
                             <line x1="160" y1="135" x2="240" y2="135" stroke="#475569" stroke-width="6"/>
                             <line x1="200" y1="100" x2="200" y2="170" stroke="#475569" stroke-width="6"/>
                         </svg>
-                        <p style="color: var(--texto-secundario); font-size: 13px; margin-top: 15px;">Vista Geométrica Superior - Prototipo Autónomo</p>
+                        <p style="color: var(--texto-secundario); font-size: 14px; margin-top: 20px;">Vista Geométrica Superior - Prototipo Autónomo</p>
                     </div>
                 </div>
                 <div class="columna-tabla">
@@ -500,7 +497,7 @@
                 </div>
             </div>
 
-            <div class="grid-telemetria" style="margin-top: -20px;">
+            <div class="grid-telemetria" style="margin-top: -25px;">
                 <div class="fila-grid">
                     <div class="celda-tarjeta tarjeta-ancha">
                         <div class="tarjeta-titulo"><i class="fa-solid fa-gauge-high"></i> Velocidad calculada</div>
@@ -520,8 +517,8 @@
 
         <div id="pestana-2" class="contenido-pestana">
             <div class="tarjeta-calculo">
-                <h2 style="font-size: 18px; color: var(--color-activo); margin-bottom: 15px; text-transform: uppercase;"><i class="fa-solid fa-square-root-variable"></i> Cálculo de Parada Dinámica (ISO 3691-4)</h2>
-                <p style="color: var(--texto-secundario); font-size: 14px; line-height: 1.6;">Esta norma internacional define la distancia mínima de seguridad que debe mantener un vehículo guiado automático antes de colisionar contra un obstáculo en movimiento o fijo.</p>
+                <h2 style="font-size: 20px; color: var(--color-activo); margin-bottom: 18px; text-transform: uppercase;"><i class="fa-solid fa-square-root-variable"></i> Cálculo de Parada Dinámica (ISO 3691-4)</h2>
+                <p style="color: var(--texto-secundario); font-size: 15px; line-height: 1.6;">Esta norma internacional define la distancia mínima de seguridad que debe mantener un vehículo guiado automático antes de colisionar contra un obstáculo en movimiento o fijo.</p>
                 
                 <div class="formula-contenedor">
                     <div class="math-text">
@@ -535,7 +532,7 @@
                 </div>
 
                 <div class="explicacion-variables" style="display: block;">
-                    <p style="margin-bottom: 8px; color: var(--texto-principal); font-weight: 600;">Ecuación implementada en JavaScript del Navegador:</p>
+                    <p style="margin-bottom: 10px; color: var(--texto-principal); font-weight: 600; font-size: 16px;">Ecuación implementada en JavaScript del Navegador:</p>
                     <ul style="padding-left: 20px; line-height: 1.8;">
                         <li><b class="math-var">v</b> = Velocidad real del carro en m/s (Calculada de las RPM).</li>
                         <li><b class="math-const">t<sub>r</sub></b> = Tiempo de reacción del microcontrolador (0.05 segundos de latencia).</li>
@@ -549,21 +546,17 @@
     </div>
 
     <script>
-        // Configuración de Credenciales de la Cuenta de Adafruit IO del Usuario
         const AIO_USERNAME = "diegLOT";
         const AIO_KEY = "aio_BjKV42vCquxCE2cBAhTOPqfhmmmf";
         
-        // Manejo del estado del carrusel de pestañas
         let pestanaActual = 0;
         const totalPestanas = 3;
 
         function irAPestana(indice) {
-            // Ocultar todas las pestañas y quitar clase activa a los botones
             for(let i=0; i<totalPestanas; i++) {
                 document.getElementById(`pestana-${i}`).classList.remove('activa');
                 document.querySelectorAll('.btn-pestana')[i].classList.remove('activa');
             }
-            // Activar la pestaña seleccionada
             pestanaActual = indice;
             document.getElementById(`pestana-${indice}`).classList.add('activa');
             document.querySelectorAll('.btn-pestana')[indice].classList.add('activa');
@@ -576,7 +569,6 @@
             irAPestana(nuevaPestana);
         }
 
-        // --- CONFIGURACIÓN E INICIALIZACIÓN DE LAS GRÁFICAS (CHART.JS) ---
         const configGrafica = (color) => ({
             type: 'line',
             data: { labels: [], datasets: [{ data: [], borderColor: color, borderWidth: 2.5, pointRadius: 0, fill: false, tension: 0.3 }] },
@@ -608,7 +600,6 @@
             chart.update('none');
         }
 
-        // --- CONEXIÓN HTTP POLLING CON ADAFRUIT IO API ---
         const urlFeed = `https://io.adafruit.com/api/v2/${AIO_USERNAME}/feeds/telemetria/data?limit=1`;
 
         function consultarNube() {
@@ -616,13 +607,11 @@
             .then(response => response.json())
             .then(data => {
                 if (data && data.length > 0) {
-                    // Cambiar indicador a conectado con éxito
                     const statusBox = document.getElementById('status-box');
                     statusBox.classList.add('connected');
                     document.getElementById('status-text').innerText = "NUBE CONECTADA EN VIVO";
                     statusBox.style.color = "#22c55e";
 
-                    // Procesar la trama de datos limpia (Formato: DIST,ANGULO,RPM,IRQ,IRD)
                     const rawValue = data[0].value;
                     const partes = rawValue.split(',');
 
@@ -633,21 +622,17 @@
                         const ir_izq = parseInt(partes[3]);
                         const ir_der = parseInt(partes[4]);
 
-                        // Actualizar textos dinámicos en la UI
                         document.getElementById('lbl-distancia').innerHTML = `${distancia} <span>cm</span>`;
                         document.getElementById('lbl-servo').innerHTML = `${servo} <span>°</span>`;
                         document.getElementById('lbl-velocidad').innerHTML = `${rpm} <span>RPM</span>`;
 
-                        // Inyectar valores a los gráficos analíticos
                         agregarDatoGrafica(chartDistancia, distancia);
                         agregarDatoGrafica(chartServo, servo);
                         agregarDatoGrafica(chartVelocidad, rpm);
 
-                        // Renderizar los estados binarios de los sensores infrarrojos de piso
                         document.getElementById('ir-izq').className = ir_izq === 1 ? "sensor-ir detection" : "sensor-ir";
                         document.getElementById('ir-der').className = ir_der === 1 ? "sensor-ir detection" : "sensor-ir";
 
-                        // Calcular la Parada Dinámica sobre la marcha (Conversión aproximada: 200 RPM = 0.5 m/s)
                         const velocidadMS = (rpm * 0.5) / 200; 
                         const calculoSb = (velocidadMS * 0.05) + ((velocidadMS * velocidadMS) / (2 * 1.50)) + 0.10;
 
@@ -662,7 +647,6 @@
             });
         }
 
-        // Ejecutar lectura constante cada 1.5 segundos para sincronizar con la nube
         setInterval(consultarNube, 1500);
     </script>
 </body>
