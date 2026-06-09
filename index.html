@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- ESTILOS GENERALES Y PALETA DE COLORES --- */
+        /* --- ESTILOS GENERALES --- */
         :root {
             --bg-principal: #0f172a;
             --bg-tarjeta: #1e293b;
@@ -34,6 +34,7 @@
             color: var(--texto-principal);
             min-height: 100vh;
             padding: 25px;
+            overflow-x: hidden;
         }
 
         .contenedor-principal {
@@ -42,7 +43,7 @@
             position: relative;
         }
 
-        /* --- ENCABEZADO Y ESTADO DE CONEXIÓN --- */
+        /* --- ENCABEZADO --- */
         header {
             text-align: center;
             margin-bottom: 30px;
@@ -68,7 +69,6 @@
             font-weight: 600;
             background-color: rgba(235, 179, 8, 0.1);
             color: var(--color-advertencia);
-            transition: all 0.4s ease;
         }
 
         .estado-conexion.conectado {
@@ -84,7 +84,7 @@
             box-shadow: 0 0 10px currentColor;
         }
 
-        /* --- SISTEMA DE PESTAÑAS (TABS) --- */
+        /* --- PESTAÑAS (TABS) --- */
         .barra-pestanas {
             display: flex;
             justify-content: center;
@@ -119,23 +119,16 @@
             box-shadow: 0 4px 18px rgba(56, 189, 248, 0.35);
         }
 
-        /* --- CONTENEDOR DE CONTENIDO DE PESTAÑA --- */
         .contenido-pestana {
             display: none;
             min-height: 550px;
-            animation: fadeIn 0.4s ease-in-out forwards;
         }
 
         .contenido-pestana.activa {
             display: block;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- NAVEGACIÓN POR FLECHAS LATERALES --- */
+        /* --- FLECHAS DE NAVEGACIÓN --- */
         .flecha-nav {
             position: fixed;
             top: 55%;
@@ -165,76 +158,60 @@
         .flecha-izq { left: 25px; }
         .flecha-der { right: 25px; }
 
-        /* --- NUEVA MAQUETACIÓN ASIMÉTRICA (FICHA TÉCNICA) --- */
+        /* --- DISPOSICIÓN ASIMÉTRICA PESTAÑA 1 --- */
         .layout-ficha-libre {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             gap: 40px;
             width: 100%;
-            min-height: 600px;
-            padding: 0 20px;
+            min-height: 580px;
         }
 
-        /* Columna Izquierda Libre (Imagen + Proyección) */
+        /* Contenedor Izquierdo Transparente (Sin cuadro de fondo) */
         .columna-holograma {
-            flex: 1.2; /* Toma un poco más de espacio a la izquierda */
+            flex: 1.2;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
-            height: 100%;
+            height: 500px;
         }
 
         .placeholder-img-libre {
             width: 100%;
-            max-width: 580px; /* Tamaño masivo del prototipo */
+            max-width: 540px;
             height: auto;
             object-fit: contain;
-            z-index: 2;
-            filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.5));
-            animation: flotacionLigera 4s ease-in-out infinite;
+            z-index: 5;
+            filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.6));
+            animation: flotacion 4s ease-in-out infinite;
         }
 
-        /* Base de Contorno de Proyección Circular (CSS Avanzado) */
+        /* Anillo Holográfico de Contorno Inferior */
         .base-holografica {
             position: absolute;
-            bottom: -20px;
-            width: 500px;
-            height: 140px;
-            background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.2) 0%, rgba(56, 189, 248, 0) 70%);
+            bottom: 10px;
+            width: 480px;
+            height: 130px;
+            background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.25) 0%, rgba(56, 189, 248, 0) 70%);
             border: 4px double rgba(56, 189, 248, 0.6);
             border-radius: 50%;
             transform: rotateX(65deg);
             z-index: 1;
-            box-shadow: 0 0 30px rgba(56, 189, 248, 0.3), inset 0 0 30px rgba(56, 189, 248, 0.2);
-            animation: rotacionBase 20s linear infinite;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.4), inset 0 0 30px rgba(56, 189, 248, 0.2);
         }
 
-        .base-holografica::before {
-            content: '';
-            position: absolute;
-            top: 10px; left: 10px; right: 10px; bottom: 10px;
-            border: 2px dashed rgba(56, 189, 248, 0.4);
-            border-radius: 50%;
-        }
-
-        @keyframes flotacionLigera {
+        @keyframes flotacion {
             0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-12px); }
             100% { transform: translateY(0px); }
         }
 
-        @keyframes rotacionBase {
-            from { transform: rotateX(65deg) rotate(0deg); }
-            to { transform: rotateX(65deg) rotate(360deg); }
-        }
-
-        /* Columna Derecha (Ficha Técnica Contenida) */
+        /* Contenedor Derecho (Ficha Técnica Fija) */
         .columna-ficha-tarjeta {
             flex: 0.9;
-            width: 100%;
         }
 
         .tarjeta-ficha {
@@ -252,7 +229,6 @@
             border-left: 5px solid var(--color-activo);
             padding-left: 15px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .tabla-spec {
@@ -292,7 +268,7 @@
             font-size: 14px;
         }
 
-        /* --- SECCIÓN DE TELEMETRÍA GRIDS --- */
+        /* --- PESTAÑA 2: GRIDS DE TELEMETRÍA --- */
         .seccion-telemetria {
             display: flex;
             flex-direction: column;
@@ -346,7 +322,6 @@
             position: relative;
         }
 
-        /* Indicadores Infrarrojos */
         .contenedor-infrarrojos {
             display: flex;
             gap: 15px;
@@ -365,7 +340,6 @@
             font-weight: bold;
             font-size: 18px;
             color: var(--texto-secundario);
-            transition: all 0.3s ease;
         }
 
         .sensor-ir.detection {
@@ -375,18 +349,6 @@
             box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
         }
 
-        /* --- MAQUETACIÓN PESTAÑA 3 (CÁLCULO MATEMÁTICO) --- */
+        /* --- PESTAÑA 3: ANALISIS MATEMÁTICO --- */
         .tarjeta-calculo {
-            background: var(--bg-tarjeta);
-            border: 1px solid var(--borde-tarjeta);
-            border-radius: 12px;
-            padding: 40px;
-            max-width: 900px;
-            margin: 0 auto;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-
-        .formula-contenedor {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 30px;
-            border-radius:
+            background:
