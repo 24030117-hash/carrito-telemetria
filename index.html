@@ -1,0 +1,455 @@
+const char index_html[] PROGMEM = R"rawliteral(
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carrito_RF Nube</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #111827;
+            --card-bg: #1f2937;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            text-align: center; 
+            background-color: var(--bg-color); 
+            color: var(--text-main);
+            margin: 0; 
+            padding: 20px; 
+        }
+        
+        h1 { 
+            font-size: 2rem;
+            margin-bottom: 5px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #3b82f6, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 35px;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .container { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 25px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        
+        .card { 
+            background: var(--card-bg); 
+            padding: 25px; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4); 
+            width: 320px; 
+            box-sizing: border-box; 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #374151;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+
+        .card-wide {
+            width: 665px;
+        }
+        
+        h3 { 
+            color: #e5e7eb; 
+            margin-top: 0; 
+            border-bottom: 2px solid #374151; 
+            padding-bottom: 12px; 
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+        
+        .big-val { 
+            font-size: 3.2rem; 
+            font-weight: 700; 
+            color: var(--accent-blue); 
+            margin: 15px 0 5px 0; 
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 120px;
+            margin-top: 15px;
+            background: #111827;
+            border-radius: 8px;
+            border: 1px solid #374151;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .ir-container { 
+            display: flex; 
+            justify-content: space-around; 
+            margin-top: 35px; 
+        }
+        
+        .ir-box { 
+            padding: 18px 0; 
+            border-radius: 12px; 
+            font-weight: 800; 
+            background: #374151; 
+            width: 42%; 
+            color: #6b7280;
+            transition: all 0.2s ease;
+            border: 1px solid #4b5563;
+            letter-spacing: 1px;
+        }
+        
+        .active-line { 
+            background: var(--accent-green); 
+            color: #111827; 
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+            border-color: #34d399;
+        }
+        
+        .danger-alert {
+            animation: pulse-red 0.8s infinite alternate;
+            border-color: var(--accent-red);
+        }
+
+        .formula-display {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1.6rem;
+            font-weight: 700;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 25px 0;
+            letter-spacing: 1px;
+        }
+
+        .fraccion {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            vertical-align: middle;
+            padding: 0 5px;
+        }
+
+        .numerador {
+            padding-bottom: 3px;
+            text-align: center;
+        }
+
+        .denominador {
+            border-top: 3px solid var(--text-main); 
+            padding-top: 3px;
+            text-align: center;
+        }
+
+        .variables-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            text-align: left;
+            padding: 0 10px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .variables-grid span {
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
+            100% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.7); }
+        }
+
+        @media (max-width: 768px) {
+            .card-wide { width: 320px; }
+            .formula-display { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Carrito evasor de obstáculos con RF</h1>
+    <div id="status-bar" class="subtitle" style="color: var(--accent-yellow); font-weight: bold;">Conectando a la nube de Adafruit...</div>
+    
+    <div class="container">
+        <div id="card-distancia" class="card">
+            <h3>Distancia</h3>
+            <div id="fallback-dist" class="big-val">-- cm</div>
+            <div class="chart-container">
+                <canvas id="canvas-distancia"></canvas>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>Ángulo del Servo</h3>
+            <div id="val-servo" class="big-val" style="color: var(--accent-yellow);">90&deg;</div>
+            <div class="chart-container">
+                <canvas id="canvas-servo"></canvas>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>Sensores Infrarrojos</h3>
+            <div class="ir-container">
+                <div id="ir-izq" class="ir-box">IZQ</div>
+                <div id="ir-der" class="ir-box">DER</div>
+            </div>
+        </div>
+        
+        <div id="card-rpm" class="card">
+            <h3>Velocidad Motores</h3>
+            <div id="fallback-rpm" class="big-val">-- RPM</div>
+            <div class="chart-container">
+                <canvas id="canvas-rpm"></canvas>
+            </div>
+        </div>
+
+        <div id="card-seguridad" class="card card-wide">
+            <h3>Cálculo de Parada Dinámica (ISO 3691-4)</h3>
+            <div class="formula-display">
+                S<sub>b</sub> = (<span id="eq-v1" style="color: var(--accent-blue);">0.00</span>&middot;<span style="color: var(--accent-yellow);">0.05</span>) + 
+                <div class="fraccion">
+                    <div class="numerador">(<span id="eq-v2" style="color: var(--accent-blue);">0.00</span>)<sup>2</sup></div>
+                    <div class="denominador">2&middot;<span style="color: var(--accent-red);">1.50</span></div>
+                </div>
+                + <span style="color: var(--accent-green);">0.10</span>
+            </div>
+            
+            <div class="variables-grid">
+                <div>&bull; Vel. Lineal (<span style="color: var(--accent-blue);">v</span>): <span id="live-v" style="color: var(--accent-blue);">0.00</span> m/s</div>
+                <div>&bull; Tiempo Reac. (<span style="color: var(--accent-yellow);">t</span>): <span style="color: var(--accent-yellow);">0.05</span> s</div>
+                <div>&bull; Desaceleración (<span style="color: var(--accent-red);">a</span>): <span style="color: var(--accent-red);">1.50</span> m/s²</div>
+                <div>&bull; Margen Estático (<span style="color: var(--accent-green);">S<sub>m</sub></span>): <span style="color: var(--accent-green);">0.10</span> m</div>
+            </div>
+            <div id="live-Sb" class="big-val" style="color: var(--accent-green); font-size: 2.5rem; margin-top: 20px;">10.0 cm</div>
+        </div>
+    </div>
+
+    <script>
+        // --- CREDENCIALES DE TU NUEVA CUENTA DE ADAFRUIT IO ---
+        const AIO_USERNAME = "diegLOT";
+        const AIO_KEY = "aio_BjKV42vCquxCE2cBAhTOPqfhmmmf";
+        const AIO_FEED = "diegLOT/feeds/telemetria";
+
+        // Conexión WebSockets segura (WSS) externa hacia el Broker de Adafruit
+        const BROKER_URL = `wss://io.adafruit.com:443/mqtt`;
+
+        var datosDist = [];
+        var datosServo = [];
+        var datosRPM = [];
+        var maxPuntos = 20;
+        
+        window.addEventListener('load', function() {
+            ajustarResolucionCanvas();
+            renderGraficasPuras();
+            initMQTT(); // Iniciamos la escucha a internet
+        });
+
+        window.addEventListener('resize', ajustarResolucionCanvas);
+
+        function initMQTT() {
+            var statusText = document.getElementById('status-bar');
+            
+            // Creamos el cliente MQTT usando la librería importada
+            const client = mqtt.connect(BROKER_URL, {
+                username: AIO_USERNAME,
+                password: AIO_KEY,
+                clientId: 'web_dashboard_' + Math.random().toString(16).substr(2, 8)
+            });
+
+            client.on('connect', () => {
+                if(statusText) {
+                    statusText.innerText = "NUBE CONECTADA EN VIVO (Cualquier red)";
+                    statusText.style.color = "var(--accent-green)";
+                }
+                // Nos suscribimos al canal donde el ESP32 va a publicar los datos
+                client.subscribe(AIO_FEED);
+            });
+
+            client.on('message', (topic, message) => {
+                // Ejecutamos exactamente tu misma lógica de procesamiento cuando llega un dato
+                procesarDatosRemotos(message.toString());
+            });
+
+            client.on('close', () => {
+                if(statusText) {
+                    statusText.innerText = "Desconectado de la Nube. Reintentando...";
+                    statusText.style.color = "var(--accent-red)";
+                }
+            });
+        }
+
+        function ajustarResolucionCanvas() {
+            var ids = ['canvas-distancia', 'canvas-servo', 'canvas-rpm'];
+            for(var i=0; i<ids.length; i++) {
+                var canvas = document.getElementById(ids[i]);
+                if(canvas) {
+                    canvas.width = canvas.parentElement.clientWidth;
+                    canvas.height = canvas.parentElement.clientHeight;
+                }
+            }
+            renderGraficasPuras();
+        }
+
+        function dibujarGraficaNativa(idCanvas, arregloDatos, maxVal, colorLinea) {
+            var canvas = document.getElementById(idCanvas);
+            if (!canvas) return;
+            var ctx = canvas.getContext('2d');
+            var W = canvas.width;
+            var H = canvas.height;
+            
+            ctx.clearRect(0, 0, W, H);
+            ctx.strokeStyle = '#232d3f';
+            ctx.lineWidth = 1;
+            for(var i = 1; i < 4; i++) {
+                var yLine = (H / 4) * i;
+                ctx.beginPath(); ctx.moveTo(0, yLine); ctx.lineTo(W, yLine); ctx.stroke();
+            }
+            
+            if (arregloDatos.length === 0) return;
+            
+            ctx.strokeStyle = colorLinea;
+            ctx.lineWidth = 3;
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            
+            for (var j = 0; j < arregloDatos.length; j++) {
+                var x = (W / (maxPuntos - 1)) * j;
+                var fraccion = arregloDatos[j] / maxVal;
+                if(fraccion > 1) fraccion = 1;
+                if(fraccion < 0) fraccion = 0;
+                var y = H - (fraccion * H * 0.8) - (H * 0.1);
+                
+                if (j === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+
+        function renderGraficasPuras() {
+            dibujarGraficaNativa('canvas-distancia', datosDist, 120, '#ef4444');
+            dibujarGraficaNativa('canvas-servo', datosServo, 180, '#f59e0b');
+            
+            var ultimoRPM = datosRPM[datosRPM.length - 1] || 0;
+            var colorGraficaRPM = (ultimoRPM >= 150) ? '#ef4444' : '#3b82f6';
+            dibujarGraficaNativa('canvas-rpm', datosRPM, 250, colorGraficaRPM);
+        }
+
+        function agregarDato(arreglo, nuevoDato) {
+            arreglo.push(nuevoDato);
+            if(arreglo.length > maxPuntos) {
+                arreglo.shift();
+            }
+        }
+
+        function procesarDatosRemotos(stringDatos) {
+            var datos = stringDatos.split(',');
+            if(datos.length >= 5) {
+                var dist   = parseInt(datos[0]);
+                var servo  = parseInt(datos[1]);
+                var ir_izq = parseInt(datos[2]);
+                var ir_der = parseInt(datos[3]);
+                var rpm    = parseInt(datos[4]);
+
+                var v_lineal = rpm * 0.003455; 
+                var t_reaccion = 0.05;
+                var desaceleracion = 1.5;
+                var margen_estatico = 0.10;
+                
+                var Sb_metros = (v_lineal * t_reaccion) + ((v_lineal * v_lineal) / (2 * desaceleracion)) + margen_estatico;
+                var Sb_cm = Sb_metros * 100;
+
+                var elLiveV = document.getElementById('live-v');
+                var elLiveSb = document.getElementById('live-Sb');
+                var elEqV1 = document.getElementById('eq-v1');
+                var elEqV2 = document.getElementById('eq-v2');
+                
+                var vTexto = v_lineal.toFixed(2);
+                
+                if(elLiveV) elLiveV.innerText = vTexto;
+                if(elLiveSb) elLiveSb.innerText = Sb_cm.toFixed(1) + " cm";
+                if(elEqV1) elEqV1.innerText = vTexto;
+                if(elEqV2) elEqV2.innerText = vTexto;
+
+                var cDist = document.getElementById('card-distancia');
+                var fDist = document.getElementById('fallback-dist');
+                if(fDist) fDist.innerText = dist + " cm";
+                
+                if(cDist) {
+                    if(dist < Sb_cm) {
+                        cDist.classList.add('danger-alert');
+                        if(fDist) fDist.style.color = 'var(--accent-red)';
+                        if(elLiveSb) elLiveSb.style.color = 'var(--accent-red)';
+                    } else {
+                        cDist.classList.remove('danger-alert');
+                        if(fDist) fDist.style.color = 'var(--accent-blue)';
+                        if(elLiveSb) elLiveSb.style.color = 'var(--accent-green)';
+                    }
+                }
+                agregarDato(datosDist, dist);
+
+                var elServo = document.getElementById('val-servo');
+                if(elServo) elServo.innerText = servo + ' ' + String.fromCharCode(176);
+                agregarDato(datosServo, servo);
+
+                var fRpm = document.getElementById('fallback-rpm');
+                if(fRpm) {
+                    fRpm.innerText = rpm + " RPM";
+                    if(rpm >= 150) {
+                        fRpm.style.color = 'var(--accent-red)';
+                    } else if(rpm > 40) {
+                        fRpm.style.color = 'var(--accent-green)';
+                    } else {
+                        fRpm.style.color = 'var(--accent-blue)';
+                    }
+                }
+                agregarDato(datosRPM, rpm);
+
+                renderGraficasPuras();
+
+                var elIzq = document.getElementById('ir-izq');
+                if(elIzq) {
+                    if(ir_izq === 1) elIzq.classList.add('active-line');
+                    else elIzq.classList.remove('active-line');
+                }
+
+                var elDer = document.getElementById('ir-der');
+                if(elDer) {
+                    if(ir_der === 1) elDer.classList.add('active-line');
+                    else elDer.classList.remove('active-line');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+)rawliteral";
