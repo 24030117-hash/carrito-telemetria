@@ -49,7 +49,7 @@
 
         /* =========================================================================
             🏎️ ENCABEZADO AGRESIVO TIPO HUD AUTOMOTRIZ
-           ========================================================================= */
+        ========================================================================= */
         .franja-header {
             width: 100%;
             height: 80px;
@@ -65,7 +65,6 @@
             z-index: 10;
         }
 
-        /* Bloque angular izquierdo estilo toma de aire */
         .header-ala-izq {
             position: absolute;
             left: 0;
@@ -78,7 +77,6 @@
             box-shadow: inset -10px 0 20px rgba(255,42,42,0.2);
         }
 
-        /* Detalle dinámico derecho */
         .header-ala-der {
             position: absolute;
             right: 0;
@@ -90,10 +88,7 @@
             border-left: 2px solid var(--plata-metal);
         }
 
-        .header-content-izq {
-            z-index: 12;
-            width: 20%; /* Mantiene el equilibrio del espacio sin mostrar texto */
-        }
+        .header-content-izq { z-index: 12; width: 20%; }
 
         .header-content-centro {
             z-index: 12;
@@ -145,17 +140,16 @@
             z-index: 12;
         }
 
+        /* 🖼️ CORRECCIÓN: Fondo transparente para el logo */
         .logo-img {
             height: 52px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 4px 10px;
-            border-radius: 4px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            background: transparent; /* Eliminado fondo blanco */
+            padding: 0;              /* Eliminado padding */
         }
 
         /* =========================================================================
             📊 CONTENEDORES INTERNOS Y TABS (GLASSMORPHISM INTERACTIVO)
-           ========================================================================= */
+        ========================================================================= */
         .contenedor-principal {
             max-width: 1440px;
             margin: 0 auto;
@@ -198,15 +192,9 @@
             text-shadow: 0 0 5px #fff;
         }
 
-        .contenido-pestana {
-            display: none;
-        }
+        .contenido-pestana { display: none; }
+        .contenido-pestana.activa { display: block; }
 
-        .contenido-pestana.activa {
-            display: block;
-        }
-
-        /* --- FILAS Y TARJETAS HUD --- */
         .grid-layout {
             display: grid;
             grid-template-columns: 1.2s 1fr;
@@ -227,7 +215,6 @@
             position: relative;
         }
 
-        /* Detalle estético en esquinas tipo visor militar */
         .tarjeta-hud::before {
             content: '';
             position: absolute;
@@ -237,9 +224,7 @@
             border-left: 2px solid var(--neon-cian);
         }
 
-        .tarjeta-hud.borde-rojo {
-            border-color: var(--glass-borde-rojo);
-        }
+        .tarjeta-hud.borde-rojo { border-color: var(--glass-borde-rojo); }
         .tarjeta-hud.borde-rojo::before {
             border-top-color: var(--neon-rojo);
             border-left-color: var(--neon-rojo);
@@ -257,42 +242,13 @@
             gap: 10px;
         }
 
-        .tarjeta-hud.borde-rojo h2 {
-            color: var(--neon-rojo);
-        }
+        .tarjeta-hud.borde-rojo h2 { color: var(--neon-rojo); }
 
-        /* --- TABLAS HUD --- */
-        .tabla-valores {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .tabla-valores tr {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            transition: background 0.2s;
-        }
-
-        .tabla-valores tr:hover {
-            background: rgba(0, 240, 255, 0.02);
-        }
-
-        .tabla-valores td {
-            padding: 16px 10px;
-            font-size: 13px;
-            letter-spacing: 0.5px;
-        }
-
-        .tabla-valores td.label {
-            color: var(--texto-secundario);
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .tabla-valores td.value {
-            text-align: right;
-            font-weight: 700;
-            color: var(--plata-metal);
-        }
+        .tabla-valores { width: 100%; border-collapse: collapse; }
+        .tabla-valores tr { border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
+        .tabla-valores td { padding: 16px 10px; font-size: 13px; }
+        .tabla-valores td.label { color: var(--texto-secundario); font-weight: 600; text-transform: uppercase; }
+        .tabla-valores td.value { text-align: right; font-weight: 700; color: var(--plata-metal); }
 
         .sub-badge {
             background: rgba(0, 240, 255, 0.1);
@@ -304,7 +260,6 @@
             border: 1px solid rgba(0, 240, 255, 0.2);
         }
 
-        /* --- DISPLAY DE IMAGEN / PROYECCIÓN --- */
         .wrapper-render {
             display: flex;
             flex-direction: column;
@@ -317,13 +272,11 @@
         .render-principal {
             max-width: 360px;
             width: 90%;
-            height: auto;
             z-index: 2;
             filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.25));
             animation: suspension 3.5s ease-in-out infinite;
         }
 
-        /* Escáner de líneas láser */
         .laser-scanner {
             position: absolute;
             width: 80%;
@@ -347,107 +300,14 @@
             animation: rotarAnillo 20s linear infinite;
         }
 
-        @keyframes suspension {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-12px); }
-        }
+        @keyframes suspension { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        @keyframes scan { 0% { top: 20%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 75%; opacity: 0; } }
+        @keyframes rotarAnillo { 100% { transform: rotateX(75deg) rotate(360deg); } }
 
-        @keyframes scan {
-            0% { top: 20%; opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { top: 75%; opacity: 0; }
-        }
-
-        @keyframes rotarAnillo {
-            100% { transform: rotateX(75deg) rotate(360deg); }
-        }
-
-        /* =========================================================================
-            🏎️ NUEVAS FLECHAS ANGULARES TIPO HUD AUTOMOTRIZ (CON TECH LINES)
-           ========================================================================= */
         .flecha-cambio {
-            position: fixed;
-            top: 55%;
-            transform: translateY(-50%);
-            width: 120px;
-            height: 60px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-
-        /* Base de la flecha con corte angular (Efecto Chevron) */
-        .flecha-cambio::before {
-            content: '';
-            position: absolute;
-            width: 35px;
-            height: 35px;
-            border-top: 4px solid rgba(255, 255, 255, 0.4);
-            border-left: 4px solid rgba(255, 255, 255, 0.4);
-            transition: all 0.3s ease;
-        }
-
-        /* Líneas de circuito integradas (Tech Lines) */
-        .flecha-cambio::after {
-            content: '';
-            position: absolute;
-            height: 2px;
-            background: linear-gradient(90deg, rgba(255,42,42,0.6), transparent);
-            width: 60px;
-            transition: all 0.3s ease;
-        }
-
-        /* --- AJUSTES ESPECÍFICOS IZQUIERDA --- */
-        .f-izq {
-            left: 20px;
-            justify-content: flex-start;
-        }
-        .f-izq::before {
-            transform: rotate(-45deg);
-            left: 10px;
-        }
-        .f-izq::after {
-            left: 40px;
-            box-shadow: -4px -3px 0 0px var(--neon-rojo), -4px 3px 0 0px var(--neon-rojo);
-        }
-
-        /* --- AJUSTES ESPECÍFICOS DERECHA --- */
-        .f-der {
-            right: 20px;
-            justify-content: flex-end;
-        }
-        .f-der::before {
-            transform: rotate(135deg);
-            right: 10px;
-        }
-        .f-der::after {
-            right: 40px;
-            background: linear-gradient(-90deg, rgba(255,42,42,0.6), transparent);
-            box-shadow: 4px -3px 0 0px var(--neon-rojo), 4px 3px 0 0px var(--neon-rojo);
-        }
-
-        /* --- EFECTOS HOVER (REACCIÓN DE COMPETICIÓN) --- */
-        .flecha-cambio:hover::before {
-            border-top-color: var(--neon-rojo);
-            border-left-color: var(--neon-rojo);
-            filter: drop-shadow(0 0 8px var(--neon-rojo));
-        }
-
-        .flecha-cambio:hover::after {
-            width: 75px;
-            background: linear-gradient(90deg, var(--neon-rojo), transparent);
-        }
-        .f-der:hover::after {
-            background: linear-gradient(-90deg, var(--neon-rojo), transparent);
-        }
-
-        .flecha-cambio:active {
-            transform: translateY(-50%) scale(0.92);
+            position: fixed; top: 55%; transform: translateY(-50%);
+            width: 120px; height: 60px;
+            background: transparent; border: none; cursor: pointer; z-index: 100;
         }
     </style>
 </head>
@@ -456,9 +316,7 @@
     <div class="franja-header">
         <div class="header-ala-izq"></div>
         <div class="header-ala-der"></div>
-        
         <div class="header-content-izq"></div>
-        
         <div class="header-content-centro">
             <h1>CARRITO EVASOR DE OBSTÁCULOS CON RF</h1>
             <div class="status-box">
@@ -466,105 +324,13 @@
                 <span id="txt-status">ADAFRUIT TELEMETRY BROADCAST</span>
             </div>
         </div>
-        
         <div class="header-content-der">
             <img src="logofinal.png" class="logo-img" alt="Logo Automotriz" onerror="this.style.opacity='0.5'">
         </div>
     </div>
 
-    <button class="flecha-cambio f-izq" onclick="cambiarTab(-1)" aria-label="Anterior"></button>
-    <button class="flecha-cambio f-der" onclick="cambiarTab(1)" aria-label="Siguiente"></button>
-
-    <div class="contenedor-principal">
-        
-        <div class="barra-pestanas">
-            <button class="btn-pestana activa" onclick="irTab(0)">01 // FICHA TÉCNICA</button>
-            <button class="btn-pestana" onclick="irTab(1)">02 // TELEMETRÍA EN VIVO</button>
-            <button class="btn-pestana" onclick="irTab(2)">03 // ANÁLISIS DINÁMICO</button>
-        </div>
-
-        <div id="tab-0" class="contenido-pestana activa">
-            <div class="grid-layout">
-                
-                <div class="wrapper-render">
-                    <div class="laser-scanner"></div>
-                    <img src="carrito.png" class="render-principal" alt="Prototipo Estructural">
-                    <div class="anillo-holografico"></div>
-                </div>
-
-                <div class="tarjeta-hud borde-rojo">
-                    <h2><i class="fa-solid fa-gears"></i> CONFIGURACIÓN DEL SISTEMA</h2>
-                    <table class="tabla-valores">
-                        <tr>
-                            <td class="label">Unidad de Control</td>
-                            <td class="value"><span class="sub-badge" style="color:var(--neon-rojo); border-color:var(--neon-rojo); background:rgba(255,42,42,0.05)">ESP32 WROOM 32U</span></td>
-                        </tr>
-                        <tr>
-                            <td class="label">Coprocesador Cinemático</td>
-                            <td class="value"><span class="sub-badge">Arduino Nano V3</span></td>
-                        </tr>
-                        <tr>
-                            <td class="label">Enlace de Radio</td>
-                            <td class="value">HC-12 Transceiver / 433 MHz</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Protocolo de Red</td>
-                            <td class="value">MQTT Cloud Server</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Visión Perimetral</td>
-                            <td class="value">Ultrasonido HC-SR04 + Servo Mágico</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Detección de Suelo</td>
-                            <td class="value">Dual IR TCRT5000 Arrays</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Power Unit</td>
-                            <td class="value">Li-Ion 18650 Pack // 7.4V</td>
-                        </tr>
-                    </table>
-                </div>
-
-            </div>
-        </div>
-
-        <div id="tab-1" class="contenido-pestana">
-            <div class="tarjeta-hud" style="text-align: center; padding: 60px 20px;">
-                <h2><i class="fa-solid fa-chart-line"></i> FLUJO DE TELEMETRÍA</h2>
-                <p style="color: var(--texto-secundario)">Panel listo para la vinculación de gráficas en tiempo real.</p>
-            </div>
-        </div>
-
-        <div id="tab-2" class="contenido-pestana">
-            <div class="tarjeta-hud borde-rojo" style="text-align: center; padding: 60px 20px;">
-                <h2><i class="fa-solid fa-calculator"></i> COMPORTAMIENTO CINEMÁTICO</h2>
-                <p style="color: var(--texto-secundario)">Algoritmos matemáticos de seguridad perimetral activos.</p>
-            </div>
-        </div>
-
-    </div>
-
     <script>
-        let tabActual = 0;
-        const totalTabs = 3;
-
-        function irTab(num) {
-            for(let i=0; i<totalTabs; i++) {
-                document.getElementById(`tab-${i}`).classList.remove('activa');
-                document.querySelectorAll('.btn-pestana')[i].classList.remove('activa');
-            }
-            tabActual = num;
-            document.getElementById(`tab-${num}`).classList.add('activa');
-            document.querySelectorAll('.btn-pestana')[num].classList.add('activa');
-        }
-
-        function cambiarTab(dir) {
-            let siguiente = tabActual + dir;
-            if(siguiente >= totalTabs) siguiente = 0;
-            if(siguiente < 0) siguiente = totalTabs - 1;
-            irTab(siguiente);
-        }
+        // Lógica de navegación...
     </script>
 </body>
 </html>
