@@ -37,15 +37,15 @@
             overflow-x: hidden;
         }
 
-        /* --- 🚀 FRANJA DE ENCABEZADO REESTRUCTURADA --- */
+        /* --- 🚀 FRANJA DE ENCABEZADO SUPER REFORZADA --- */
         .franja-header {
             width: 100%;
             background-color: var(--bg-franja);
             border-bottom: 1px solid var(--borde-tarjeta);
-            padding: 15px 20px;
+            padding: 20px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
             margin-bottom: 30px;
-            position: relative; /* Clave para el posicionamiento del logo */
+            position: relative; 
         }
 
         .contenido-franja {
@@ -101,7 +101,7 @@
             box-shadow: 0 0 8px currentColor;
         }
 
-        /* Contenedor del Logo */
+        /* Contenedor del Logo (Base Móvil) */
         .logo-contenedor {
             display: flex;
             align-items: center;
@@ -109,7 +109,7 @@
         }
 
         .logo-proyecto {
-            height: 55px; /* Tamaño móvil base ligeramente mayor */
+            height: 65px; 
             width: auto;
             object-fit: contain;
             filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.2)); 
@@ -433,18 +433,18 @@
         }
 
         /* =========================================================================
-            🚀 ESCALA PARA LAPTOPS Y PC (POSICIONAMIENTO ABSOLUTO INDEPENDIENTE)
+            🚀 MÁXIMO TAMAÑO E IMPACTO VISUAL PARA ESCRITORIO/LAPTOPS
            ========================================================================= */
         @media (min-width: 1024px) {
             .franja-header {
-                padding: 10px 40px;
-                min-height: 110px; /* Un poco más de altura para albergar un logo imponente */
+                padding: 0 40px;
+                min-height: 160px; /* Incrementamos la altura para darle un espacio gigante al logo */
                 display: flex;
                 align-items: center;
             }
 
             .contenido-franja {
-                display: block; /* Centrado directo del bloque de texto */
+                display: block; 
                 max-width: 1400px;
                 position: static;
             }
@@ -458,22 +458,26 @@
                 font-size: 28px;
             }
 
-            /* Extraemos el logo del flujo y lo fijamos a la derecha con tamaño masivo */
+            /* Contenedor absoluto ampliado masivamente */
             .logo-contenedor {
                 position: absolute;
-                right: 30px;
+                right: 50px; /* Separación del borde derecho */
                 top: 50%;
                 transform: translateY(-50%);
-                height: 85%; /* Toma casi el 100% de la altura total de la franja */
-                width: 260px; /* Forzamos un ancho generoso para evitar restricciones */
+                height: 100px; /* Alto base amplio */
+                width: 380px;  /* Ancho base ultra generoso */
+                display: flex;
                 justify-content: flex-end;
+                align-items: center;
             }
 
+            /* Multiplicador de escala agresivo para romper límites de tamaño */
             .logo-proyecto {
-                height: 100%; /* Escala al alto total del contenedor sin recortarse */
+                height: 100%;
                 width: 100%; 
-                object-fit: contain; /* No se deforma, conserva la proporción original */
-                transform: scale(1.15); /* Multiplicador extra de tamaño visual */
+                object-fit: contain; 
+                transform: scale(1.45); /* Multiplica el tamaño visual un 45% más */
+                filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.35));
             }
 
             .btn-pestana {
