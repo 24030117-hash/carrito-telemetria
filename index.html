@@ -360,112 +360,82 @@
         }
 
         /* =========================================================================
-            🏎️ NUEVAS FLECHAS DE NAVEGACIÓN "AERO-SPORT" (SÚPER DEPORTIVAS)
+            🏎️ NAVEGACIÓN TRIPLES CHEVRONS "AERO-RACING" SECUENCIALES
            ========================================================================= */
-        .flecha-cambio {
+        .contenedor-chevron {
             position: fixed;
             top: 55%;
             transform: translateY(-50%);
-            width: 70px;
-            height: 90px;
-            background: rgba(10, 16, 26, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 6px;
+            background: rgba(10, 16, 26, 0.3);
+            padding: 16px 22px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 240, 255, 0.08);
             cursor: pointer;
             z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            backdrop-filter: blur(8px);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            backdrop-filter: blur(6px);
         }
 
-        /* El cuerpo interno genera las puntas de flecha triples de competición */
-        .flecha-cambio::before {
-            content: '';
-            position: absolute;
-            width: 18px;
-            height: 18px;
-            border-top: 4px solid var(--plata-metal);
-            border-left: 4px solid var(--plata-metal);
+        /* Diseño base de cada bloque Chevron */
+        .chevron-bit {
+            width: 14px;
+            height: 28px;
+            background: var(--texto-secundario);
+            opacity: 0.3;
             transition: all 0.2s ease;
         }
 
-        /* Líneas aerodinámicas traseras (estilo difusor / alerón) */
-        .flecha-cambio::after {
-            content: '';
-            position: absolute;
-            width: 4px;
-            height: 40px;
-            background: var(--neon-rojo-dim);
-            transition: all 0.2s ease;
+        /* Cortes angulares inclinados (Itálica deportiva de alta velocidad) */
+        .f-izq .chevron-bit {
+            clip-path: polygon(100% 0, 30% 50%, 100% 100%, 70% 100%, 0% 50%, 70% 0);
+        }
+        .f-der .chevron-bit {
+            clip-path: polygon(0 0, 70% 50%, 0 100%, 30% 100%, 100% 50%, 30% 0);
         }
 
-        /* --- ORIENTACIÓN Y AERODINÁMICA IZQUIERDA --- */
-        .f-izq {
-            left: 0;
-            /* Corte inclinado hacia adelante para dar sensación de velocidad */
-            clip-path: polygon(0 0, 100% 15%, 80% 85%, 0 100%);
-        }
-        .f-izq::before {
-            transform: rotate(-45deg);
-            left: 22px;
-        }
-        .f-izq::after {
-            right: 12px;
-            transform: skewX(-12deg);
-        }
+        /* Posicionamiento en los extremos de la pantalla */
+        .f-izq { left: 25px; }
+        .f-der { right: 25px; }
 
-        /* --- ORIENTACIÓN Y AERODINÁMICA DERECHA --- */
-        .f-der {
-            right: 0;
-            /* Corte inclinado inverso */
-            clip-path: polygon(20% 15%, 100% 0, 100% 100%, 0 85%);
-        }
-        .f-der::before {
-            transform: rotate(135deg);
-            right: 22px;
-        }
-        .f-der::after {
-            left: 12px;
-            transform: skewX(12deg);
-        }
-
-        /* --- DETECTOR DE PROXIMIDAD / HOVER DE COMPETICIÓN --- */
-        .flecha-cambio:hover {
-            background: rgba(255, 42, 42, 0.12);
+        /* --- HOVER EFECTO RACING (BARRIDO E ILUMINACIÓN) --- */
+        .contenedor-chevron:hover {
             border-color: var(--neon-rojo);
-            width: 85px; /* Se extiende hacia el centro como si fuera un flap activo */
+            background: rgba(255, 42, 42, 0.05);
+            box-shadow: 0 0 20px rgba(255, 42, 42, 0.15);
         }
 
-        .f-izq:hover {
-            box-shadow: 10px 0 20px rgba(255, 42, 42, 0.2);
-        }
-
-        .f-der:hover {
-            box-shadow: -10px 0 20px rgba(255, 42, 42, 0.2);
-        }
-
-        /* Cambio de color de la punta y efecto de luz */
-        .flecha-cambio:hover::before {
-            border-top-color: var(--neon-rojo);
-            border-left-color: var(--neon-rojo);
-            filter: drop-shadow(0 0 6px var(--neon-rojo));
-        }
-
-        /* El ala/difusor se ilumina a máxima potencia */
-        .flecha-cambio:hover::after {
+        /* Activación secuencial simulada por delay en CSS */
+        .contenedor-chevron:hover .chevron-bit {
             background: var(--neon-rojo);
-            height: 55px;
-            filter: drop-shadow(0 0 8px var(--neon-rojo));
+            opacity: 1;
+            filter: drop-shadow(0 0 5px var(--neon-rojo));
         }
 
-        /* Reacción al hacer click (Feedback táctil instantáneo) */
-        .flecha-cambio:active {
-            background: var(--neon-rojo);
+        /* Secuencia de avance hacia la IZQUIERDA (De derecha a izquierda) */
+        .f-izq:hover .chevron-bit:nth-child(3) { animation: pulsoChevron 0.6s infinite 0s; }
+        .f-izq:hover .chevron-bit:nth-child(2) { animation: pulsoChevron 0.6s infinite 0.15s; }
+        .f-izq:hover .chevron-bit:nth-child(1) { animation: pulsoChevron 0.6s infinite 0.3s; }
+
+        /* Secuencia de avance hacia la DERECHA (De izquierda a derecha) */
+        .f-der:hover .chevron-bit:nth-child(1) { animation: pulsoChevron 0.6s infinite 0s; }
+        .f-der:hover .chevron-bit:nth-child(2) { animation: pulsoChevron 0.6s infinite 0.15s; }
+        .f-der:hover .chevron-bit:nth-child(3) { animation: pulsoChevron 0.6s infinite 0.3s; }
+
+        @keyframes pulsoChevron {
+            0% { opacity: 0.3; background: var(--texto-secundario); filter: none; }
+            50% { opacity: 1; background: var(--neon-rojo); filter: drop-shadow(0 0 8px var(--neon-rojo)); }
+            100% { opacity: 0.3; background: var(--texto-secundario); filter: none; }
         }
-        .flecha-cambio:active::before {
-            border-top-color: #ffffff;
-            border-left-color: #ffffff;
+
+        /* Feedback al hacer Click */
+        .contenedor-chevron:active {
+            transform: translateY(-50%) scale(0.9);
+        }
+        .contenedor-chevron:active .chevron-bit {
+            background: #ffffff !important;
+            filter: drop-shadow(0 0 10px #ffffff) !important;
         }
     </style>
 </head>
@@ -490,8 +460,17 @@
         </div>
     </div>
 
-    <button class="flecha-cambio f-izq" onclick="cambiarTab(-1)" aria-label="Anterior"></button>
-    <button class="flecha-cambio f-der" onclick="cambiarTab(1)" aria-label="Siguiente"></button>
+    <div class="contenedor-chevron f-izq" onclick="cambiarTab(-1)" aria-label="Anterior">
+        <div class="chevron-bit"></div>
+        <div class="chevron-bit"></div>
+        <div class="chevron-bit"></div>
+    </div>
+
+    <div class="contenedor-chevron f-der" onclick="cambiarTab(1)" aria-label="Siguiente">
+        <div class="chevron-bit"></div>
+        <div class="chevron-bit"></div>
+        <div class="chevron-bit"></div>
+    </div>
 
     <div class="contenedor-principal">
         
