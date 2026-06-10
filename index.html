@@ -11,7 +11,6 @@
             --bg-puro: #06090e;
             --neon-rojo: #ff2a2a;
             --texto-secundario: #64748b;
-            --plata-metal: #e2e8f0;
         }
 
         body {
@@ -19,92 +18,73 @@
             color: #fff;
             margin: 0;
             padding: 0;
-            font-family: sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .contenedor-global {
-            position: relative;
-            width: 100%;
-            height: 100%;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        /* FLECHAS: Corregidas para visibilidad absoluta */
-        .btn-chevron {
+        /* --- FLECHAS DE NAVEGACIÓN CHEVRON RACING --- */
+        .nav-chevron {
             position: absolute;
             top: 50%;
-            z-index: 999;
-            background: rgba(0,0,0,0.5);
-            border: none;
+            transform: translateY(-50%);
+            z-index: 100;
             cursor: pointer;
-            padding: 20px 10px;
             display: flex;
-            gap: 5px;
+            flex-direction: column;
+            gap: 8px;
+            padding: 20px;
         }
-        .f-izq { left: 10px; }
-        .f-der { right: 10px; }
 
-        .chevron-segmento {
-            width: 10px;
-            height: 30px;
+        .left-arrow { left: 10px; }
+        .right-arrow { right: 10px; }
+
+        .chevron {
+            width: 25px;
+            height: 8px;
             background: var(--texto-secundario);
+            transition: all 0.3s ease;
         }
-        .f-izq .chevron-segmento { clip-path: polygon(100% 0, 30% 50%, 100% 100%, 70% 100%, 0% 50%, 70% 0); }
-        .f-der .chevron-segmento { clip-path: polygon(0 0, 70% 50%, 0 100%, 30% 100%, 100% 50%, 30% 0); }
 
-        .btn-chevron:hover .chevron-segmento { background: var(--neon-rojo); }
+        /* Diseño de flecha */
+        .left-arrow .chevron { clip-path: polygon(100% 0, 0 50%, 100% 100%, 80% 100%, 20% 50%, 80% 0); }
+        .right-arrow .chevron { clip-path: polygon(0 0, 100% 50%, 0 100%, 20% 100%, 80% 50%, 20% 0); }
 
-        /* Estilos básicos para mantener el layout */
-        .franja-header { height: 70px; background: #000; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; }
-        .contenedor-principal { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .tarjeta-hud { width: 90%; background: #0f172a; border: 1px solid #333; padding: 20px; margin-top: 10px; }
-        .tabla-valores { width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .tabla-item { border: 1px solid #222; padding: 10px; }
+        /* Efecto de barrido al pasar el mouse */
+        .nav-chevron:hover .chevron {
+            background: var(--neon-rojo);
+            filter: drop-shadow(0 0 8px var(--neon-rojo));
+        }
+        
+        .nav-chevron:hover .chevron:nth-child(1) { transition-delay: 0s; }
+        .nav-chevron:hover .chevron:nth-child(2) { transition-delay: 0.1s; }
+        .nav-chevron:hover .chevron:nth-child(3) { transition-delay: 0.2s; }
+
+        /* Layout */
+        .contenedor-principal { flex: 1; padding: 40px; display: flex; align-items: center; justify-content: center; }
+        .tarjeta-hud { background: #0f172a; border: 1px solid #333; padding: 30px; width: 100%; max-width: 800px; }
     </style>
 </head>
 <body>
 
-<div class="contenedor-global">
-    <header class="franja-header">
-        <h1>CARRITO EVASOR DE OBSTÁCULOS</h1>
-    </header>
-
-    <button class="btn-chevron f-izq" onclick="cambiarTab(-1)">
-        <div class="chevron-segmento"></div><div class="chevron-segmento"></div><div class="chevron-segmento"></div>
-    </button>
-    <button class="btn-chevron f-der" onclick="cambiarTab(1)">
-        <div class="chevron-segmento"></div><div class="chevron-segmento"></div><div class="chevron-segmento"></div>
-    </button>
+    <div class="nav-chevron left-arrow" onclick="cambiarTab(-1)">
+        <div class="chevron"></div><div class="chevron"></div><div class="chevron"></div>
+    </div>
+    <div class="nav-chevron right-arrow" onclick="cambiarTab(1)">
+        <div class="chevron"></div><div class="chevron"></div><div class="chevron"></div>
+    </div>
 
     <div class="contenedor-principal">
-        <div id="tab-0" class="contenido-pestana">
-            <div style="height: 200px; background: #111; width: 100%; margin-bottom: 20px; display:flex; align-items:center; justify-content:center;">
-                [RENDER DEL CARRITO]
-            </div>
-            <div class="tarjeta-hud">
-                <h2>CONFIGURACIÓN</h2>
-                <div class="tabla-valores">
-                    <div class="tabla-item">Unidad: ESP32</div>
-                    <div class="tabla-item">Radio: HC-12</div>
-                    <div class="tabla-item">Visión: US</div>
-                    <div class="tabla-item">Energía: 7.4V</div>
-                </div>
-            </div>
+        <div id="tab-0" class="tarjeta-hud">
+            <h2>CONFIGURACIÓN DEL SISTEMA</h2>
+            <p>Contenido principal del dashboard...</p>
         </div>
     </div>
-</div>
 
-<script>
-    let tabActual = 0;
-    function cambiarTab(dir) {
-        // Lógica de cambio aquí
-        console.log("Cambiando...");
-    }
-</script>
+    <script>
+        function cambiarTab(dir) { console.log("Cambiando:", dir); }
+    </script>
 </body>
 </html>
