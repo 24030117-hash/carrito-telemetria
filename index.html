@@ -37,7 +37,7 @@
             overflow-x: hidden;
         }
 
-        /* --- 🚀 FRANJA DE ENCABEZADO CON PARÁMETROS ORIGINALES COMPACTOS --- */
+        /* --- 🚀 FRANJA DE ENCABEZADO COMPACTA E INMUTABLE --- */
         .franja-header {
             width: 100%;
             background-color: var(--bg-franja);
@@ -46,7 +46,8 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
             margin-bottom: 30px;
             position: relative; 
-            min-height: 75px; /* Restauramos la altura delgada original */
+            min-height: 75px; /* Altura original fija de la barra */
+            max-height: 75px; 
             display: flex;
             align-items: center;
         }
@@ -113,7 +114,7 @@
         }
 
         .logo-proyecto {
-            height: 50px; 
+            height: 45px; 
             width: auto;
             object-fit: contain;
         }
@@ -436,12 +437,11 @@
         }
 
         /* =========================================================================
-            🚀 COMPACTACIÓN E INDEPENDENCIA VISUAL PARA ESCRITORIO
+            🚀 SOLUCIÓN DEFINITIVA: CONTENEDOR COMPACTO + LOGO FORZADO EN PX
            ========================================================================= */
         @media (min-width: 1024px) {
             .franja-header {
                 padding: 0 40px;
-                min-height: 75px; /* Fijamos la franja delgada original de tus primeras fotos */
             }
 
             .contenido-franja {
@@ -457,27 +457,24 @@
                 font-size: 24px;
             }
 
-            /* El contenedor se mantiene pequeño para no alterar el DOM ni la franja */
+            /* Contenedor del logo perfectamente alineado al borde sin alterar la barra */
             .logo-contenedor {
                 position: absolute;
-                right: 40px; 
+                right: 30px; 
                 top: 50%;
                 transform: translateY(-50%);
-                height: 50px; 
-                width: 160px;  
+                height: auto; 
+                width: auto;  
                 display: flex;
-                justify-content: flex-end;
                 align-items: center;
             }
 
-            /* Con transform e inline dimensions hacemos grande el logo sin alterar la franja */
+            /* Dimensiones brutas forzadas en píxeles. Obliga a expandirse sí o sí */
             .logo-proyecto {
-                height: 52px; /* Forzamos tamaño de renderizado óptimo */
-                width: auto;
-                max-width: none; /* Rompe los limitadores de herencia */
-                transform: scale(2.3); /* Lo agiganta visualmente de forma limpia */
-                transform-origin: right center; /* Evita que choque con los bordes */
-                filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.3));
+                width: 180px !important;  /* Ancho ideal para ver el texto horizontal */
+                height: 65px !important;  /* Alto completo para llenar el rango vertical */
+                object-fit: fill !important; /* Rompe la proporción original y elimina el "aire" invisible */
+                filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.35));
             }
 
             .btn-pestana {
