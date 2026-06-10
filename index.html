@@ -1,1468 +1,271 @@
 <!DOCTYPE html>
-
 <html lang="es">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Dashboard Telemetría - Carrito Evasor</title>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <title>F1 Telemetry System - Step 1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     
-
     <style>
-
-        /* --- ESTILOS GENERALES Y PALETA DE COLORES --- */
-
         :root {
-
-            --bg-principal: #0f172a;
-
-            --bg-tarjeta: #1e293b;
-
-            --bg-tarjeta-hover: #25354f;
-
-            --texto-principal: #f8fafc;
-
-            --texto-secundario: #94a3b8;
-
-            --color-activo: #38bdf8;
-
-            --color-alerta: #ef4444;
-
-            --color-exito: #22c55e;
-
-            --color-advertencia: #eab308;
-
-            --borde-tarjeta: rgba(255, 255, 255, 0.05);
-
-            --bg-franja: #111827; 
-
+            --f1-black: #0b0f19;         /* Negro asfalto */
+            --f1-carbon: #131a2c;        /* Azul fibra de carbono */
+            --f1-cyan: #00f2fe;          /* Cian neón principal */
+            --f1-white: #f8fafc;
+            --f1-red: #ff1e1e;           /* Rojo Boxes */
+            --bg-glass: rgba(19, 26, 44, 0.7);
         }
-
-
 
         * {
-
             box-sizing: border-box;
-
             margin: 0;
-
             padding: 0;
-
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
+            font-family: 'Rajdhani', sans-serif; /* Fuente legible y técnica */
         }
-
-
 
         body {
-
-            background-color: var(--bg-principal);
-
-            color: var(--texto-principal);
-
+            background-color: var(--f1-black);
+            color: var(--f1-white);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(0, 242, 254, 0.05) 0%, transparent 40%),
+                linear-gradient(rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.8) 100%),
+                url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); /* Sutil textura de carbono */
             min-height: 100vh;
-
-            overflow-x: hidden;
-
         }
 
-
-
-        /* --- 🚀 FRANJA DE ENCABEZADO OPTIMIZADA --- */
-
+        /* --- 🏎️ ENCABEZADO TIPO PIT LANE --- */
         .franja-header {
-
             width: 100%;
-
-            background-color: var(--bg-franja);
-
-            border-bottom: 1px solid var(--borde-tarjeta);
-
-            padding: 15px 20px;
-
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-
-            margin-bottom: 30px;
-
-        }
-
-
-
-        .contenido-franja {
-
-            max-width: 1400px;
-
-            margin: 0 auto;
-
-            display: flex;
-
-            flex-direction: column; 
-
+            background: linear-gradient(180deg, #000 0%, var(--f1-black) 100%);
+            border-bottom: 2px solid var(--f1-cyan);
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr; /* Centralización perfecta */
             align-items: center;
-
-            gap: 15px;
-
-            position: relative;
-
+            box-shadow: 0 4px 30px rgba(0, 242, 254, 0.2);
         }
-
-
-
-        /* Texto y Título (Totalmente Centrado) */
 
         .texto-header {
-
+            grid-column: 2;
             text-align: center;
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-            gap: 6px;
-
         }
-
-
 
         .texto-header h1 {
-
-            font-size: 20px;
-
-            letter-spacing: 1.5px;
-
-            text-transform: uppercase;
-
-            color: var(--texto-principal);
-
-            font-weight: 700;
-
+            font-family: 'Orbitron', sans-serif; /* Fuente deportiva */
+            font-size: 24px;
+            letter-spacing: 2px;
+            color: var(--f1-white);
+            margin-bottom: 5px;
         }
 
-
-
-        .estado-conexion {
-
+        .status-badge {
             display: inline-flex;
-
             align-items: center;
-
-            gap: 8px;
-
-            padding: 5px 14px;
-
-            border-radius: 50px;
-
-            font-size: 11px;
-
-            font-weight: 600;
-
-            background-color: rgba(235, 179, 8, 0.1);
-
-            color: var(--color-advertencia);
-
-            width: fit-content;
-
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 15px;
+            border: 1px solid var(--f1-cyan);
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--f1-cyan);
+            text-transform: uppercase;
         }
-
-
-
-        .estado-conexion.conectado {
-
-            background-color: rgba(34, 197, 94, 0.1);
-
-            color: var(--color-exito);
-
-        }
-
-
 
         .punto-pulso {
-
-            width: 8px;
-
-            height: 8px;
-
+            width: 8px; height: 8px;
+            background-color: var(--f1-cyan);
             border-radius: 50%;
-
-            background-color: currentColor;
-
-            box-shadow: 0 0 8px currentColor;
-
+            animation: pulse 1.5s infinite;
         }
 
-
-
-        /* Contenedor del Logo (Esquina Derecha y Más Grande) */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 242, 254, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
+        }
 
         .logo-contenedor {
-
+            grid-column: 3;
             display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
+            justify-content: flex-end;
         }
-
-
 
         .logo-proyecto {
-
-            height: 50px; /* Tamaño móvil base */
-
-            width: auto;
-
-            object-fit: contain;
-
-            filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.2)); 
-
+            height: 70px; /* Logo más grande */
+            filter: drop-shadow(0 0 5px var(--f1-cyan));
         }
 
-
-
-        /* --- CONTENEDOR PRINCIPAL DEL PANEL --- */
-
+        /* --- 🛠️ LAYOUT DE LA FICHA TÉCNICA (STEP 1) --- */
         .contenedor-principal {
-
-            max-width: 1400px;
-
-            margin: 0 auto;
-
-            padding: 0 15px 30px 15px;
-
-            position: relative;
-
+            max-width: 1300px;
+            margin: 40px auto;
+            padding: 0 20px;
         }
 
+        .grid-ficha {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr; /* Espacio para imagen y tabla */
+            gap: 40px;
+            align-items: center;
+        }
 
-
-        /* --- PESTAÑAS (TABS) RESPONSIVAS --- */
-
-        .barra-pestanas {
-
+        /* Visualizador del Vehículo */
+        .visor-vehiculo {
+            position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 242, 254, 0.1);
+            padding: 40px;
             display: flex;
-
             justify-content: center;
+            align-items: center;
+            border-radius: 20px;
+        }
 
-            gap: 8px;
+        .img-carro {
+            width: 100%;
+            max-width: 450px;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));
+            z-index: 2;
+            animation: float 3s ease-in-out infinite;
+        }
 
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .base-holograma {
+            position: absolute;
+            bottom: 40px;
+            width: 80%;
+            height: 20px;
+            background: radial-gradient(ellipse at center, var(--f1-cyan) 0%, transparent 70%);
+            opacity: 0.3;
+            transform: rotateX(75deg);
+        }
+
+        /* Tabla Estilo Racing */
+        .specs-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border-left: 5px solid var(--f1-cyan);
+            padding: 30px;
+            box-shadow: 10px 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .specs-card h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
             margin-bottom: 25px;
-
-            flex-wrap: wrap;
-
+            color: var(--f1-cyan);
+            border-bottom: 1px solid rgba(0, 242, 254, 0.3);
+            padding-bottom: 10px;
         }
 
-
-
-        .btn-pestana {
-
-            background: var(--bg-tarjeta);
-
-            border: 1px solid var(--borde-tarjeta);
-
-            color: var(--texto-secundario);
-
-            padding: 10px 16px;
-
-            border-radius: 8px;
-
-            cursor: pointer;
-
-            font-size: 13px;
-
-            font-weight: 600;
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 8px;
-
-            transition: all 0.3s ease;
-
-            flex: 1 1 auto;
-
-            justify-content: center;
-
-            max-width: 220px;
-
-        }
-
-
-
-        .btn-pestana:hover {
-
-            background: var(--bg-tarjeta-hover);
-
-            color: var(--texto-principal);
-
-        }
-
-
-
-        .btn-pestana.activa {
-
-            background: var(--color-activo);
-
-            color: var(--bg-principal);
-
-            border-color: var(--color-activo);
-
-            box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
-
-        }
-
-
-
-        .contenido-pestana {
-
-            display: none;
-
-            animation: fadeIn 0.3s ease-in-out;
-
-        }
-
-
-
-        .contenido-pestana.activa {
-
-            display: block;
-
-        }
-
-
-
-        @keyframes fadeIn {
-
-            from { opacity: 0; transform: translateY(8px); }
-
-            to { opacity: 1; transform: translateY(0); }
-
-        }
-
-
-
-        /* --- FLECHAS DE NAVEGACIÓN --- */
-
-        .flecha-nav {
-
-            position: fixed;
-
-            top: 55%;
-
-            transform: translateY(-50%);
-
-            background: rgba(30, 41, 59, 0.7);
-
-            border: 1px solid var(--borde-tarjeta);
-
-            color: var(--texto-principal);
-
-            width: 50px;
-
-            height: 50px;
-
-            border-radius: 50%;
-
-            display: none;
-
-            align-items: center;
-
-            justify-content: center;
-
-            cursor: pointer;
-
-            font-size: 18px;
-
-            transition: all 0.3s ease;
-
-            backdrop-filter: blur(5px);
-
-            z-index: 10;
-
-        }
-
-
-
-        .flecha-nav:hover {
-
-            background: var(--color-activo);
-
-            color: var(--bg-principal);
-
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
-
-        }
-
-
-
-        .flecha-izq { left: 15px; }
-
-        .flecha-der { right: 15px; }
-
-
-
-        /* --- PESTAÑA 1: DISEÑO RESPONSIVO (FICHA) --- */
-
-        .layout-ficha-final {
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-            gap: 30px;
-
+        .racing-table {
             width: 100%;
-
-        }
-
-
-
-        .columna-proyeccion {
-
-            width: 100%;
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-            justify-content: center;
-
-            position: relative;
-
-            padding: 20px 0;
-
-            min-height: 320px;
-
-        }
-
-
-
-        .placeholder-img-libre {
-
-            width: 85%;
-
-            max-width: 320px;
-
-            height: auto;
-
-            object-fit: contain;
-
-            z-index: 5;
-
-            filter: drop-shadow(0 12px 25px rgba(0, 0, 0, 0.6));
-
-            animation: flotacionPrecisa 4s ease-in-out infinite;
-
-        }
-
-
-
-        .base-holografica-detallada {
-
-            position: absolute;
-
-            bottom: 10px;
-
-            width: 290px;
-
-            height: 80px;
-
-            z-index: 1;
-
-            transform: rotateX(65deg);
-
-            opacity: 0.9;
-
-        }
-
-
-
-        .base-holografica-detallada::before {
-
-            content: '';
-
-            position: absolute;
-
-            top: 0; left: 0; right: 0; bottom: 0;
-
-            border-radius: 50%;
-
-            border: 4px solid rgba(56, 189, 248, 0.5);
-
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.6), inset 0 0 20px rgba(56, 189, 248, 0.4);
-
-        }
-
-
-
-        .base-holografica-detallada::after {
-
-            content: '';
-
-            position: absolute;
-
-            top: 12px; left: 12px; right: 12px; bottom: 12px;
-
-            border-radius: 50%;
-
-            background: 
-
-                radial-gradient(circle, rgba(56, 189, 248, 0.6) 0%, rgba(56, 189, 248, 0) 60%),
-
-                repeating-radial-gradient(transparent, transparent 10px, rgba(56, 189, 248, 0.15) 10px, rgba(56, 189, 248, 0.15) 20px);
-
-            border: 1.5px dashed rgba(56, 189, 248, 0.4);
-
-        }
-
-
-
-        @keyframes flotacionPrecisa {
-
-            0% { transform: translateY(0px); }
-
-            50% { transform: translateY(-8px); }
-
-            100% { transform: translateY(0px); }
-
-        }
-
-
-
-        .columna-ficha-tarjeta {
-
-            width: 100%;
-
-        }
-
-
-
-        .tarjeta-ficha {
-
-            background: var(--bg-tarjeta);
-
-            border: 1px solid var(--borde-tarjeta);
-
-            border-radius: 14px;
-
-            padding: 20px;
-
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-
-        }
-
-
-
-        .tarjeta-ficha h2 {
-
-            font-size: 18px;
-
-            color: var(--color-activo);
-
-            margin-bottom: 20px;
-
-            border-left: 4px solid var(--color-activo);
-
-            padding-left: 12px;
-
-            text-transform: uppercase;
-
-        }
-
-
-
-        .tabla-spec {
-
-            width: 100%;
-
             border-collapse: collapse;
-
         }
 
-
-
-        .tabla-spec tr {
-
+        .racing-table td {
+            padding: 12px 5px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-
+            font-size: 15px;
         }
 
-
-
-        .tabla-spec tr:last-child {
-
-            border-bottom: none;
-
-        }
-
-
-
-        .tabla-spec td {
-
-            padding: 14px 8px;
-
-            font-size: 14px;
-
-        }
-
-
-
-        .tabla-spec td.propiedad {
-
-            color: var(--texto-secundario);
-
-        }
-
-
-
-        .tabla-spec td.valor {
-
-            color: var(--texto-principal);
-
-            font-weight: 600;
-
-            text-align: right;
-
-        }
-
-
-
-        .badge-micro {
-
-            background: rgba(56, 189, 248, 0.15);
-
-            color: var(--color-activo);
-
-            padding: 4px 10px;
-
-            border-radius: 6px;
-
-            font-size: 12px;
-
-        }
-
-
-
-        /* --- PESTAÑA 2: TELEMETRÍA --- */
-
-        .seccion-telemetria {
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 15px;
-
-        }
-
-
-
-        .fila-telemetria {
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 15px;
-
-            width: 100%;
-
-        }
-
-
-
-        .tarjeta-medicion {
-
-            background: var(--bg-tarjeta);
-
-            border: 1px solid var(--borde-tarjeta);
-
-            border-radius: 12px;
-
-            padding: 20px;
-
-            width: 100%;
-
-        }
-
-
-
-        .tarjeta-titulo {
-
-            font-size: 13px;
-
-            color: var(--texto-secundario);
-
+        .prop-name {
+            color: #94a3b8;
+            font-weight: bold;
             text-transform: uppercase;
-
-            font-weight: bold;
-
-            margin-bottom: 10px;
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 8px;
-
+            font-size: 12px;
         }
 
-
-
-        .tarjeta-valor {
-
-            font-size: 32px;
-
-            font-weight: bold;
-
-            color: var(--color-activo);
-
-            margin-bottom: 10px;
-
+        .prop-value {
+            text-align: right;
+            color: var(--f1-white);
+            font-weight: 700;
         }
 
-
-
-        .tarjeta-valor span {
-
-            font-size: 16px;
-
-            color: var(--texto-secundario);
-
+        .tag-tecnico {
+            background: rgba(0, 242, 254, 0.1);
+            color: var(--f1-cyan);
+            padding: 2px 8px;
+            font-size: 11px;
+            border: 1px solid var(--f1-cyan);
         }
 
-
-
-        .canvas-contenedor {
-
-            width: 100%;
-
-            height: 140px;
-
-            position: relative;
-
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .grid-ficha { grid-template-columns: 1fr; }
+            .franja-header { grid-template-columns: 1fr; gap: 20px; }
+            .logo-contenedor { justify-content: center; }
         }
-
-
-
-        .contenedor-infrarrojos {
-
-            display: flex;
-
-            gap: 10px;
-
-            height: 140px;
-
-        }
-
-
-
-        .sensor-ir {
-
-            flex: 1;
-
-            background: rgba(255,255,255,0.03);
-
-            border: 2px solid rgba(255,255,255,0.1);
-
-            border-radius: 8px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-weight: bold;
-
-            font-size: 16px;
-
-            color: var(--texto-secundario);
-
-        }
-
-
-
-        .sensor-ir.detection {
-
-            background: rgba(239, 68, 68, 0.15);
-
-            border-color: var(--color-alerta);
-
-            color: var(--color-alerta);
-
-        }
-
-
-
-        /* --- PESTAÑA 3: ANALISIS MATEMÁTICO --- */
-
-        .tarjeta-calculo {
-
-            background: var(--bg-tarjeta);
-
-            border: 1px solid var(--borde-tarjeta);
-
-            border-radius: 12px;
-
-            padding: 20px;
-
-            width: 100%;
-
-        }
-
-
-
-        .formula-contenedor {
-
-            background: rgba(0, 0, 0, 0.25);
-
-            padding: 15px;
-
-            border-radius: 8px;
-
-            text-align: center;
-
-            margin: 20px 0;
-
-            font-size: 16px;
-
-            color: var(--texto-principal);
-
-            border: 1px solid rgba(255, 255, 255, 0.05);
-
-            word-break: break-all;
-
-        }
-
-
-
-        .explicacion-variables {
-
-            margin-top: 20px;
-
-            font-size: 14px;
-
-            color: var(--texto-secundario);
-
-        }
-
-
-
-        /* =========================================================================
-
-           🚀 ESCALA PARA LAPTOPS Y PC (DISTRIBUCIÓN 3 COLUMNAS SIMULADA)
-
-           ========================================================================= */
-
-        @media (min-width: 1024px) {
-
-            .contenido-franja {
-
-                display: grid;
-
-                grid-template-columns: 1fr auto 1fr; /* Divide la barra en 3 secciones perfectas */
-
-                align-items: center;
-
-                width: 100%;
-
-            }
-
-
-
-            /* Forzamos al título a usar la columna central */
-
-            .texto-header {
-
-                grid-column: 2;
-
-                text-align: center;
-
-            }
-
-
-
-            .texto-header h1 {
-
-                font-size: 26px;
-
-            }
-
-
-
-            /* Forzamos al logo a irse al extremo de la tercera columna */
-
-            .logo-contenedor {
-
-                grid-column: 3;
-
-                justify-content: flex-end;
-
-            }
-
-
-
-            .logo-proyecto {
-
-                height: 65px; /* Hecho más grande a petición sin romper la franja */
-
-            }
-
-
-
-            .btn-pestana {
-
-                font-size: 15px;
-
-                padding: 14px 28px;
-
-                flex: none;
-
-                max-width: none;
-
-            }
-
-
-
-            .flecha-nav { display: flex; }
-
-
-
-            .layout-ficha-final {
-
-                flex-direction: row;
-
-                gap: 50px;
-
-            }
-
-
-
-            .columna-proyeccion {
-
-                flex: 1.2;
-
-                min-height: 580px;
-
-            }
-
-
-
-            .placeholder-img-libre { max-width: 410px; }
-
-            .base-holografica-detallada { width: 480px; height: 120px; }
-
-            .columna-ficha-tarjeta { flex: 0.9; }
-
-            .tarjeta-ficha { padding: 40px; }
-
-
-
-            .fila-telemetria {
-
-                flex-direction: row;
-
-                gap: 25px;
-
-            }
-
-
-
-            .tarjeta-ancha { flex: 2; }
-
-            .tarjeta-angosta { flex: 1; }
-
-            .tarjeta-medicion { padding: 25px; }
-
-            .tarjeta-valor { font-size: 42px; }
-
-            .canvas-contenedor, .contenedor-infrarrojos { height: 160px; }
-
-
-
-            .tarjeta-calculo { padding: 40px; max-width: 900px; }
-
-            .formula-contenedor { font-size: 22px; padding: 25px; }
-
-        }
-
     </style>
-
 </head>
-
 <body>
 
-
-
-    <div class="franja-header">
-
-        <div class="contenido-franja">
-
-            
-
-            <div></div>
-
-            
-
-            <div class="texto-header">
-
-                <h1>CARRITO EVASOR DE OBSTÁCULOS CON RF</h1>
-
-                <div id="status-box" class="estado-conexion">
-
-                    <div class="punto-pulso"></div>
-
-                    <span id="status-text">Sincronizando Adafruit...</span>
-
-                </div>
-
-            </div>
-
-            
-
-            <div class="logo-contenedor">
-
-                <img src="logo.png" class="logo-proyecto" alt="Logo Automotriz">
-
-            </div>
-
-            
-
-        </div>
-
-    </div>
-
-
-
-    <button class="flecha-nav flecha-izq" onclick="cambiarPestanaRelativa(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-
-    <button class="flecha-nav flecha-der" onclick="cambiarPestanaRelativa(1)"><i class="fa-solid fa-chevron-right"></i></button>
-
-
-
-    <div class="contenedor-principal">
-
+    <header class="franja-header">
+        <div></div> 
         
-
-        <div class="barra-pestanas">
-
-            <button class="btn-pestana activa" onclick="irAPestana(0)"><i class="fa-solid fa-circle-info"></i> Ficha Técnica</button>
-
-            <button class="btn-pestana" onclick="irAPestana(1)"><i class="fa-solid fa-chart-line"></i> Telemetría Realtime</button>
-
-            <button class="btn-pestana" onclick="irAPestana(2)"><i class="fa-solid fa-calculator"></i> Análisis ISO 3691-4</button>
-
+        <div class="texto-header">
+            <h1>CARRITO EVASOR DE OBSTÁCULOS CON RF</h1>
+            <div class="status-badge">
+                <div class="punto-pulso"></div>
+                Sincronizando Adafruit Telemetry...
+            </div>
         </div>
 
+        <div class="logo-contenedor">
+            <img src="logo.png" class="logo-proyecto" alt="Escudería Ingeniería">
+        </div>
+    </header>
 
+    <main class="contenedor-principal">
+        <div id="ficha-tecnica" class="grid-ficha">
+            
+            <div class="visor-vehiculo">
+                <img src="carrito.png" class="img-carro" alt="FAU EVASOR">
+                <div class="base-holograma"></div>
+            </div>
 
-        <div id="pestana-0" class="contenido-pestana activa">
-
-            <div class="layout-ficha-final">
-
-                <div class="columna-proyeccion">
-
-                    <img src="carrito.png" class="placeholder-img-libre" alt="Prototipo Carrito">
-
-                    <div class="base-holografica-detallada"></div>
-
-                </div>
-
-
-
-                <div class="columna-ficha-tarjeta">
-
-                    <div class="tarjeta-ficha">
-
-                        <h2>Ficha Técnica del Sistema</h2>
-
-                        <table class="tabla-spec">
-
-                            <tr>
-
-                                <td class="propiedad">Procesador Maestro</td>
-
-                                <td class="valor"><span class="badge-micro">ESP32 WROOM 32U</span></td>
-
-                            </tr>
-
-                            <tr>
-
-                                <td class="propiedad">Procesador Esclavo</td>
-
-                                <td class="valor"><span class="badge-micro">Arduino Nano</span></td>
-
-                            </tr>
-
-                            <tr>
-
-                                <td class="propiedad">Red de Telemetría</td>
-
-                                <td class="valor">Radiofrecuencia HC-12 (433 MHz)</td>
-
-                            </tr>
-
-                            <tr>
-
-                                <td class="propiedad">Protocolo Cloud</td>
-
-                                <td class="valor">MQTT / Adafruit IO API</td>
-
-                            </tr>
-
-                            <tr>
-
-                                <td class="propiedad">Sensores de Proximidad</td>
-
-                                <td class="valor">Ultrásonico HC-SR04 + Servo SG90</td>
-
-                            </tr>
-
-                            <tr>
-
-                                <td class="propiedad">Sensores de Piso</td>
-
-                                <td class="valor">2 Infrarrojos TCRT5000</td>
-
-                            </tr>
-
-                            <tr>
-
-                                <td class="propiedad">Alimentación Mecánica</td>
-
-                                <td class="valor">Batería Li-Ion 18650 (7.4V)</td>
-
-                            </tr>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
+            <div class="specs-card">
+                <h2><i class="fa-solid fa-gears"></i> CONFIGURACIÓN DE SISTEMA</h2>
+                <table class="racing-table">
+                    <tr>
+                        <td class="prop-name">Unidad de Control</td>
+                        <td class="prop-value"><span class="tag-tecnico">ESP32 WROOM</span></td>
+                    </tr>
+                    <tr>
+                        <td class="prop-name">Coprocesador</td>
+                        <td class="prop-value"><span class="tag-tecnico">ARDUINO NANO</span></td>
+                    </tr>
+                    <tr>
+                        <td class="prop-name">Enlace de Radio</td>
+                        <td class="prop-value">HC-12 / 433 MHz</td>
+                    </tr>
+                    <tr>
+                        <td class="prop-name">Protocolo Data</td>
+                        <td class="prop-value">MQTT CLOUD</td>
+                    </tr>
+                    <tr>
+                        <td class="prop-name">Visión Perimetral</td>
+                        <td class="prop-value">ULTRASÓNICO + SERVO</td>
+                    </tr>
+                    <tr>
+                        <td class="prop-name">Detección de Suelo</td>
+                        <td class="prop-value">DUAL IR TCRT5000</td>
+                    </tr>
+                    <tr>
+                        <td class="prop-name">Power Unit</td>
+                        <td class="prop-value">LI-ION 18650 7.4V</td>
+                    </tr>
+                </table>
             </div>
 
         </div>
-
-
-
-        <div id="pestana-1" class="contenido-pestana">
-
-            <div class="seccion-telemetria">
-
-                <div class="fila-telemetria">
-
-                    <div class="tarjeta-medicion tarjeta-ancha">
-
-                        <div class="tarjeta-titulo"><i class="fa-solid fa-ruler"></i> Distancia al Obstáculo</div>
-
-                        <div class="tarjeta-valor" id="lbl-distancia">-- <span>cm</span></div>
-
-                        <div class="canvas-contenedor"><canvas id="chart-distancia"></canvas></div>
-
-                    </div>
-
-                    <div class="tarjeta-medicion tarjeta-angosta">
-
-                        <div class="tarjeta-titulo"><i class="fa-solid fa-compass"></i> Ángulo del Servo</div>
-
-                        <div class="tarjeta-valor" id="lbl-servo">90<span>°</span></div>
-
-                        <div class="canvas-contenedor"><canvas id="chart-servo"></canvas></div>
-
-                    </div>
-
-                </div>
-
-                <div class="fila-telemetria">
-
-                    <div class="tarjeta-medicion tarjeta-ancha">
-
-                        <div class="tarjeta-titulo"><i class="fa-solid fa-gauge-high"></i> Velocidad calculada</div>
-
-                        <div class="tarjeta-valor" id="lbl-velocidad">-- <span>RPM</span></div>
-
-                        <div class="canvas-contenedor"><canvas id="chart-velocidad"></canvas></div>
-
-                    </div>
-
-                    <div class="tarjeta-medicion tarjeta-angosta">
-
-                        <div class="tarjeta-titulo"><i class="fa-solid fa-eye"></i> Sensores Infrarrojos (Piso)</div>
-
-                        <div class="contenedor-infrarrojos">
-
-                            <div id="ir-izq" class="sensor-ir">IZQ</div>
-
-                            <div id="ir-der" class="sensor-ir">DER</div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-        <div id="pestana-2" class="contenido-pestana">
-
-            <div class="tarjeta-calculo">
-
-                <h2 style="font-size: 18px; color: var(--color-activo); margin-bottom: 15px; text-transform: uppercase;"><i class="fa-solid fa-square-root-variable"></i> Distancia de Parada Segura (ISO 3691-4)</h2>
-
-                <p style="color: var(--texto-secundario); font-size: 14px; line-height: 1.6;">Cálculo dinámico en base a la latencia del microcontrolador y la fricción de frenado del modelo mecánico.</p>
-
-                
-
-                <div class="formula-contenedor">
-
-                    Sb = (<span id="f-vel" style="color:var(--color-activo); font-weight:bold;">0.00</span> × 0.05) + [ (<span id="f-vel2" style="color:var(--color-activo); font-weight:bold;">0.00</span>)² / 3.00 ] + 0.10 = <span id="f-res" style="color:var(--color-exito); font-weight:bold;">0.10</span> m
-
-                </div>
-
-
-
-                <div class="explicacion-variables">
-
-                    <p style="margin-bottom: 10px; color: var(--texto-principal); font-weight: 600;">Parámetros del Algoritmo:</p>
-
-                    <ul style="padding-left: 20px; line-height: 1.8;">
-
-                        <li><b>Velocidad (v):</b> Calculada dinámicamente en m/s desde las RPM reales.</li>
-
-                        <li><b>Tiempo de reacción:</b> 0.05 segundos de latencia de cómputo en el lazo maestro.</li>
-
-                        <li><b>Desaceleración:</b> Fricción constante asignada de 1.50 m/s².</li>
-
-                        <li><b>Tolerancia física:</b> 0.10 metros fijos como factor de resguardo perimetral.</li>
-
-                    </ul>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-    </div>
-
-
-
-    <script>
-
-        const AIO_USERNAME = "diegLOT";
-
-        const AIO_KEY = "aio_BjKV42vCquxCE2cBAhTOPqfhmmmf";
-
-        
-
-        let pestanaActual = 0;
-
-        const totalPestanas = 3;
-
-
-
-        function irAPestana(indice) {
-
-            for(let i=0; i<totalPestanas; i++) {
-
-                document.getElementById(`pestana-${i}`).classList.remove('activa');
-
-                document.querySelectorAll('.btn-pestana')[i].classList.remove('activa');
-
-            }
-
-            pestanaActual = indice;
-
-            document.getElementById(`pestana-${indice}`).classList.add('activa');
-
-            document.querySelectorAll('.btn-pestana')[indice].classList.add('activa');
-
-        }
-
-
-
-        function cambiarPestanaRelativa(direccion) {
-
-            let nuevaPestana = pestanaActual + direccion;
-
-            if(nuevaPestana >= totalPestanas) nuevaPestana = 0;
-
-            if(nuevaPestana < 0) nuevaPestana = totalPestanas - 1;
-
-            irAPestana(nuevaPestana);
-
-        }
-
-
-
-        const configGrafica = (color) => ({
-
-            type: 'line',
-
-            data: { labels: [], datasets: [{ data: [], borderColor: color, borderWidth: 2.5, pointRadius: 0, fill: false, tension: 0.3 }] },
-
-            options: {
-
-                responsive: true, maintainAspectRatio: false,
-
-                plugins: { legend: { display: false } },
-
-                scales: {
-
-                    x: { display: false },
-
-                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } }
-
-                }
-
-            }
-
-        });
-
-
-
-        const chartDistancia = new Chart(document.getElementById('chart-distancia').getContext('2d'), configGrafica('#38bdf8'));
-
-        const chartServo = new Chart(document.getElementById('chart-servo').getContext('2d'), configGrafica('#eab308'));
-
-        const chartVelocidad = new Chart(document.getElementById('chart-velocidad').getContext('2d'), configGrafica('#38bdf8'));
-
-
-
-        function agregarDatoGrafica(chart, valor) {
-
-            chart.data.labels.push('');
-
-            chart.data.datasets[0].data.push(valor);
-
-            if(chart.data.labels.length > 20) {
-
-                chart.data.labels.shift();
-
-                chart.data.datasets[0].data.shift();
-
-            }
-
-            chart.update('none');
-
-        }
-
-
-
-        const urlFeed = `https://io.adafruit.com/api/v2/${AIO_USERNAME}/feeds/telemetria/data?limit=1`;
-
-
-
-        function consultarNube() {
-
-            fetch(urlFeed, { headers: { 'X-AIO-Key': AIO_KEY } })
-
-            .then(response => response.json())
-
-            .then(data => {
-
-                if (data && data.length > 0) {
-
-                    const statusBox = document.getElementById('status-box');
-
-                    statusBox.classList.add('conectado');
-
-                    document.getElementById('status-text').innerText = "LIVE ADAFRUIT OK";
-
-
-
-                    const partes = data[0].value.split(',');
-
-
-
-                    if(partes.length >= 5) {
-
-                        const distancia = parseInt(partes[0]);
-
-                        const servo = parseInt(partes[1]);
-
-                        const rpm = parseInt(partes[2]);
-
-                        const ir_izq = parseInt(partes[3]);
-
-                        const ir_der = parseInt(partes[4]);
-
-
-
-                        document.getElementById('lbl-distancia').innerHTML = `${distancia} <span>cm</span>`;
-
-                        document.getElementById('lbl-servo').innerHTML = `${servo} <span>°</span>`;
-
-                        document.getElementById('lbl-velocidad').innerHTML = `${rpm} <span>RPM</span>`;
-
-
-
-                        agregarDatoGrafica(chartDistancia, distancia);
-
-                        agregarDatoGrafica(chartServo, servo);
-
-                        agregarDatoGrafica(chartVelocidad, rpm);
-
-
-
-                        document.getElementById('ir-izq').className = ir_izq === 1 ? "sensor-ir detection" : "sensor-ir";
-
-                        document.getElementById('ir-der').className = ir_der === 1 ? "sensor-ir detection" : "sensor-ir";
-
-
-
-                        const velocidadMS = (rpm * 0.5) / 200; 
-
-                        const calculoSb = (velocidadMS * 0.05) + ((velocidadMS * velocidadMS) / 3.00) + 0.10;
-
-
-
-                        document.getElementById('f-vel').innerText = velocidadMS.toFixed(2);
-
-                        document.getElementById('f-vel2').innerText = velocidadMS.toFixed(2);
-
-                        document.getElementById('f-res').innerText = calculoSb.toFixed(2);
-
-                    }
-
-                }
-
-            })
-
-            .catch(err => console.log("Sincronizando..."));
-
-        }
-
-
-
-        setInterval(consultarNube, 1500);
-
-    </script>
+    </main>
 
 </body>
-
-</html> 
-
+</html>
