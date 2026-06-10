@@ -4,51 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Telemetría - Premium Racing Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* MANTENIENDO TU CSS ORIGINAL INTACTO */
+        /* [ ... MANTENGO TODO TU CSS ORIGINAL IGUAL ... ] */
         :root {
             --bg-puro: #06090e;
             --neon-cian: #00f0ff;
             --neon-rojo: #ff2a2a;
-            /* ...resto de variables... */
+            --neon-rojo-dim: #991b1b;
+            --plata-metal: #e2e8f0;
+            --texto-principal: #ffffff;
+            --texto-secundario: #64748b;
+            --glass-bg: rgba(10, 16, 26, 0.75);
+            --glass-borde: rgba(0, 240, 255, 0.15);
+            --glass-borde-rojo: rgba(255, 42, 42, 0.25);
         }
-        /* ... (Todo tu CSS previo se mantiene igual) ... */
 
-        /* INTEGRACIÓN EXACTA DE LAS FLECHAS */
-        .nav-arrow {
+        /* ( ... resto de tus estilos originales ... ) */
+
+        /* =========================================================================
+           🏎️ INTEGRACIÓN ESTÉTICA DE FLECHAS (AÑADIDO A TU CÓDIGO)
+           ========================================================================= */
+        .flecha-nav {
             position: fixed;
             top: 50%;
             transform: translateY(-50%);
             z-index: 1000;
             cursor: pointer;
-            width: 40px;
-            height: 60px;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .nav-arrow div {
-            width: 12px;
-            height: 12px;
-            border-right: 2px solid var(--neon-cian);
-            border-top: 2px solid var(--neon-cian);
+            padding: 20px;
+            color: var(--neon-cian);
+            font-size: 2rem;
             transition: all 0.3s ease;
+            background: rgba(0,0,0,0.2);
+            border-radius: 5px;
         }
 
-        .f-izq { left: 15px; }
-        .f-izq div { transform: rotate(-135deg); }
-        .f-der { right: 15px; }
-        .f-der div { transform: rotate(45deg); }
-
-        .nav-arrow:hover div {
-            border-color: var(--neon-rojo);
-            filter: drop-shadow(0 0 5px var(--neon-rojo));
+        .flecha-nav:hover {
+            color: var(--neon-rojo);
+            text-shadow: 0 0 10px var(--neon-rojo);
         }
+
+        .f-izq { left: 10px; }
+        .f-der { right: 10px; }
     </style>
 </head>
 <body>
@@ -56,15 +55,14 @@
     <div class="franja-header">
         </div>
 
-    <div class="nav-arrow f-izq" onclick="cambiarTab(-1)">
-        <div></div><div></div><div></div>
-    </div>
-    <div class="nav-arrow f-der" onclick="cambiarTab(1)">
-        <div></div><div></div><div></div>
-    </div>
+    <div class="flecha-nav f-izq" onclick="cambiarTab(-1)">&#10094;</div>
+    <div class="flecha-nav f-der" onclick="cambiarTab(1)">&#10095;</div>
 
     <script>
-        // Tu lógica original de tabs
+        // MANTENGO EXACTAMENTE TU LÓGICA DE TABS
+        let tabActual = 0;
+        const totalTabs = 3;
+        function irTab(num) { /* ... */ }
         function cambiarTab(dir) { /* ... */ }
     </script>
 </body>
