@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- MANTENIENDO TU CONFIGURACIÓN ORIGINAL --- */
+        /* --- CONFIGURACIÓN DE COLORES DE INSTRUMENTACIÓN --- */
         :root {
             --bg-puro: #06090e;
             --neon-cian: #00f0ff;
@@ -17,12 +17,19 @@
             --plata-metal: #e2e8f0;
             --texto-principal: #ffffff;
             --texto-secundario: #64748b;
+            
+            /* Cristal esmerilado premium */
             --glass-bg: rgba(10, 16, 26, 0.75);
             --glass-borde: rgba(0, 240, 255, 0.15);
             --glass-borde-rojo: rgba(255, 42, 42, 0.25);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
 
         body {
             background-color: var(--bg-puro);
@@ -30,77 +37,534 @@
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
-            background-image: radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.4) 0%, #04060a 100%), linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%, #111), linear-gradient(45deg, #111 25%, #181818 25%, #181818 75%, #111 75%, #111);
+
+            /* 🏎️ TEXTURA TEXTURIZADA DE FIBRA DE CARBONO DE ALTA DENSIDAD */
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.4) 0%, #04060a 100%),
+                linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%, #111), 
+                linear-gradient(45deg, #111 25%, #181818 25%, #181818 75%, #111 75%, #111);
             background-size: 100% 100%, 8px 8px, 8px 8px;
             background-position: 0 0, 0 0, 4px 4px;
         }
 
-        /* [RESTO DE TU CSS DE HEADER, TABS Y TARJETAS SE MANTIENE IDENTICO AL ORIGINAL] */
-        .franja-header { width: 100%; height: 80px; position: relative; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: rgba(4, 6, 9, 0.9); border-bottom: 2px solid var(--neon-cian); margin-bottom: 40px; z-index: 10; }
-        .contenedor-principal { max-width: 1440px; margin: 0 auto; padding: 0 25px 40px 25px; }
-        .barra-pestanas { display: flex; justify-content: center; gap: 12px; margin-bottom: 35px; }
-        .btn-pestana { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.08); color: var(--texto-secundario); padding: 12px 26px; font-size: 13px; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: all 0.25s ease; backdrop-filter: blur(4px); clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%); }
-        .btn-pestana.activa { background: rgba(220, 38, 38, 0.2); color: #ffffff; border: 1px solid var(--neon-rojo); }
-        .contenido-pestana { display: none; }
-        .contenido-pestana.activa { display: block; }
-
         /* =========================================================================
-            NUEVO DISEÑO: CHEVRONS SEGÚN IMAGEN REFERENCIA
+            🏎️ ENCABEZADO AGRESIVO TIPO HUD AUTOMOTRIZ
            ========================================================================= */
-        .contenedor-chevron {
-            position: fixed;
-            top: 50%;
-            transform: translateY(-50%);
+        .franja-header {
+            width: 100%;
+            height: 80px;
+            position: relative;
             display: flex;
-            flex-direction: column;
-            gap: 4px;
-            cursor: pointer;
-            z-index: 100;
-            padding: 10px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            background: rgba(4, 6, 9, 0.9);
+            border-bottom: 2px solid var(--neon-cian);
+            box-shadow: 0 5px 30px rgba(0, 240, 255, 0.15);
+            margin-bottom: 40px;
+            z-index: 10;
         }
 
-        .f-izq { left: 20px; }
-        .f-der { right: 20px; }
+        /* Bloque angular izquierdo estilo toma de aire */
+        .header-ala-izq {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 28%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--neon-rojo-dim) 0%, #450a0a 100%);
+            clip-path: polygon(0 0, 85% 0, 100% 100%, 0 100%);
+            border-right: 3px solid var(--neon-rojo);
+            box-shadow: inset -10px 0 20px rgba(255,42,42,0.2);
+        }
 
-        .chevron-bit {
-            width: 20px;
-            height: 12px;
-            background: #4a4a4a;
+        /* Detalle dinámico derecho */
+        .header-ala-der {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 18%;
+            height: 100%;
+            background: linear-gradient(-135deg, #1e293b 0%, #0f172a 100%);
+            clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%);
+            border-left: 2px solid var(--plata-metal);
+        }
+
+        .header-content-izq {
+            z-index: 12;
+            width: 20%; /* Mantiene el equilibrio del espacio sin mostrar texto */
+        }
+
+        .header-content-centro {
+            z-index: 12;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .header-content-centro h1 {
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .status-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,0,0,0.6);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--neon-cian);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            margin-top: 4px;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+        }
+
+        .punto-pulso {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--neon-cian);
+            box-shadow: 0 0 8px var(--neon-cian);
+            animation: latido 1.5s infinite;
+        }
+
+        @keyframes latido {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.5; }
+        }
+
+        .header-content-der {
+            z-index: 12;
+        }
+
+        .logo-img {
+            height: 52px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 4px 10px;
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        /* =========================================================================
+            📊 CONTENEDORES INTERNOS Y TABS (GLASSMORPHISM INTERACTIVO)
+           ========================================================================= */
+        .contenedor-principal {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 25px 40px 25px;
+        }
+
+        .barra-pestanas {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 35px;
+        }
+
+        .btn-pestana {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: var(--texto-secundario);
+            padding: 12px 26px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(4px);
+            clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+        }
+
+        .btn-pestana:hover {
+            color: var(--texto-principal);
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .btn-pestana.activa {
+            background: rgba(220, 38, 38, 0.2);
+            color: #ffffff;
+            border: 1px solid var(--neon-rojo);
+            box-shadow: 0 0 15px rgba(255, 42, 42, 0.25);
+            text-shadow: 0 0 5px #fff;
+        }
+
+        .contenido-pestana {
+            display: none;
+        }
+
+        .contenido-pestana.activa {
+            display: block;
+        }
+
+        /* --- FILAS Y TARJETAS HUD --- */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1.2s 1fr;
+            gap: 30px;
+        }
+
+        @media(max-width: 1024px) {
+            .grid-layout { grid-template-columns: 1fr; }
+        }
+
+        .tarjeta-hud {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-borde);
+            border-radius: 6px;
+            padding: 30px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 240, 255, 0.02);
+            position: relative;
+        }
+
+        /* Detalle estético en esquinas tipo visor militar */
+        .tarjeta-hud::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px;
+            width: 12px; height: 12px;
+            border-top: 2px solid var(--neon-cian);
+            border-left: 2px solid var(--neon-cian);
+        }
+
+        .tarjeta-hud.borde-rojo {
+            border-color: var(--glass-borde-rojo);
+        }
+        .tarjeta-hud.borde-rojo::before {
+            border-top-color: var(--neon-rojo);
+            border-left-color: var(--neon-rojo);
+        }
+
+        .tarjeta-hud h2 {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--neon-cian);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tarjeta-hud.borde-rojo h2 {
+            color: var(--neon-rojo);
+        }
+
+        /* --- TABLAS HUD --- */
+        .tabla-valores {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tabla-valores tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            transition: background 0.2s;
+        }
+
+        .tabla-valores tr:hover {
+            background: rgba(0, 240, 255, 0.02);
+        }
+
+        .tabla-valores td {
+            padding: 16px 10px;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+
+        .tabla-valores td.label {
+            color: var(--texto-secundario);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .tabla-valores td.value {
+            text-align: right;
+            font-weight: 700;
+            color: var(--plata-metal);
+        }
+
+        .sub-badge {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--neon-cian);
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 800;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+        }
+
+        /* --- DISPLAY DE IMAGEN / PROYECCIÓN --- */
+        .wrapper-render {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-height: 450px;
+        }
+
+        .render-principal {
+            max-width: 360px;
+            width: 90%;
+            height: auto;
+            z-index: 2;
+            filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.25));
+            animation: suspension 3.5s ease-in-out infinite;
+        }
+
+        /* Escáner de líneas láser */
+        .laser-scanner {
+            position: absolute;
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-cian), transparent);
+            box-shadow: 0 0 12px var(--neon-cian);
+            top: 20%;
+            z-index: 3;
+            animation: scan 4s linear infinite;
+        }
+
+        .anillo-holografico {
+            position: absolute;
+            bottom: 30px;
+            width: 420px;
+            height: 100px;
+            border: 2px dashed rgba(0, 240, 255, 0.4);
+            border-radius: 50%;
+            transform: rotateX(75deg);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.2), inset 0 0 30px rgba(0, 240, 255, 0.2);
+            animation: rotarAnillo 20s linear infinite;
+        }
+
+        @keyframes suspension {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        @keyframes scan {
+            0% { top: 20%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 75%; opacity: 0; }
+        }
+
+        @keyframes rotarAnillo {
+            100% { transform: rotateX(75deg) rotate(360deg); }
+        }
+
+        /* =========================================================================
+            🏎️ NUEVAS FLECHAS ANGULARES TIPO HUD AUTOMOTRIZ (CON TECH LINES)
+           ========================================================================= */
+        .flecha-cambio {
+            position: fixed;
+            top: 55%;
+            transform: translateY(-50%);
+            width: 120px;
+            height: 60px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            align-items: center;
             transition: all 0.3s ease;
         }
 
-        .f-izq .chevron-bit { clip-path: polygon(100% 0, 40% 50%, 100% 100%, 80% 100%, 20% 50%, 80% 0); }
-        .f-der .chevron-bit { clip-path: polygon(0 0, 60% 50%, 0 100%, 20% 100%, 80% 50%, 20% 0); }
+        /* Base de la flecha con corte angular (Efecto Chevron) */
+        .flecha-cambio::before {
+            content: '';
+            position: absolute;
+            width: 35px;
+            height: 35px;
+            border-top: 4px solid rgba(255, 255, 255, 0.4);
+            border-left: 4px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+        }
 
-        .contenedor-chevron:hover .chevron-bit {
-            background: var(--neon-rojo);
-            filter: drop-shadow(0 0 5px var(--neon-rojo));
+        /* Líneas de circuito integradas (Tech Lines) */
+        .flecha-cambio::after {
+            content: '';
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,42,42,0.6), transparent);
+            width: 60px;
+            transition: all 0.3s ease;
+        }
+
+        /* --- AJUSTES ESPECÍFICOS IZQUIERDA --- */
+        .f-izq {
+            left: 20px;
+            justify-content: flex-start;
+        }
+        .f-izq::before {
+            transform: rotate(-45deg);
+            left: 10px;
+        }
+        .f-izq::after {
+            left: 40px;
+            box-shadow: -4px -3px 0 0px var(--neon-rojo), -4px 3px 0 0px var(--neon-rojo);
+        }
+
+        /* --- AJUSTES ESPECÍFICOS DERECHA --- */
+        .f-der {
+            right: 20px;
+            justify-content: flex-end;
+        }
+        .f-der::before {
+            transform: rotate(135deg);
+            right: 10px;
+        }
+        .f-der::after {
+            right: 40px;
+            background: linear-gradient(-90deg, rgba(255,42,42,0.6), transparent);
+            box-shadow: 4px -3px 0 0px var(--neon-rojo), 4px 3px 0 0px var(--neon-rojo);
+        }
+
+        /* --- EFECTOS HOVER (REACCIÓN DE COMPETICIÓN) --- */
+        .flecha-cambio:hover::before {
+            border-top-color: var(--neon-rojo);
+            border-left-color: var(--neon-rojo);
+            filter: drop-shadow(0 0 8px var(--neon-rojo));
+        }
+
+        .flecha-cambio:hover::after {
+            width: 75px;
+            background: linear-gradient(90deg, var(--neon-rojo), transparent);
+        }
+        .f-der:hover::after {
+            background: linear-gradient(-90deg, var(--neon-rojo), transparent);
+        }
+
+        .flecha-cambio:active {
+            transform: translateY(-50%) scale(0.92);
         }
     </style>
 </head>
 <body>
 
     <div class="franja-header">
+        <div class="header-ala-izq"></div>
+        <div class="header-ala-der"></div>
+        
+        <div class="header-content-izq"></div>
+        
+        <div class="header-content-centro">
+            <h1>CARRITO EVASOR DE OBSTÁCULOS CON RF</h1>
+            <div class="status-box">
+                <div class="punto-pulso"></div>
+                <span id="txt-status">ADAFRUIT TELEMETRY BROADCAST</span>
+            </div>
         </div>
-
-    <div class="contenedor-chevron f-izq" onclick="cambiarTab(-1)">
-        <div class="chevron-bit"></div>
-        <div class="chevron-bit"></div>
-        <div class="chevron-bit"></div>
+        
+        <div class="header-content-der">
+            <img src="logofinal.png" class="logo-img" alt="Logo Automotriz" onerror="this.style.opacity='0.5'">
+        </div>
     </div>
 
-    <div class="contenedor-chevron f-der" onclick="cambiarTab(1)">
-        <div class="chevron-bit"></div>
-        <div class="chevron-bit"></div>
-        <div class="chevron-bit"></div>
-    </div>
+    <button class="flecha-cambio f-izq" onclick="cambiarTab(-1)" aria-label="Anterior"></button>
+    <button class="flecha-cambio f-der" onclick="cambiarTab(1)" aria-label="Siguiente"></button>
 
     <div class="contenedor-principal">
+        
+        <div class="barra-pestanas">
+            <button class="btn-pestana activa" onclick="irTab(0)">01 // FICHA TÉCNICA</button>
+            <button class="btn-pestana" onclick="irTab(1)">02 // TELEMETRÍA EN VIVO</button>
+            <button class="btn-pestana" onclick="irTab(2)">03 // ANÁLISIS DINÁMICO</button>
         </div>
 
+        <div id="tab-0" class="contenido-pestana activa">
+            <div class="grid-layout">
+                
+                <div class="wrapper-render">
+                    <div class="laser-scanner"></div>
+                    <img src="carrito.png" class="render-principal" alt="Prototipo Estructural">
+                    <div class="anillo-holografico"></div>
+                </div>
+
+                <div class="tarjeta-hud borde-rojo">
+                    <h2><i class="fa-solid fa-gears"></i> CONFIGURACIÓN DEL SISTEMA</h2>
+                    <table class="tabla-valores">
+                        <tr>
+                            <td class="label">Unidad de Control</td>
+                            <td class="value"><span class="sub-badge" style="color:var(--neon-rojo); border-color:var(--neon-rojo); background:rgba(255,42,42,0.05)">ESP32 WROOM 32U</span></td>
+                        </tr>
+                        <tr>
+                            <td class="label">Coprocesador Cinemático</td>
+                            <td class="value"><span class="sub-badge">Arduino Nano V3</span></td>
+                        </tr>
+                        <tr>
+                            <td class="label">Enlace de Radio</td>
+                            <td class="value">HC-12 Transceiver / 433 MHz</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Protocolo de Red</td>
+                            <td class="value">MQTT Cloud Server</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Visión Perimetral</td>
+                            <td class="value">Ultrasonido HC-SR04 + Servo Mágico</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Detección de Suelo</td>
+                            <td class="value">Dual IR TCRT5000 Arrays</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Power Unit</td>
+                            <td class="value">Li-Ion 18650 Pack // 7.4V</td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="tab-1" class="contenido-pestana">
+            <div class="tarjeta-hud" style="text-align: center; padding: 60px 20px;">
+                <h2><i class="fa-solid fa-chart-line"></i> FLUJO DE TELEMETRÍA</h2>
+                <p style="color: var(--texto-secundario)">Panel listo para la vinculación de gráficas en tiempo real.</p>
+            </div>
+        </div>
+
+        <div id="tab-2" class="contenido-pestana">
+            <div class="tarjeta-hud borde-rojo" style="text-align: center; padding: 60px 20px;">
+                <h2><i class="fa-solid fa-calculator"></i> COMPORTAMIENTO CINEMÁTICO</h2>
+                <p style="color: var(--texto-secundario)">Algoritmos matemáticos de seguridad perimetral activos.</p>
+            </div>
+        </div>
+
+    </div>
+
     <script>
-        // Tu lógica JS original...
-        function cambiarTab(dir) { /* ... */ }
+        let tabActual = 0;
+        const totalTabs = 3;
+
+        function irTab(num) {
+            for(let i=0; i<totalTabs; i++) {
+                document.getElementById(`tab-${i}`).classList.remove('activa');
+                document.querySelectorAll('.btn-pestana')[i].classList.remove('activa');
+            }
+            tabActual = num;
+            document.getElementById(`tab-${num}`).classList.add('activa');
+            document.querySelectorAll('.btn-pestana')[num].classList.add('activa');
+        }
+
+        function cambiarTab(dir) {
+            let siguiente = tabActual + dir;
+            if(siguiente >= totalTabs) siguiente = 0;
+            if(siguiente < 0) siguiente = totalTabs - 1;
+            irTab(siguiente);
+        }
     </script>
 </body>
 </html>
