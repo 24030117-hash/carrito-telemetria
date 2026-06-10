@@ -2,50 +2,114 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Telemetría - Premium Racing Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* ... (TODO TU CSS ORIGINAL SE MANTIENE AQUÍ) ... */
+        /* --- TU CSS ORIGINAL --- */
+        :root {
+            --bg-puro: #06090e;
+            --neon-cian: #00f0ff;
+            --neon-rojo: #ff2a2a;
+            --neon-rojo-dim: #991b1b;
+            --plata-metal: #e2e8f0;
+            --texto-principal: #ffffff;
+            --texto-secundario: #64748b;
+            --glass-bg: rgba(10, 16, 26, 0.75);
+            --glass-borde: rgba(0, 240, 255, 0.15);
+            --glass-borde-rojo: rgba(255, 42, 42, 0.25);
+        }
 
-        /* AÑADIMOS SOLO ESTO PARA LAS FLECHAS */
-        .flecha-nav {
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+
+        body {
+            background-color: var(--bg-puro);
+            color: var(--texto-principal);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            background-image: radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.4) 0%, #04060a 100%), linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%, #111), linear-gradient(45deg, #111 25%, #181818 25%, #181818 75%, #111 75%, #111);
+            background-size: 100% 100%, 8px 8px, 8px 8px;
+            background-position: 0 0, 0 0, 4px 4px;
+        }
+
+        .franja-header { width: 100%; height: 80px; position: relative; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: rgba(4, 6, 9, 0.9); border-bottom: 2px solid var(--neon-cian); margin-bottom: 40px; z-index: 10; }
+        .contenedor-principal { max-width: 1440px; margin: 0 auto; padding: 0 25px 40px 25px; }
+        .barra-pestanas { display: flex; justify-content: center; gap: 12px; margin-bottom: 35px; }
+        .btn-pestana { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.08); color: var(--texto-secundario); padding: 12px 26px; font-size: 13px; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: all 0.25s ease; backdrop-filter: blur(4px); clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%); }
+        .btn-pestana.activa { background: rgba(220, 38, 38, 0.2); color: #ffffff; border: 1px solid var(--neon-rojo); }
+        .contenido-pestana { display: none; }
+        .contenido-pestana.activa { display: block; }
+        .grid-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px; }
+        .tarjeta-hud { background: var(--glass-bg); border: 1px solid var(--glass-borde); border-radius: 6px; padding: 30px; backdrop-filter: blur(12px); position: relative; }
+
+        /* --- INTEGRACIÓN DE FLECHAS ESTÉTICAS --- */
+        .btn-nav {
             position: fixed;
             top: 50%;
             transform: translateY(-50%);
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--neon-cian);
+            color: var(--neon-cian);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            z-index: 1000;
-            font-size: 24px;
-            color: #00f0ff;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border: 1px solid rgba(0, 240, 255, 0.3);
-            transition: all 0.3s ease;
+            font-size: 20px;
+            transition: all 0.3s;
         }
-
-        .flecha-nav:hover {
-            background: rgba(255, 42, 42, 0.2);
-            border-color: #ff2a2a;
-            color: #ffffff;
-        }
-
-        .f-izq { left: 20px; }
-        .f-der { right: 20px; }
+        .btn-nav:hover { background: var(--neon-cian); color: #000; box-shadow: 0 0 15px var(--neon-cian); }
+        .nav-izq { left: 20px; clip-path: polygon(100% 0, 100% 100%, 20% 100%, 0 50%, 20% 0); }
+        .nav-der { right: 20px; clip-path: polygon(0 0, 0 100%, 80% 100%, 100% 50%, 80% 0); }
     </style>
 </head>
 <body>
 
     <div class="franja-header">
+        <div class="header-content-centro"><h1>CARRITO EVASOR DE OBSTÁCULOS CON RF</h1></div>
+    </div>
+
+    <div class="btn-nav nav-izq" onclick="cambiarTab(-1)"><i class="fas fa-chevron-left"></i></div>
+    <div class="btn-nav nav-der" onclick="cambiarTab(1)"><i class="fas fa-chevron-right"></i></div>
+
+    <div class="contenedor-principal">
+        <div class="barra-pestanas">
+            <button class="btn-pestana activa" onclick="irTab(0)">01 // FICHA TÉCNICA</button>
+            <button class="btn-pestana" onclick="irTab(1)">02 // TELEMETRÍA</button>
         </div>
 
-    <div class="flecha-nav f-izq" onclick="cambiarTab(-1)">
-        &#10094;&#10094;&#10094;
-    </div>
-    <div class="flecha-nav f-der" onclick="cambiarTab(1)">
-        &#10095;&#10095;&#10095;
+        <div id="tab-0" class="contenido-pestana activa">
+            <div class="grid-layout">
+                <div class="tarjeta-hud">
+                    <h2>CONFIGURACIÓN DEL SISTEMA</h2>
+                    <p>Unidad de Control: ESP32 WROOM 32U</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Tu lógica original de tabs se mantiene intacta
-        function cambiarTab(dir) { /* ... */ }
+        let tabActual = 0;
+        function irTab(num) {
+            document.querySelectorAll('.contenido-pestana').forEach((t, i) => {
+                t.classList.toggle('activa', i === num);
+            });
+            document.querySelectorAll('.btn-pestana').forEach((b, i) => {
+                b.classList.toggle('activa', i === num);
+            });
+            tabActual = num;
+        }
+        function cambiarTab(dir) {
+            let n = tabActual + dir;
+            if(n < 0) n = 1;
+            if(n > 1) n = 0;
+            irTab(n);
+        }
     </script>
 </body>
 </html>
