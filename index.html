@@ -366,31 +366,92 @@
             100% { transform: rotateX(75deg) rotate(360deg); }
         }
 
-        /* --- BOTONES DE DESPLAZAMIENTO FLOTANTES --- */
+        /* =========================================================================
+            🏎️ NUEVAS FLECHAS ANGULARES TIPO HUD AUTOMOTRIZ (CON TECH LINES)
+           ========================================================================= */
         .flecha-cambio {
             position: fixed;
             top: 55%;
             transform: translateY(-50%);
-            background: rgba(10, 16, 26, 0.8);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #fff;
-            width: 45px;
-            height: 45px;
-            border-radius: 4px;
+            width: 120px;
+            height: 60px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 100;
             display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 20;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
         }
-        .flecha-cambio:hover {
-            border-color: var(--neon-cian);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
-            color: var(--neon-cian);
+
+        /* Base de la flecha con corte angular (Efecto Chevron) */
+        .flecha-cambio::before {
+            content: '';
+            position: absolute;
+            width: 35px;
+            height: 35px;
+            border-top: 4px solid rgba(255, 255, 255, 0.4);
+            border-left: 4px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
         }
-        .f-izq { left: 20px; }
-        .f-der { right: 20px; }
+
+        /* Líneas de circuito integradas (Tech Lines) */
+        .flecha-cambio::after {
+            content: '';
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,42,42,0.6), transparent);
+            width: 60px;
+            transition: all 0.3s ease;
+        }
+
+        /* --- AJUSTES ESPECÍFICOS IZQUIERDA --- */
+        .f-izq {
+            left: 20px;
+            justify-content: flex-start;
+        }
+        .f-izq::before {
+            transform: rotate(-45deg);
+            left: 10px;
+        }
+        .f-izq::after {
+            left: 40px;
+            box-shadow: -4px -3px 0 0px var(--neon-rojo), -4px 3px 0 0px var(--neon-rojo);
+        }
+
+        /* --- AJUSTES ESPECÍFICOS DERECHA --- */
+        .f-der {
+            right: 20px;
+            justify-content: flex-end;
+        }
+        .f-der::before {
+            transform: rotate(135deg);
+            right: 10px;
+        }
+        .f-der::after {
+            right: 40px;
+            background: linear-gradient(-90deg, rgba(255,42,42,0.6), transparent);
+            box-shadow: 4px -3px 0 0px var(--neon-rojo), 4px 3px 0 0px var(--neon-rojo);
+        }
+
+        /* --- EFECTOS HOVER (REACCIÓN DE COMPETICIÓN) --- */
+        .flecha-cambio:hover::before {
+            border-top-color: var(--neon-rojo);
+            border-left-color: var(--neon-rojo);
+            filter: drop-shadow(0 0 8px var(--neon-rojo));
+        }
+
+        .flecha-cambio:hover::after {
+            width: 75px;
+            background: linear-gradient(90deg, var(--neon-rojo), transparent);
+        }
+        .f-der:hover::after {
+            background: linear-gradient(-90deg, var(--neon-rojo), transparent);
+        }
+
+        .flecha-cambio:active {
+            transform: translateY(-50%) scale(0.92);
+        }
     </style>
 </head>
 <body>
@@ -416,8 +477,8 @@
         </div>
     </div>
 
-    <div class="flecha-cambio f-izq" onclick="cambiarTab(-1)"><i class="fa-solid fa-angle-left"></i></div>
-    <div class="flecha-cambio f-der" onclick="cambiarTab(1)"><i class="fa-solid fa-angle-right"></i></div>
+    <button class="flecha-cambio f-izq" onclick="cambiarTab(-1)" aria-label="Anterior"></button>
+    <button class="flecha-cambio f-der" onclick="cambiarTab(1)" aria-label="Siguiente"></button>
 
     <div class="contenedor-principal">
         
