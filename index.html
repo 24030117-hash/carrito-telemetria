@@ -6,6 +6,7 @@
     <title>Dashboard Telemetría - Premium Racing Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
     
     <style>
         /* --- CONFIGURACIÓN DE COLORES DE INSTRUMENTACIÓN --- */
@@ -56,7 +57,7 @@
             position: relative;
             display: flex;
             align-items: center;
-            justify-content: center; /* Centrado ajustado al quitar logo */
+            justify-content: center;
             padding: 0 40px;
             background: rgba(4, 6, 9, 0.9);
             border-bottom: 2px solid var(--neon-cian);
@@ -65,7 +66,6 @@
             z-index: 10;
         }
 
-        /* Bloque angular izquierdo estilo toma de aire */
         .header-ala-izq {
             position: absolute;
             left: 0;
@@ -78,7 +78,6 @@
             box-shadow: inset -10px 0 20px rgba(255,42,42,0.2);
         }
 
-        /* Detalle dinámico derecho */
         .header-ala-der {
             position: absolute;
             right: 0;
@@ -228,7 +227,6 @@
             border: 1px solid rgba(0, 240, 255, 0.2);
         }
 
-        /* --- DISPLAY DE IMAGEN / PROYECCIÓN --- */
         .wrapper-render {
             display: flex; flex-direction: column; align-items: center;
             justify-content: center; position: relative; min-height: 450px;
@@ -357,6 +355,27 @@
     </div>
 
     <script>
+        // Paso 2: Lógica de conexión MQTT
+        const aio_username = "diegLOT";
+        const aio_key = "aio_BjKV42vCquxCE2cBAhTOPqfhmmmf";
+        const client = new Paho.MQTT.Client("io.adafruit.com", 8083, "web-client-" + parseInt(Math.random() * 100));
+
+        client.onMessageArrived = (message) => {
+            console.log("Mensaje recibido: " + message.payloadString);
+            // Aquí procesarás los datos del sensor
+        };
+
+        client.connect({
+            userName: aio_username,
+            password: aio_key,
+            useSSL: true,
+            onSuccess: () => {
+                client.subscribe(`${aio_username}/feeds/telemetria`);
+                console.log("Conectado a Adafruit IO");
+            }
+        });
+
+        // Funciones de navegación existentes
         let tabActual = 0;
         const totalTabs = 3;
         function irTab(num) {
