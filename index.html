@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard - Carrito Evasor con RF</title>
+    <title>Console - Carrito Evasor con RF</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8">
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
@@ -32,6 +32,7 @@
             text-align: center;
             border-bottom: 2px solid var(--accent-red);
             position: relative;
+            z-index: 5000;
         }
 
         .header-banner h1 {
@@ -56,8 +57,8 @@
             background: rgba(0, 240, 255, 0.05);
         }
 
-        /* --- PESTAÑAS DE NAVEGACIÓN SUPERIORES (SIN FLECHAS) --- */
-        .hud-navigation {
+        /* --- PESTAÑAS SUPERIORES --- */
+        .hud-tabs-container {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -92,48 +93,57 @@
             border-bottom: 2px solid var(--accent-red);
         }
 
-        /* --- NUEVAS FLECHAS LATERALES FLOTANTES EN MEDIO --- */
-        .hud-side-arrow {
+        /* --- FLECHAS LATERALES FLOTANTES MASIVAS --- */
+        .hud-massive-arrow {
             position: fixed;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(13, 22, 38, 0.8);
-            border: 2px solid #223147;
+            background: none;
+            border: none;
             color: var(--accent-red);
-            font-size: 1.2rem;
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
+            font-size: 8rem; /* Tamaño masivo para un efecto dramático */
+            font-weight: 100; /* Delgadas pero intensas */
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease-in-out;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(255, 42, 42, 0.1);
-            z-index: 9999; /* Asegura que queden sobre cualquier componente */
+            text-shadow: 0 0 30px rgba(255, 42, 42, 0.9);
+            z-index: 10000; /* Sobre todo el contenido */
+            padding: 20px;
         }
 
-        .arrow-left {
-            left: 25px;
+        /* Posicionamiento más hacia el centro (menos a la orilla) */
+        .massive-arrow-left {
+            left: 80px; /* Separación considerable de la orilla izquierda */
         }
 
-        .arrow-right {
-            right: 25px;
+        .massive-arrow-right {
+            right: 80px; /* Separación considerable de la orilla derecha */
         }
 
-        .hud-side-arrow:hover {
+        .hud-massive-arrow:hover {
             color: var(--text-main);
-            border-color: var(--border-cyan);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4), inset 0 0 10px rgba(0, 240, 255, 0.2);
-            background: rgba(0, 240, 255, 0.05);
+            text-shadow: 0 0 30px rgba(0, 240, 255, 0.9);
+            transform: translateY(-50%) scale(1.1);
         }
 
-        .hud-side-arrow:active {
-            transform: translateY(-50%) scale(0.92);
+        .hud-massive-arrow:active {
+            transform: translateY(-50%) scale(0.95);
         }
 
-        /* --- CONTENIDOS --- */
-        .tab-content { display: none; width: 100%; max-width: 1250px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; }
+        /* --- CONTENIDOS (Max-width ajustado para no chocar con flechas) --- */
+        .tab-content { 
+            display: none; 
+            width: 100%; 
+            max-width: 1100px; /* Reducido un poco para dar espacio a las flechas masivas */
+            margin: 0 auto; 
+            padding: 0 20px; 
+            box-sizing: border-box; 
+            position: relative;
+            z-index: 10;
+        }
+        
         .tab-content.active { display: block; }
 
         /* --- PESTAÑA 1: SHOWCASE DEL VEHÍCULO --- */
@@ -182,7 +192,6 @@
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
             width: 100%;
-            max-width: 1150px;
             border-radius: 4px;
             padding: 25px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.5);
@@ -210,7 +219,7 @@
             background: var(--accent-red);
         }
 
-        /* STRUCTURA PANORÁMICA */
+        /* ESTRUCTURA DE BLOQUES PANORÁMICA 4x2 */
         .specs-blocks-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -241,9 +250,6 @@
             letter-spacing: 1px;
             display: block;
             margin-bottom: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         .spec-block-value {
@@ -328,15 +334,18 @@
         .numerador { border-bottom: 2px solid white; padding-bottom: 2px; }
 
         /* RESPONSIVE DESIGN */
+        @media (max-width: 1200px) {
+            .hud-massive-arrow { font-size: 5rem; left: 20px; right: 20px; } /* Más pequeñas y a la orilla en pantallas medianas */
+            .tab-content { max-width: 950px; }
+        }
         @media (max-width: 992px) {
             .specs-blocks-grid { grid-template-columns: repeat(2, 1fr); }
+            .hud-massive-arrow { font-size: 4rem; left: 10px; right: 10px; }
         }
         @media (max-width: 768px) {
-            .hud-tabs { display: none; }
+            .hud-tabs { display: none; } /* Ocultar pestañas de texto en móvil */
             .specs-blocks-grid { grid-template-columns: 1fr; }
-            .hud-side-arrow { width: 40px; height: 40px; font-size: 1rem; } /* Flechas un poco más chicas en móviles */
-            .arrow-left { left: 5px; }
-            .arrow-right { right: 5px; }
+            .hud-massive-arrow { font-size: 3rem; left: 5px; right: 5px; background: rgba(0,0,0,0.4); border-radius: 50%; width: 50px; height: 50px;} /* Flechas de botón táctil en móvil */
         }
     </style>
 </head>
@@ -344,13 +353,13 @@
 
     <div class="header-banner">
         <h1>Carrito Evasor de Obstáculos con RF</h1>
-        <div id="status-mqtt" class="status-indicator" style="color: var(--border-cyan); border-color: var(--border-cyan);">CONECTANDO TELEMETRÍA...</div>
+        <div id="status-mqtt" class="status-indicator">📡 CONECTANDO TELEMETRÍA...</div>
     </div>
 
-    <button class="hud-side-arrow arrow-left" onclick="adjustTab(-1)">&#9664;</button>
-    <button class="hud-side-arrow arrow-right" onclick="adjustTab(1)">&#9654;</button>
+    <button class="hud-massive-arrow massive-arrow-left" onclick="adjustTab(-1)">&#10216;</button>
+    <button class="hud-massive-arrow massive-arrow-right" onclick="adjustTab(1)">&#10217;</button>
 
-    <div class="hud-navigation">
+    <div class="hud-tabs-container">
         <div class="hud-tabs">
             <button class="hud-tab-btn active" id="btn-0" onclick="switchTab(0)">01 // Ficha Técnica</button>
             <button class="hud-tab-btn" id="btn-1" onclick="switchTab(1)">02 // Telemetría en Vivo</button>
@@ -371,15 +380,15 @@
                     
                     <div class="spec-block-item border-red">
                         <span class="spec-block-label">Microcontrolador Maestro</span>
-                        <span class="spec-block-value highlight-red">ESP32 WROOM 32U</span>
+                        <span class="spec-block-value highlight-red">ESP32 DevKit V1</span>
                     </div>
                     <div class="spec-block-item border-cyan">
                         <span class="spec-block-label">Procesamiento Esclavo</span>
-                        <span class="spec-block-value highlight-cyan">Arduino Nano V3</span>
+                        <span class="spec-block-value highlight-cyan">Arduino ATmega328P</span>
                     </div>
                     <div class="spec-block-item border-cyan">
                         <span class="spec-block-label">Transmisión Inalámbrica</span>
-                        <span class="spec-block-value">RF HC-12 (433MHz)</span>
+                        <span class="spec-block-value">Radio HC-12 (433MHz)</span>
                     </div>
                     <div class="spec-block-item border-red">
                         <span class="spec-block-label">Detección Obstáculos</span>
@@ -387,12 +396,12 @@
                     </div>
                     
                     <div class="spec-block-item border-red">
-                        <span class="spec-block-label">Dimensión Motriz</span>
-                        <span class="spec-block-value">Ruedas Neumáticas 6.6cm</span>
+                        <span class="spec-block-label">Diámetro de Rueda</span>
+                        <span class="spec-block-value">6.60 cm</span>
                     </div>
                     <div class="spec-block-item border-cyan">
-                        <span class="spec-block-label">Resolución de Giro</span>
-                        <span class="spec-block-value">Encoder Óptico 20R</span>
+                        <span class="spec-block-label">Resolución Encoder</span>
+                        <span class="spec-block-value">20 Ranuras / Vuelta</span>
                     </div>
                     <div class="spec-block-item border-cyan">
                         <span class="spec-block-label">Seguidor de Línea</span>
@@ -416,17 +425,17 @@
                 <div class="chart-box"><canvas id="chart-dist"></canvas></div>
             </div>
             <div class="telemetry-card">
-                <h4 class="panel-title">Tacómetro Dinámico</h4>
+                <h4 class="panel-title">Tacómetro (RPM)</h4>
                 <div id="val-rpm" class="big-numeric">--</div>
                 <div class="chart-box"><canvas id="chart-rpm"></canvas></div>
             </div>
             <div class="telemetry-card">
-                <h4 class="panel-title">Barrido Servo</h4>
+                <h4 class="panel-title">Barrido Servo HC-SR04</h4>
                 <div id="val-servo" class="big-numeric" style="color: var(--accent-red)">90&deg;</div>
                 <div class="chart-box"><canvas id="chart-servo"></canvas></div>
             </div>
             <div class="telemetry-card">
-                <h4 class="panel-title">Mapeo de Línea Infrarrojo</h4>
+                <h4 class="panel-title">Detección Infrarroja (Piso)</h4>
                 <div class="ir-row">
                     <div id="ir-izq" class="ir-sensor">MÓDULO IZQUIERDO</div>
                     <div id="ir-der" class="ir-sensor">MÓDULO DERECHO</div>
@@ -437,8 +446,8 @@
 
     <div id="tab-2" class="tab-content">
         <div class="formula-container">
-            <h4 class="panel-title">Cálculo de Frenado ISO 3691-4</h4>
-            <p style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">Evaluación dinámica de inercia basada en velocidad periférica.</p>
+            <h4 class="panel-title">Cálculo Cinemático de Frenado (ISO)</h4>
+            <p style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">Evaluación de distancia mínima de parada basada en velocidad periférica.</p>
             
             <div class="math-display">
                 S<sub>b</sub> = (<span id="iso-f1" style="color:var(--border-cyan)">v</span> &middot; <span style="color:rgba(255,255,255,0.6)">0.05</span>) + 
@@ -451,21 +460,21 @@
 
             <div class="specs-panel" style="margin: 20px auto;">
                 <h4 class="panel-title">Parámetros de Entrada Activos</h4>
-                <div class="specs-blocks-grid">
+                <div class="specs-blocks-grid" style="grid-template-columns: repeat(2, 1fr);">
                     <div class="spec-block-item border-cyan">
-                        <span class="spec-block-label">Velocidad Lineal (v)</span>
+                        <span class="spec-block-label">Velocidad Lineal Calculada (v)</span>
                         <span id="iso-v" class="spec-block-value highlight-cyan">0.00 m/s</span>
                     </div>
                     <div class="spec-block-item border-red">
-                        <span class="spec-block-label">Retraso de Red (t)</span>
+                        <span class="spec-block-label">Tiempo de Retraso de Red (t)</span>
                         <span class="spec-block-value">0.05 s</span>
                     </div>
                     <div class="spec-block-item border-red">
-                        <span class="spec-block-label">Desaceleración (a)</span>
+                        <span class="spec-block-label">Desaceleración Mecánica (a)</span>
                         <span class="spec-block-value">1.50 m/s²</span>
                     </div>
                     <div class="spec-block-item border-cyan">
-                        <span class="spec-block-label">Espacio Crítico (Sm)</span>
+                        <span class="spec-block-label">Margen Crítico ISO (Sm)</span>
                         <span class="spec-block-value">0.10 m</span>
                     </div>
                 </div>
@@ -477,6 +486,7 @@
     </div>
 
     <script>
+        // CONFIGURACIÓN MQTT ADAFRUIT
         const AIO_USER = "diegLOT";
         const AIO_KEY  = "aio_BjKV42vCquxCE2cBAhTOPqfhmmmf";
         const AIO_FEED = "diegLOT/feeds/telemetria";
@@ -541,11 +551,12 @@
             draw('chart-servo', storeServo, 180, '#ffaa00');
         }
 
+        // CONEXIÓN MQTT
         const client = mqtt.connect(BROKER, { username: AIO_USER, password: AIO_KEY });
 
         client.on('connect', () => {
             const indicator = document.getElementById('status-mqtt');
-            indicator.innerText = "● BROADCAST TELEMETRÍA ONLINE";
+            indicator.innerText = "LIVE: TELEMETRÍA ONLINE";
             indicator.style.color = "#00f0ff";
             indicator.style.borderColor = "#00f0ff";
             client.subscribe(AIO_FEED);
@@ -556,13 +567,16 @@
             if(raw.length >= 5) {
                 const d = parseInt(raw[0]), s = parseInt(raw[1]), il = parseInt(raw[2]), ir = parseInt(raw[3]), r = parseInt(raw[4]);
 
+                // Telemetría Dinámica
                 document.getElementById('val-dist').innerText = d + " cm";
                 document.getElementById('val-rpm').innerText = r;
                 document.getElementById('val-servo').innerText = s + "°";
 
+                // Mapeo Infrarrojo
                 document.getElementById('ir-izq').className = il ? 'ir-sensor active-line' : 'ir-sensor';
                 document.getElementById('ir-der').className = ir ? 'ir-sensor active-line' : 'ir-sensor';
 
+                // Física Cinemática
                 const v = r * 0.003455;
                 const sb = ((v * 0.05) + (Math.pow(v, 2) / (2 * 1.5)) + 0.10) * 100;
                 
@@ -572,6 +586,7 @@
                 document.getElementById('iso-f2').innerText = vStr;
                 document.getElementById('iso-res').innerText = sb.toFixed(1) + " cm";
 
+                // Historial de Gráficos
                 [storeDist, storeRPM, storeServo].forEach((arr, i) => {
                     const val = [d, r, s][i];
                     arr.push(val);
