@@ -183,18 +183,10 @@
             background: var(--accent-red);
         }
 
-        /* GRILLA PANORÁMICA DE LA FICHA TÉCNICA (AISLADA EXCLUSIVAMENTE AQUÍ) */
-        .tech-specs-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            text-align: left;
-        }
-
-        /* ESTRUCTURA DE BLOQUES ESTÁNDAR */
+        /* NUEVA ESTRUCTURA PANORÁMICA: 2 FILAS X 4 COLUMNAS */
         .specs-blocks-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 15px;
             text-align: left;
         }
@@ -236,7 +228,7 @@
         .highlight-red { color: var(--accent-red); font-family: monospace; }
         .highlight-cyan { color: var(--border-cyan); font-family: monospace; }
 
-        /* --- PESTAÑA 2: TELEMETRÍA (DISEÑO ORIGINAL SIN ALTERAR) --- */
+        /* --- PESTAÑA 2: TELEMETRÍA --- */
         .telemetry-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -310,12 +302,11 @@
 
         /* RESPONSIVE DESIGN */
         @media (max-width: 992px) {
-            .tech-specs-grid { grid-template-columns: repeat(2, 1fr); }
+            .specs-blocks-grid { grid-template-columns: repeat(2, 1fr); } /* Pasa a 4x2 en pantallas medianas */
         }
         @media (max-width: 768px) {
             .hud-tabs { display: none; }
-            .tech-specs-grid { grid-template-columns: 1fr; }
-            .specs-blocks-grid { grid-template-columns: 1fr; }
+            .specs-blocks-grid { grid-template-columns: 1fr; } /* Colapsa a 1 columna en móviles */
         }
     </style>
 </head>
@@ -340,12 +331,12 @@
         <div class="showcase-container">
             <div class="robot-viewport">
                 <div class="laser-scanner"></div>
-                <img src="https://i.imgur.com/kSly8be.png" alt="Prototipo Robótico">
+                <img src="carrito.png" alt="Prototipo Robótico">
             </div>
 
             <div class="specs-panel">
                 <h4 class="panel-title">Especificaciones del Prototipo</h4>
-                <div class="tech-specs-grid">
+                <div class="specs-blocks-grid">
                     
                     <div class="spec-block-item border-red">
                         <span class="spec-block-label">Microcontrolador Maestro</span>
