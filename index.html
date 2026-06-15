@@ -56,7 +56,7 @@
             background: rgba(0, 240, 255, 0.05);
         }
 
-        /* --- NAVEGACIÓN ESTILO HUD MILITAR --- */
+        /* --- NAVEGACIÓN ESTILO HUD --- */
         .hud-navigation {
             display: flex;
             align-items: center;
@@ -106,7 +106,7 @@
         }
 
         /* --- CONTENIDOS --- */
-        .tab-content { display: none; width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; }
+        .tab-content { display: none; width: 100%; max-width: 1250px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; }
         .tab-content.active { display: block; }
 
         /* --- PESTAÑA 1: SHOWCASE DEL VEHÍCULO --- */
@@ -118,7 +118,6 @@
             margin-bottom: 40px;
         }
 
-        /* Render central con línea de escaneo */
         .robot-viewport {
             position: relative;
             width: 100%;
@@ -152,12 +151,11 @@
             100% { top: 15%; opacity: 0.3; }
         }
 
-        /* Contenedor principal de especificaciones */
         .specs-panel {
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
             width: 100%;
-            max-width: 850px;
+            max-width: 1150px;
             border-radius: 4px;
             padding: 25px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.5);
@@ -185,17 +183,17 @@
             background: var(--accent-red);
         }
 
-        /* ESTRUCTURA SIMÉTRICA FIXED DE 4 FILAS X 2 COLUMNAS */
+        /* NUEVA ESTRUCTURA PANORÁMICA: 2 FILAS X 4 COLUMNAS */
         .specs-blocks-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 15px;
             text-align: left;
         }
 
         .spec-block-item {
             background: rgba(6, 10, 19, 0.6);
-            padding: 14px 18px;
+            padding: 14px 16px;
             border-radius: 6px;
             border: 1px solid rgba(255, 255, 255, 0.03);
             transition: all 0.3s ease;
@@ -210,24 +208,27 @@
         }
 
         .spec-block-label {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
             display: block;
             margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .spec-block-value {
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 0.88rem;
             color: var(--text-main);
         }
 
         .highlight-red { color: var(--accent-red); font-family: monospace; }
         .highlight-cyan { color: var(--border-cyan); font-family: monospace; }
 
-        /* --- PESTAÑA 2: TELEMETRÍA Y GRÁFICOS --- */
+        /* --- PESTAÑA 2: TELEMETRÍA --- */
         .telemetry-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -276,7 +277,7 @@
             box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
         }
 
-        /* --- PESTAÑA 3: NORMATIVA --- */
+        /* --- PESTAÑA 3: ANÁLISIS --- */
         .formula-container {
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
@@ -299,9 +300,13 @@
         .fraccion { display: inline-flex; flex-direction: column; vertical-align: middle; padding: 0 5px; }
         .numerador { border-bottom: 2px solid white; padding-bottom: 2px; }
 
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 992px) {
+            .specs-blocks-grid { grid-template-columns: repeat(2, 1fr); } /* Pasa a 4x2 en pantallas medianas */
+        }
         @media (max-width: 768px) {
             .hud-tabs { display: none; }
-            .specs-blocks-grid { grid-template-columns: 1fr; } /* Se vuelve 1 columna solo en smartphones para legibilidad */
+            .specs-blocks-grid { grid-template-columns: 1fr; } /* Colapsa a 1 columna en móviles */
         }
     </style>
 </head>
@@ -341,32 +346,30 @@
                         <span class="spec-block-label">Procesamiento Esclavo</span>
                         <span class="spec-block-value highlight-cyan">Arduino Nano V3</span>
                     </div>
-                    
                     <div class="spec-block-item border-cyan">
                         <span class="spec-block-label">Transmisión Inalámbrica</span>
-                        <span class="spec-block-value">Radiofrecuencia HC-12 (433MHz)</span>
+                        <span class="spec-block-value">RF HC-12 (433MHz)</span>
                     </div>
                     <div class="spec-block-item border-red">
-                        <span class="spec-block-label">Detección de Obstáculos</span>
+                        <span class="spec-block-label">Detección Obstáculos</span>
                         <span class="spec-block-value">HC-SR04 Ultrasónico</span>
                     </div>
                     
                     <div class="spec-block-item border-red">
                         <span class="spec-block-label">Dimensión Motriz</span>
-                        <span class="spec-block-value">Ruedas Neumáticas de 6.60 cm</span>
+                        <span class="spec-block-value">Ruedas Neumáticas 6.6cm</span>
                     </div>
                     <div class="spec-block-item border-cyan">
                         <span class="spec-block-label">Resolución de Giro</span>
-                        <span class="spec-block-value">Encoder Óptico de 20 Ranuras</span>
+                        <span class="spec-block-value">Encoder Óptico 20R</span>
                     </div>
-                    
                     <div class="spec-block-item border-cyan">
                         <span class="spec-block-label">Seguidor de Línea</span>
-                        <span class="spec-block-value">Dual IR (TCRT5000) Módulos</span>
+                        <span class="spec-block-value">Dual IR TCRT5000</span>
                     </div>
                     <div class="spec-block-item border-red">
                         <span class="spec-block-label">Actuador Evasión</span>
-                        <span class="spec-block-value">Micro Servo Mágico SG90</span>
+                        <span class="spec-block-value">Micro Servo SG90</span>
                     </div>
 
                 </div>
@@ -419,19 +422,19 @@
                 <h4 class="panel-title">Parámetros de Entrada Activos</h4>
                 <div class="specs-blocks-grid">
                     <div class="spec-block-item border-cyan">
-                        <span class="spec-block-label">Velocidad Lineal Calculada (v)</span>
+                        <span class="spec-block-label">Velocidad Lineal (v)</span>
                         <span id="iso-v" class="spec-block-value highlight-cyan">0.00 m/s</span>
                     </div>
                     <div class="spec-block-item border-red">
-                        <span class="spec-block-label">Tiempo de Retraso de Red (t)</span>
+                        <span class="spec-block-label">Retraso de Red (t)</span>
                         <span class="spec-block-value">0.05 s</span>
                     </div>
                     <div class="spec-block-item border-red">
-                        <span class="spec-block-label">Desaceleración Mecánica (a)</span>
+                        <span class="spec-block-label">Desaceleración (a)</span>
                         <span class="spec-block-value">1.50 m/s²</span>
                     </div>
                     <div class="spec-block-item border-cyan">
-                        <span class="spec-block-label">Espacio Crítico de Seguridad (Sm)</span>
+                        <span class="spec-block-label">Espacio Crítico (Sm)</span>
                         <span class="spec-block-value">0.10 m</span>
                     </div>
                 </div>
@@ -443,7 +446,6 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN CENTRALIZADA MQTT ADAFRUIT
         const AIO_USER = "diegLOT";
         const AIO_KEY  = "aio_BjKV42vCquxCE2cBAhTOPqfhmmmf";
         const AIO_FEED = "diegLOT/feeds/telemetria";
