@@ -152,16 +152,14 @@
             100% { top: 15%; opacity: 0.3; }
         }
 
-        /* Tabla de especificaciones de la imagen */
+        /* Contenedor principal de especificaciones */
         .specs-panel {
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
-            border-left: 3px solid var(--accent-red);
             width: 100%;
-            max-width: 800px;
+            max-width: 850px;
             border-radius: 4px;
-            padding: 20px;
-            text-align: left;
+            padding: 25px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
 
@@ -171,7 +169,8 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-top: 0;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            text-align: left;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -185,37 +184,48 @@
             background: var(--accent-red);
         }
 
-        .tech-table {
-            width: 100%;
-            border-collapse: collapse;
+        /* REPLICACIÓN DE DISEÑO DE BLOQUES (2 columnas) */
+        .specs-blocks-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            text-align: left;
         }
 
-        .tech-table tr {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        .spec-block-item {
+            background: rgba(6, 10, 19, 0.6);
+            padding: 14px 18px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.3s ease;
         }
 
-        .tech-table td {
-            padding: 12px 8px;
-            font-size: 0.75rem;
+        /* Bordes dinámicos que combinan con el esquema de color */
+        .spec-block-item.border-red { border-left: 3px solid var(--accent-red); }
+        .spec-block-item.border-cyan { border-left: 3px solid var(--border-cyan); }
+
+        .spec-block-item:hover {
+            background: rgba(13, 22, 38, 0.9);
+            transform: translateY(-2px);
         }
 
-        .tech-label {
+        .spec-block-label {
+            font-size: 0.7rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
-            width: 40%;
+            display: block;
+            margin-bottom: 4px;
         }
 
-        .tech-value {
+        .spec-block-value {
+            font-weight: bold;
+            font-size: 0.95rem;
             color: var(--text-main);
-            font-weight: 600;
-            text-align: right;
         }
 
-        .tech-highlight {
-            color: var(--border-cyan);
-            font-family: monospace;
-        }
+        .highlight-red { color: var(--accent-red); font-family: monospace; }
+        .highlight-cyan { color: var(--border-cyan); font-family: monospace; }
 
         /* --- PESTAÑA 2: TELEMETRÍA Y GRÁFICOS --- */
         .telemetry-grid {
@@ -290,8 +300,8 @@
         .numerador { border-bottom: 2px solid white; padding-bottom: 2px; }
 
         @media (max-width: 768px) {
-            .hud-tabs { display: none; } /* Navegación por flechas en móviles */
-            .tech-table td { font-size: 0.7rem; }
+            .hud-tabs { display: none; }
+            .specs-blocks-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -320,41 +330,41 @@
             </div>
 
             <div class="specs-panel">
-                <h4 class="panel-title">Configuración del Sistema</h4>
-                <table class="tech-table">
-                    <tr>
-                        <td class="tech-label">Unidad de Control</td>
-                        <td class="tech-value tech-highlight" style="color: var(--accent-red);">ESP32 WROOM 32U</td>
-                    </tr>
-                    <tr>
-                        <td class="tech-label">Coprocesador Cinemático</td>
-                        <td class="tech-value tech-highlight" style="color: var(--border-cyan);">Arduino Nano V3</td>
-                    </tr>
-                    <tr>
-                        <td class="tech-label">Enlace de Radio</td>
-                        <td class="tech-value">HC-12 Transceiver / 433 MHz</td>
-                    </tr>
-                    <tr>
-                        <td class="tech-label">Protocolo de Red</td>
-                        <td class="tech-value">MQTT Cloud Server</td>
-                    </tr>
-                    <tr>
-                        <td class="tech-label">Visión Perimetral</td>
-                        <td class="tech-value">Ultrasonido HC-SR04 + Servo Mágico</td>
-                    </tr>
-                    <tr>
-                        <td class="tech-label">Detección de Suelo</td>
-                        <td class="tech-value">Dual IR TCRT5000 Arrays</td>
-                    </tr>
-                    <tr>
-                        <td class="tech-label">Dimensión Motriz</td>
-                        <td class="tech-value">Ruedas Neumáticas de 6.60 cm</td>
-                    </tr>
-                    <tr>
-                        <td class="tech-label">Resolución de Giro</td>
-                        <td class="tech-value">Encoder Óptico de 20 Ranuras</td>
-                    </tr>
-                </table>
+                <h4 class="panel-title">Especificaciones del Prototipo</h4>
+                <div class="specs-blocks-grid">
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Microcontrolador Maestro</span>
+                        <span class="spec-block-value highlight-red">ESP32 WROOM 32U</span>
+                    </div>
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Procesamiento Esclavo</span>
+                        <span class="spec-block-value highlight-cyan">Arduino Nano V3</span>
+                    </div>
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Transmisión Inalámbrica</span>
+                        <span class="spec-block-value">Radiofrecuencia HC-12 (433MHz)</span>
+                    </div>
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Detección de Obstáculos</span>
+                        <span class="spec-block-value">HC-SR04 Ultrasónico</span>
+                    </div>
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Dimensión Motriz</span>
+                        <span class="spec-block-value">Ruedas Neumáticas de 6.60 cm</span>
+                    </div>
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Resolución de Giro</span>
+                        <span class="spec-block-value">Encoder Óptico de 20 Ranuras</span>
+                    </div>
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Seguidor de Línea</span>
+                        <span class="spec-block-value">Dual IR (TCRT5000) Módulos</span>
+                    </div>
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Actuador Evasión</span>
+                        <span class="spec-block-value">Micro Servo Mágico SG90</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -402,12 +412,24 @@
 
             <div class="specs-panel" style="margin: 20px auto;">
                 <h4 class="panel-title">Parámetros de Entrada Activos</h4>
-                <table class="tech-table">
-                    <tr><td class="tech-label">Velocidad Lineal Calculada (v)</td><td id="iso-v" class="tech-value tech-highlight">0.00 m/s</td></tr>
-                    <tr><td class="tech-label">Tiempo de Retraso de Red (t)</td><td class="tech-value">0.05 s</td></tr>
-                    <tr><td class="tech-label">Desaceleración Mecánica (a)</td><td class="tech-value">1.50 m/s²</td></tr>
-                    <tr><td class="tech-label">Espacio Crítico de Seguridad (Sm)</td><td class="tech-value">0.10 m</td></tr>
-                </table>
+                <div class="specs-blocks-grid">
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Velocidad Lineal Calculada (v)</span>
+                        <span id="iso-v" class="spec-block-value highlight-cyan">0.00 m/s</span>
+                    </div>
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Tiempo de Retraso de Red (t)</span>
+                        <span class="spec-block-value">0.05 s</span>
+                    </div>
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Desaceleración Mecánica (a)</span>
+                        <span class="spec-block-value">1.50 m/s²</span>
+                    </div>
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Espacio Crítico de Seguridad (Sm)</span>
+                        <span class="spec-block-value">0.10 m</span>
+                    </div>
+                </div>
             </div>
 
             <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-top: 20px;">Distancia de Parada Mínima Exigida:</div>
@@ -481,7 +503,6 @@
             draw('chart-servo', storeServo, 180, '#ffaa00');
         }
 
-        // CONEXIÓN AL CLIENTE MQTT
         const client = mqtt.connect(BROKER, { username: AIO_USER, password: AIO_KEY });
 
         client.on('connect', () => {
@@ -497,16 +518,13 @@
             if(raw.length >= 5) {
                 const d = parseInt(raw[0]), s = parseInt(raw[1]), il = parseInt(raw[2]), ir = parseInt(raw[3]), r = parseInt(raw[4]);
 
-                // Actualizaciones de Telemetría Dinámica
                 document.getElementById('val-dist').innerText = d + " cm";
                 document.getElementById('val-rpm').innerText = r;
                 document.getElementById('val-servo').innerText = s + "°";
 
-                // Matriz Infrarroja
                 document.getElementById('ir-izq').className = il ? 'ir-sensor active-line' : 'ir-sensor';
                 document.getElementById('ir-der').className = ir ? 'ir-sensor active-line' : 'ir-sensor';
 
-                // Operaciones de Física Cinemática
                 const v = r * 0.003455;
                 const sb = ((v * 0.05) + (Math.pow(v, 2) / (2 * 1.5)) + 0.10) * 100;
                 
@@ -516,7 +534,6 @@
                 document.getElementById('iso-f2').innerText = vStr;
                 document.getElementById('iso-res').innerText = sb.toFixed(1) + " cm";
 
-                // Agrupamiento de datos históricos
                 [storeDist, storeRPM, storeServo].forEach((arr, i) => {
                     const val = [d, r, s][i];
                     arr.push(val);
