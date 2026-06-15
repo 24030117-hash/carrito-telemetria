@@ -56,66 +56,21 @@
             background: rgba(0, 240, 255, 0.05);
         }
 
-        /* --- NUEVO ESTILO DE NAVEGACIÓN HUD PROFESIONAL Y CENTRADO --- */
+        /* --- PESTAÑAS DE NAVEGACIÓN SUPERIORES (SIN FLECHAS) --- */
         .hud-navigation {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 30px auto;
+            margin: 25px auto;
             max-width: 1000px;
-            padding: 0 20px;
         }
 
-        /* Bloque contenedor que unifica flechas y pestañas */
-        .hud-nav-group {
-            display: flex;
-            background: rgba(13, 22, 38, 0.6);
-            border: 1px solid var(--panel-border);
-            border-radius: 6px;
-            padding: 3px;
-            align-items: stretch;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        /* Flechas industriales proporcionales */
-        .hud-arrow {
-            background: rgba(255, 255, 255, 0.02);
-            border: none;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            padding: 0 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .hud-arrow-left {
-            border-radius: 4px 0 0 4px;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .hud-arrow-right {
-            border-radius: 0 4px 4px 0;
-            border-left: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .hud-arrow:hover {
-            color: var(--border-cyan);
-            background: rgba(0, 240, 255, 0.08);
-            text-shadow: 0 0 8px var(--border-cyan);
-        }
-
-        .hud-arrow:active {
-            background: rgba(0, 240, 255, 0.15);
-        }
-
-        /* Contenedor interno para aislar las pestañas */
         .hud-tabs {
             display: flex;
-            gap: 2px;
-            padding: 0 3px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 4px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .hud-tab-btn {
@@ -128,21 +83,53 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
+            transition: all 0.3s;
         }
 
         .hud-tab-btn.active {
             color: var(--text-main);
-            background: linear-gradient(to bottom, rgba(0, 240, 255, 0.15), rgba(0, 240, 255, 0.02));
-            box-shadow: inset 0 -2px 0 var(--border-cyan);
+            background: linear-gradient(to bottom, rgba(255, 42, 42, 0.2), transparent);
+            border-bottom: 2px solid var(--accent-red);
         }
 
-        .hud-tab-btn:hover:not(.active) {
+        /* --- NUEVAS FLECHAS LATERALES FLOTANTES EN MEDIO --- */
+        .hud-side-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(13, 22, 38, 0.8);
+            border: 2px solid #223147;
+            color: var(--accent-red);
+            font-size: 1.2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(255, 42, 42, 0.1);
+            z-index: 9999; /* Asegura que queden sobre cualquier componente */
+        }
+
+        .arrow-left {
+            left: 25px;
+        }
+
+        .arrow-right {
+            right: 25px;
+        }
+
+        .hud-side-arrow:hover {
             color: var(--text-main);
-            background: rgba(255, 255, 255, 0.03);
+            border-color: var(--border-cyan);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4), inset 0 0 10px rgba(0, 240, 255, 0.2);
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        .hud-side-arrow:active {
+            transform: translateY(-50%) scale(0.92);
         }
 
         /* --- CONTENIDOS --- */
@@ -223,7 +210,7 @@
             background: var(--accent-red);
         }
 
-        /* NUEVA ESTRUCTURA PANORÁMICA: 2 FILAS X 4 COLUMNAS */
+        /* STRUCTURA PANORÁMICA */
         .specs-blocks-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -345,9 +332,11 @@
             .specs-blocks-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 768px) {
-            .hud-navigation { display: flex; }
             .hud-tabs { display: none; }
             .specs-blocks-grid { grid-template-columns: 1fr; }
+            .hud-side-arrow { width: 40px; height: 40px; font-size: 1rem; } /* Flechas un poco más chicas en móviles */
+            .arrow-left { left: 5px; }
+            .arrow-right { right: 5px; }
         }
     </style>
 </head>
@@ -358,15 +347,14 @@
         <div id="status-mqtt" class="status-indicator" style="color: var(--border-cyan); border-color: var(--border-cyan);">CONECTANDO TELEMETRÍA...</div>
     </div>
 
+    <button class="hud-side-arrow arrow-left" onclick="adjustTab(-1)">&#9664;</button>
+    <button class="hud-side-arrow arrow-right" onclick="adjustTab(1)">&#9654;</button>
+
     <div class="hud-navigation">
-        <div class="hud-nav-group">
-            <button class="hud-arrow hud-arrow-left" onclick="adjustTab(-1)">&#9664;</button>
-            <div class="hud-tabs">
-                <button class="hud-tab-btn active" id="btn-0" onclick="switchTab(0)">01 // Ficha Técnica</button>
-                <button class="hud-tab-btn" id="btn-1" onclick="switchTab(1)">02 // Telemetría en Vivo</button>
-                <button class="hud-tab-btn" id="btn-2" onclick="switchTab(2)">03 // Análisis Dinámico</button>
-            </div>
-            <button class="hud-arrow hud-arrow-right" onclick="adjustTab(1)">&#9654;</button>
+        <div class="hud-tabs">
+            <button class="hud-tab-btn active" id="btn-0" onclick="switchTab(0)">01 // Ficha Técnica</button>
+            <button class="hud-tab-btn" id="btn-1" onclick="switchTab(1)">02 // Telemetría en Vivo</button>
+            <button class="hud-tab-btn" id="btn-2" onclick="switchTab(2)">03 // Análisis Dinámico</button>
         </div>
     </div>
 
