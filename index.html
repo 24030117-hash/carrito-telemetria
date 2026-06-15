@@ -191,7 +191,7 @@ const char index_html[] PROGMEM = R"rawliteral(
 
         @media (max-width: 600px) {
             .specs-grid { grid-template-columns: 1fr; }
-            .tabs-window { display: none; } /* En móvil se usan flechas */
+            .tabs-window { display: none; }
         }
     </style>
 </head>
@@ -261,12 +261,12 @@ const char index_html[] PROGMEM = R"rawliteral(
                 <h3>Análisis Cinemático ISO 3691-4</h3>
                 <p style="color:var(--text-muted); font-size:0.9rem">Cálculo de la distancia mínima de seguridad basada en inercia y velocidad real.</p>
                 <div class="formula-box">
-                    S<sub>b</sub> = (v &middot; t) + 
+                    S<sub>b</sub> = (<span id="iso-f1" style="color:var(--accent-blue)">v</span> &middot; <span style="color:var(--accent-yellow)">0.05</span>) + 
                     <div class="fraccion">
-                        <div class="numerador">v<sup>2</sup></div>
-                        <div>2 &middot; a</div>
+                        <div class="numerador">(<span id="iso-f2" style="color:var(--accent-blue)">v</span>)<sup>2</sup></div>
+                        <div>2 &middot; <span style="color:var(--accent-red)">1.50</span></div>
                     </div>
-                    + S<sub>m</sub>
+                    + <span style="color:var(--accent-green)">0.10</span>
                 </div>
                 <div class="specs-grid">
                     <div class="spec-item"><span class="spec-label">Velocidad Lineal (v)</span><span id="iso-v" class="spec-value">0.00 m/s</span></div>
@@ -370,7 +370,11 @@ const char index_html[] PROGMEM = R"rawliteral(
                 // Cálculos ISO
                 const v = r * 0.003455;
                 const sb = ((v * 0.05) + (Math.pow(v, 2) / (2 * 1.5)) + 0.10) * 100;
-                document.getElementById('iso-v').innerText = v.toFixed(2) + " m/s";
+                
+                const vStr = v.toFixed(2);
+                document.getElementById('iso-v').innerText = vStr + " m/s";
+                document.getElementById('iso-f1').innerText = vStr;
+                document.getElementById('iso-f2').innerText = vStr;
                 document.getElementById('iso-res').innerText = sb.toFixed(1) + " cm";
 
                 // Guardar datos
