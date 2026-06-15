@@ -289,7 +289,6 @@ const char index_html[] PROGMEM = R"rawliteral(
         let currentTabIndex = 0;
         const totalTabs = 3;
 
-        // DATOS PARA GRÁFICAS
         let storeDist = [], storeRPM = [], storeServo = [];
         const maxPoints = 20;
 
@@ -313,8 +312,10 @@ const char index_html[] PROGMEM = R"rawliteral(
         function resizeCharts() {
             ['chart-dist', 'chart-rpm', 'chart-servo'].forEach(id => {
                 const canvas = document.getElementById(id);
-                canvas.width = canvas.parentElement.clientWidth;
-                canvas.height = canvas.parentElement.clientHeight;
+                if(canvas) {
+                    canvas.width = canvas.parentElement.clientWidth;
+                    canvas.height = canvas.parentElement.clientHeight;
+                }
             });
             drawAll();
         }
@@ -344,7 +345,6 @@ const char index_html[] PROGMEM = R"rawliteral(
             draw('chart-servo', storeServo, 180, '#f59e0b');
         }
 
-        // CONEXIÓN MQTT
         const client = mqtt.connect(BROKER, { username: AIO_USER, password: AIO_KEY });
 
         client.on('connect', () => {
@@ -358,16 +358,13 @@ const char index_html[] PROGMEM = R"rawliteral(
             if(raw.length >= 5) {
                 const d = parseInt(raw[0]), s = parseInt(raw[1]), il = parseInt(raw[2]), ir = parseInt(raw[3]), r = parseInt(raw[4]);
 
-                // Actualizar interfaz
                 document.getElementById('val-dist').innerText = d + " cm";
                 document.getElementById('val-rpm').innerText = r;
                 document.getElementById('val-servo').innerText = s + "°";
 
-                // Sensores IR
                 document.getElementById('ir-izq').className = il ? 'ir-box active-line' : 'ir-box';
                 document.getElementById('ir-der').className = ir ? 'ir-box active-line' : 'ir-box';
 
-                // Cálculos ISO
                 const v = r * 0.003455;
                 const sb = ((v * 0.05) + (Math.pow(v, 2) / (2 * 1.5)) + 0.10) * 100;
                 
@@ -377,7 +374,6 @@ const char index_html[] PROGMEM = R"rawliteral(
                 document.getElementById('iso-f2').innerText = vStr;
                 document.getElementById('iso-res').innerText = sb.toFixed(1) + " cm";
 
-                // Guardar datos
                 [storeDist, storeRPM, storeServo].forEach((arr, i) => {
                     const val = [d, r, s][i];
                     arr.push(val);
