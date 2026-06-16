@@ -359,7 +359,7 @@
 
     <div class="header-banner">
         <h1>Carrito Evasor de Obstáculos con RF</h1>
-        <div id="status-mqtt" class="status-indicator">📡 CONECTANDO TELEMETRÍA...</div>
+        <div id="status-mqtt" class="status-indicator">📡 COMPROBANDO CREDENCIALES...</div>
     </div>
 
     <button class="hud-massive-arrow massive-arrow-left" onclick="adjustTab(-1)">&#10216;</button>
@@ -489,11 +489,25 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN MQTT ADAFRUIT ACTUALIZADA
+        // CONFIGURACIÓN DINÁMICA DE CREDENCIALES (PROTECCIÓN CONTRA SECRET SCANNING)
         const AIO_USER = "dieglot"; 
-        const AIO_KEY  = "aio_isGm72lK6mM6lKBCWDV5BfoxTykr"; // Nueva llave activa vinculada
         const AIO_FEED = "dieglot/feeds/telemetria"; 
         const BROKER   = "wss://io.adafruit.com:443/mqtt";
+
+        // Recuperar o solicitar la llave de Adafruit IO localmente
+        let AIO_KEY = localStorage.getItem("adafruit_io_key");
+
+        if (!AIO_KEY) {
+            AIO_KEY = prompt("Por favor ingresa tu Adafruit IO Active Key (Esto solo se guarda localmente en tu navegador):");
+            if (AIO_KEY) {
+                localStorage.setItem("adafruit_io_key", AIO_KEY.trim());
+            } else {
+                const indicator = document.getElementById('status-mqtt');
+                indicator.innerText = "❌ FALTA KEY DE ADAFRUIT";
+                indicator.style.color = "#ff2a2a";
+                indicator.style.borderColor = "#ff2a2a";
+            }
+        }
 
         let activeTabIdx = 0;
         const totalTabs = 3;
@@ -515,7 +529,6 @@
             const targetBtn = document.getElementById(`btn-${index}`);
             if(targetBtn) targetBtn.classList.add('active');
 
-            // SOLUCIÓN AL BUG DEL CANVAS: Forzar redimensionado al entrar a la pestaña activa
             if(index === 1) {
                 setTimeout(resizeCharts, 50);
             }
@@ -540,7 +553,6 @@
             
             ctx.clearRect(0,0,W,H);
 
-            // Rejilla de fondo sutil cyberpunk
             ctx.strokeStyle = "rgba(0, 240, 255, 0.03)";
             ctx.lineWidth = 1;
             for(let i = 0; i < W; i += W/4) {
@@ -569,60 +581,60 @@
             draw('chart-servo', storeServo, 180, '#ffaa00');
         }
 
-        // CONEXIÓN MQTT
-        const client = mqtt.connect(BROKER, { username: AIO_USER, password: AIO_KEY });
+        // CONEXIÓN CON MQTT CLIENT CONTROLADO
+        if (AIO_KEY) {
+            const client = mqtt.connect(BROKER, { username: AIO_USER, password: AIO_KEY });
 
-        client.on('connect', () => {
-            const indicator = document.getElementById('status-mqtt');
-            indicator.innerText = "LIVE: TELEMETRÍA ONLINE";
-            indicator.style.color = "#00f0ff";
-            indicator.style.borderColor = "#00f0ff";
-            indicator.style.background = "rgba(0, 240, 255, 0.1)";
-            client.subscribe(AIO_FEED);
-        });
+            client.on('connect', () => {
+                const indicator = document.getElementById('status-mqtt');
+                indicator.innerText = "LIVE: TELEMETRÍA ONLINE";
+                indicator.style.color = "#00f0ff";
+                indicator.style.borderColor = "#00f0ff";
+                indicator.style.background = "rgba(0, 240, 255, 0.1)";
+                client.subscribe(AIO_FEED);
+            });
 
-        client.on('error', (err) => {
-            const indicator = document.getElementById('status-mqtt');
-            indicator.innerText = "❌ ERROR DE CREDENCIALES";
-            indicator.style.color = "#ff2a2a";
-            indicator.style.borderColor = "#ff2a2a";
-            indicator.style.background = "rgba(255, 42, 42, 0.1)";
-        });
+            client.on('error', (err) => {
+                const indicator = document.getElementById('status-mqtt');
+                indicator.innerText = "❌ ERROR DE CREDENCIALES";
+                indicator.style.color = "#ff2a2a";
+                indicator.style.borderColor = "#ff2a2a";
+                indicator.style.background = "rgba(255, 42, 42, 0.1)";
+                // Si da error, eliminamos la llave incorrecta guardada para poder pedirla de nuevo
+                localStorage.removeItem("adafruit_io_key");
+            });
 
-        client.on('message', (topic, msg) => {
-            const raw = msg.toString().split(',');
-            if(raw.length >= 5) {
-                const d = parseInt(raw[0]), s = parseInt(raw[1]), il = parseInt(raw[2]), ir = parseInt(raw[3]), r = parseInt(raw[4]);
+            client.on('message', (topic, msg) => {
+                const raw = msg.toString().split(',');
+                if(raw.length >= 5) {
+                    const d = parseInt(raw[0]), s = parseInt(raw[1]), il = parseInt(raw[2]), ir = parseInt(raw[3]), r = parseInt(raw[4]);
 
-                // Telemetría Dinámica
-                document.getElementById('val-dist').innerText = d + " cm";
-                document.getElementById('val-rpm').innerText = r;
-                document.getElementById('val-servo').innerText = s + "°";
+                    document.getElementById('val-dist').innerText = d + " cm";
+                    document.getElementById('val-rpm').innerText = r;
+                    document.getElementById('val-servo').innerText = s + "°";
 
-                // Mapeo Infrarrojo
-                document.getElementById('ir-izq').className = il ? 'ir-sensor active-line' : 'ir-sensor';
-                document.getElementById('ir-der').className = ir ? 'ir-sensor active-line' : 'ir-sensor';
+                    document.getElementById('ir-izq').className = il ? 'ir-sensor active-line' : 'ir-sensor';
+                    document.getElementById('ir-der').className = ir ? 'ir-sensor active-line' : 'ir-sensor';
 
-                // Física Cinemática
-                const v = r * 0.003455;
-                const sb = ((v * 0.05) + (Math.pow(v, 2) / (2 * 1.5)) + 0.10) * 100;
-                
-                const vStr = v.toFixed(2);
-                document.getElementById('iso-v').innerText = vStr + " m/s";
-                document.getElementById('iso-f1').innerText = vStr;
-                document.getElementById('iso-f2').innerText = vStr;
-                document.getElementById('iso-res').innerText = sb.toFixed(1) + " cm";
+                    const v = r * 0.003455;
+                    const sb = ((v * 0.05) + (Math.pow(v, 2) / (2 * 1.5)) + 0.10) * 100;
+                    
+                    const vStr = v.toFixed(2);
+                    document.getElementById('iso-v').innerText = vStr + " m/s";
+                    document.getElementById('iso-f1').innerText = vStr;
+                    document.getElementById('iso-f2').innerText = vStr;
+                    document.getElementById('iso-res').innerText = sb.toFixed(1) + " cm";
 
-                // Historial de Gráficos
-                [storeDist, storeRPM, storeServo].forEach((arr, i) => {
-                    const val = [d, r, s][i];
-                    arr.push(val);
-                    if(arr.length > maxPoints) arr.shift();
-                });
+                    [storeDist, storeRPM, storeServo].forEach((arr, i) => {
+                        const val = [d, r, s][i];
+                        arr.push(val);
+                        if(arr.length > maxPoints) arr.shift();
+                    });
 
-                if(activeTabIdx === 1) drawAll();
-            }
-        });
+                    if(activeTabIdx === 1) drawAll();
+                }
+            });
+        }
 
         window.addEventListener('resize', () => {
             if(activeTabIdx === 1) resizeCharts();
