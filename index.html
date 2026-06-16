@@ -489,10 +489,9 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN MQTT ADAFRUIT
+        // CONFIGURACIÓN MQTT ADAFRUIT ACTUALIZADA
         const AIO_USER = "dieglot"; 
-        // Se corrigió el error de tipografía cambiándole la "O" mayúscula por un "0" (cero)
-        const AIO_KEY  = "aio_BJKV42vCquxCE2cBAhT0Pqfhmmmf";
+        const AIO_KEY  = "aio_isGm72lK6mM6lKBCWDV5BfoxTykr"; // Nueva llave activa vinculada
         const AIO_FEED = "dieglot/feeds/telemetria"; 
         const BROKER   = "wss://io.adafruit.com:443/mqtt";
 
@@ -558,7 +557,6 @@
             
             data.forEach((val, i) => {
                 const x = (W / (maxPoints - 1)) * i;
-                // Dejar margen superior/inferior para que la línea no se corte
                 const y = H - ((val / max) * (H * 0.70)) - (H * 0.15);
                 if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
             });
@@ -622,12 +620,10 @@
                     if(arr.length > maxPoints) arr.shift();
                 });
 
-                // Solo dibujar si la pestaña de telemetría está visible
                 if(activeTabIdx === 1) drawAll();
             }
         });
 
-        // Asegurar que responda bien a los cambios de tamaño de ventana del navegador
         window.addEventListener('resize', () => {
             if(activeTabIdx === 1) resizeCharts();
         });
