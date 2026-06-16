@@ -55,6 +55,7 @@
             border-radius: 20px;
             margin-top: 5px;
             background: rgba(0, 240, 255, 0.05);
+            transition: all 0.3s ease;
         }
 
         /* --- PESTAÑAS SUPERIORES --- */
@@ -113,13 +114,8 @@
             padding: 20px;
         }
 
-        .massive-arrow-left {
-            left: 80px; 
-        }
-
-        .massive-arrow-right {
-            right: 80px; 
-        }
+        .massive-arrow-left { left: 80px; }
+        .massive-arrow-right { right: 80px; }
 
         .hud-massive-arrow:hover {
             color: var(--text-main);
@@ -218,7 +214,6 @@
             background: var(--accent-red);
         }
 
-        /* ESTRUCTURA DE BLOQUES PANORÁMICA 4x2 */
         .specs-blocks-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -273,6 +268,7 @@
             border: 1px solid var(--panel-border);
             border-radius: 4px;
             padding: 20px;
+            box-sizing: border-box;
         }
 
         .big-numeric {
@@ -284,11 +280,19 @@
         }
 
         .chart-box {
-            height: 100px;
-            background: rgba(0,0,0,0.3);
+            height: 110px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 4px;
             overflow: hidden;
             margin-top: 15px;
+            position: relative;
+        }
+
+        .chart-box canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
         }
 
         .ir-row { display: flex; justify-content: space-between; gap: 15px; margin-top: 25px; }
@@ -301,6 +305,8 @@
             border: 1px solid rgba(255,255,255,0.05);
             color: var(--text-muted);
             border-radius: 4px;
+            text-align: center;
+            transition: all 0.2s ease;
         }
         .ir-sensor.active-line {
             background: rgba(0, 240, 255, 0.1);
@@ -327,9 +333,10 @@
             margin: 20px auto;
             max-width: 600px;
             border: 1px solid rgba(255,255,255,0.03);
+            text-align: center;
         }
 
-        .fraccion { display: inline-flex; flex-direction: column; vertical-align: middle; padding: 0 5px; }
+        .fraccion { display: inline-flex; flex-direction: column; vertical-align: middle; padding: 0 5px; text-align: center; }
         .numerador { border-bottom: 2px solid white; padding-bottom: 2px; }
 
         /* RESPONSIVE DESIGN */
@@ -344,7 +351,7 @@
         @media (max-width: 768px) {
             .hud-tabs { display: none; } 
             .specs-blocks-grid { grid-template-columns: 1fr; }
-            .hud-massive-arrow { font-size: 3rem; left: 5px; right: 5px; background: rgba(0,0,0,0.4); border-radius: 50%; width: 50px; height: 50px;} 
+            .hud-massive-arrow { font-size: 3rem; left: 5px; right: 5px; background: rgba(0,0,0,0.6); border-radius: 50%; width: 50px; height: 50px;} 
         }
     </style>
 </head>
@@ -376,7 +383,6 @@
             <div class="specs-panel">
                 <h4 class="panel-title">Especificaciones del Prototipo</h4>
                 <div class="specs-blocks-grid">
-                    
                     <div class="spec-block-item border-red">
                         <span class="spec-block-label">Microcontrolador Maestro</span>
                         <span class="spec-block-value highlight-red">ESP32 DevKit V1</span>
@@ -393,7 +399,6 @@
                         <span class="spec-block-label">Detección Obstáculos</span>
                         <span class="spec-block-value">HC-SR04 Ultrasónico</span>
                     </div>
-                    
                     <div class="spec-block-item border-red">
                         <span class="spec-block-label">Diámetro de Rueda</span>
                         <span class="spec-block-value">6.60 cm</span>
@@ -410,7 +415,6 @@
                         <span class="spec-block-label">Actuador Evasión</span>
                         <span class="spec-block-value">Micro Servo SG90</span>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -425,12 +429,12 @@
             </div>
             <div class="telemetry-card">
                 <h4 class="panel-title">Tacómetro (RPM)</h4>
-                <div id="val-rpm" class="big-numeric">--</div>
+                <div id="val-rpm" class="big-numeric" style="color: var(--accent-red)">--</div>
                 <div class="chart-box"><canvas id="chart-rpm"></canvas></div>
             </div>
             <div class="telemetry-card">
                 <h4 class="panel-title">Barrido Servo HC-SR04</h4>
-                <div id="val-servo" class="big-numeric" style="color: var(--accent-red)">90&deg;</div>
+                <div id="val-servo" class="big-numeric" style="color: #ffaa00">90&deg;</div>
                 <div class="chart-box"><canvas id="chart-servo"></canvas></div>
             </div>
             <div class="telemetry-card">
@@ -459,7 +463,7 @@
 
             <div class="specs-panel" style="margin: 20px auto;">
                 <h4 class="panel-title">Parámetros de Entrada Activos</h4>
-                <div class="specs-blocks-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="specs-blocks-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
                     <div class="spec-block-item border-cyan">
                         <span class="spec-block-label">Velocidad Lineal Calculada (v)</span>
                         <span id="iso-v" class="spec-block-value highlight-cyan">0.00 m/s</span>
@@ -485,10 +489,10 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN MQTT ADAFRUIT (CORREGIDA A MINÚSCULAS)
-        const AIO_USER = "dieglot"; // <- Nombre de usuario definitivo en minúsculas
+        // CONFIGURACIÓN MQTT ADAFRUIT
+        const AIO_USER = "dieglot"; 
         const AIO_KEY  = "aio_BjKV42vCquxCE2cBAhTOPqfhmmmf";
-        const AIO_FEED = "dieglot/feeds/telemetria"; // <- Canal apuntado correctamente
+        const AIO_FEED = "dieglot/feeds/telemetria"; 
         const BROKER   = "wss://io.adafruit.com:443/mqtt";
 
         let activeTabIdx = 0;
@@ -511,13 +515,16 @@
             const targetBtn = document.getElementById(`btn-${index}`);
             if(targetBtn) targetBtn.classList.add('active');
 
-            if(index === 1) setTimeout(resizeCharts, 60);
+            // SOLUCIÓN AL BUG DEL CANVAS: Forzar redimensionado al entrar a la pestaña activa
+            if(index === 1) {
+                setTimeout(resizeCharts, 50);
+            }
         }
 
         function resizeCharts() {
             ['chart-dist', 'chart-rpm', 'chart-servo'].forEach(id => {
                 const canvas = document.getElementById(id);
-                if(canvas) {
+                if(canvas && canvas.parentElement) {
                     canvas.width = canvas.parentElement.clientWidth;
                     canvas.height = canvas.parentElement.clientHeight;
                 }
@@ -527,18 +534,31 @@
 
         function draw(id, data, max, color) {
             const canvas = document.getElementById(id);
-            if(!canvas || canvas.width === 0) return;
+            if(!canvas || canvas.width === 0 || canvas.height === 0) return;
             const ctx = canvas.getContext('2d');
             const W = canvas.width, H = canvas.height;
             
             ctx.clearRect(0,0,W,H);
+
+            // Rejilla de fondo sutil cyberpunk
+            ctx.strokeStyle = "rgba(0, 240, 255, 0.03)";
+            ctx.lineWidth = 1;
+            for(let i = 0; i < W; i += W/4) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, H); ctx.stroke();
+            }
+
+            if(data.length === 0) return;
+
             ctx.beginPath();
             ctx.strokeStyle = color;
             ctx.lineWidth = 2.5;
+            ctx.lineJoin = "round";
+            ctx.lineCap = "round";
             
             data.forEach((val, i) => {
                 const x = (W / (maxPoints - 1)) * i;
-                const y = H - (val / max * H * 0.75) - 12;
+                // Dejar margen superior/inferior para que la línea no se corte
+                const y = H - ((val / max) * (H * 0.70)) - (H * 0.15);
                 if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
             });
             ctx.stroke();
@@ -558,7 +578,16 @@
             indicator.innerText = "LIVE: TELEMETRÍA ONLINE";
             indicator.style.color = "#00f0ff";
             indicator.style.borderColor = "#00f0ff";
+            indicator.style.background = "rgba(0, 240, 255, 0.1)";
             client.subscribe(AIO_FEED);
+        });
+
+        client.on('error', (err) => {
+            const indicator = document.getElementById('status-mqtt');
+            indicator.innerText = "❌ ERROR DE CREDENCIALES";
+            indicator.style.color = "#ff2a2a";
+            indicator.style.borderColor = "#ff2a2a";
+            indicator.style.background = "rgba(255, 42, 42, 0.1)";
         });
 
         client.on('message', (topic, msg) => {
@@ -592,8 +621,14 @@
                     if(arr.length > maxPoints) arr.shift();
                 });
 
+                // Solo dibujar si la pestaña de telemetría está visible
                 if(activeTabIdx === 1) drawAll();
             }
+        });
+
+        // Asegurar que responda bien a los cambios de tamaño de ventana del navegador
+        window.addEventListener('resize', () => {
+            if(activeTabIdx === 1) resizeCharts();
         });
     </script>
 </body>
