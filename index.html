@@ -1,245 +1,601 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telemetría - Ingeniería Automotriz</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
+    <title>Console - Carrito Evasor con RF</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-            background-color: #0a0a0a;
-            color: #ffffff;
-            margin: 0;
-            padding: 20px;
+        :root {
+            --bg-color: #060a13;
+            --panel-bg: rgba(13, 22, 38, 0.75);
+            --border-cyan: #00f0ff;
+            --accent-red: #ff2a2a;
+            --text-main: #ffffff;
+            --text-muted: #6b7c96;
+            --panel-border: rgba(0, 240, 255, 0.15);
         }
-        header {
-            text-align: center;
-            padding: 15px;
-            background: linear-gradient(145deg, #121212, #000000);
-            border-bottom: 3px solid #ff0000;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.2);
+        
+        body { 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-main);
+            margin: 0; 
+            padding: 0;
+            overflow-x: hidden;
         }
-        header h1 {
-            margin: 0;
-            font-size: 1.8rem;
-            color: #ffffff;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-        .status-badge {
-            display: inline-block;
-            margin-top: 8px;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            background-color: #222;
-            color: #aaa;
-            border: 1px solid #444;
-        }
-        .status-connected { background-color: rgba(0, 255, 0, 0.1); color: #00ff00; border-color: #00ff00; }
-        .status-error { background-color: rgba(255, 0, 0, 0.1); color: #ff0000; border-color: #ff0000; }
-        .status-connecting { background-color: rgba(255, 165, 0, 0.1); color: #ffa500; border-color: #ffa500; }
 
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .card {
-            background-color: #141414;
-            border: 1px solid #262626;
-            border-radius: 8px;
-            padding: 20px;
+        /* --- BANNER SUPERIOR ASIMÉTRICO --- */
+        .header-banner {
+            background: linear-gradient(135deg, var(--accent-red) 0%, #111 25%, #111 75%, var(--panel-border) 100%);
+            padding: 15px 20px;
             text-align: center;
-            transition: transform 0.2s, box-shadow 0.2s;
+            border-bottom: 2px solid var(--accent-red);
             position: relative;
-            overflow: hidden;
+            z-index: 5000;
         }
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background-color: #ff0000;
+
+        .header-banner h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
         }
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.1);
-        }
-        .card .title {
-            font-size: 0.9rem;
-            color: #888888;
+
+        /* --- BARRA DE ESTADO COMPACTA --- */
+        .status-indicator {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 10px;
+            border: 1px solid var(--border-cyan);
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-top: 5px;
+            background: rgba(0, 240, 255, 0.05);
         }
-        .card .value {
-            font-size: 2.2rem;
+
+        /* --- PESTAÑAS SUPERIORES --- */
+        .hud-tabs-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 25px auto;
+            max-width: 1000px;
+        }
+
+        .hud-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 4px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .hud-tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 24px;
+            font-size: 0.75rem;
             font-weight: bold;
-            color: #ffffff;
-            font-family: monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        .card .unit {
-            font-size: 1rem;
-            color: #ff0000;
-            margin-left: 5px;
+
+        .hud-tab-btn.active {
+            color: var(--text-main);
+            background: linear-gradient(to bottom, rgba(255, 42, 42, 0.2), transparent);
+            border-bottom: 2px solid var(--accent-red);
         }
-        .raw-data-box {
-            max-width: 1200px;
-            margin: 25px auto 0 auto;
-            background-color: #111;
-            border: 1px solid #222;
+
+        /* --- FLECHAS LATERALES FLOTANTES MASIVAS --- */
+        .hud-massive-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--accent-red);
+            font-size: 8rem; /* Tamaño masivo para un efecto dramático */
+            font-weight: 100; /* Delgadas pero intensas */
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease-in-out;
+            text-shadow: 0 0 30px rgba(255, 42, 42, 0.9);
+            z-index: 10000; /* Sobre todo el contenido */
+            padding: 20px;
+        }
+
+        /* Posicionamiento más hacia el centro (menos a la orilla) */
+        .massive-arrow-left {
+            left: 80px; /* Separación considerable de la orilla izquierda */
+        }
+
+        .massive-arrow-right {
+            right: 80px; /* Separación considerable de la orilla derecha */
+        }
+
+        .hud-massive-arrow:hover {
+            color: var(--text-main);
+            text-shadow: 0 0 30px rgba(0, 240, 255, 0.9);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .hud-massive-arrow:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        /* --- CONTENIDOS (Max-width ajustado para no chocar con flechas) --- */
+        .tab-content { 
+            display: none; 
+            width: 100%; 
+            max-width: 1100px; /* Reducido un poco para dar espacio a las flechas masivas */
+            margin: 0 auto; 
+            padding: 0 20px; 
+            box-sizing: border-box; 
+            position: relative;
+            z-index: 10;
+        }
+        
+        .tab-content.active { display: block; }
+
+        /* --- PESTAÑA 1: SHOWCASE DEL VEHÍCULO --- */
+        .showcase-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .robot-viewport {
+            position: relative;
+            width: 100%;
+            max-width: 380px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .robot-viewport img {
+            width: 100%;
+            height: auto;
+            z-index: 2;
+            filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.15));
+        }
+
+        .laser-scanner {
+            position: absolute;
+            width: 140%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--border-cyan), transparent);
+            box-shadow: 0 0 12px var(--border-cyan);
+            z-index: 3;
+            animation: scanMove 4s infinite ease-in-out;
+        }
+
+        @keyframes scanMove {
+            0% { top: 15%; opacity: 0.3; }
+            50% { top: 85%; opacity: 1; }
+            100% { top: 15%; opacity: 0.3; }
+        }
+
+        .specs-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            width: 100%;
+            border-radius: 4px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+        }
+
+        .panel-title {
+            color: var(--accent-red);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-title::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: var(--accent-red);
+        }
+
+        /* ESTRUCTURA DE BLOQUES PANORÁMICA 4x2 */
+        .specs-blocks-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            text-align: left;
+        }
+
+        .spec-block-item {
+            background: rgba(6, 10, 19, 0.6);
+            padding: 14px 16px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        .spec-block-item.border-red { border-left: 3px solid var(--accent-red); }
+        .spec-block-item.border-cyan { border-left: 3px solid var(--border-cyan); }
+
+        .spec-block-item:hover {
+            background: rgba(13, 22, 38, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .spec-block-label {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .spec-block-value {
+            font-weight: bold;
+            font-size: 0.88rem;
+            color: var(--text-main);
+        }
+
+        .highlight-red { color: var(--accent-red); font-family: monospace; }
+        .highlight-cyan { color: var(--border-cyan); font-family: monospace; }
+
+        /* --- PESTAÑA 2: TELEMETRÍA --- */
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .telemetry-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 4px;
+            padding: 20px;
+        }
+
+        .big-numeric {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--border-cyan);
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .chart-box {
+            height: 100px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .ir-row { display: flex; justify-content: space-between; gap: 15px; margin-top: 25px; }
+        .ir-sensor {
+            flex: 1;
             padding: 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            border-radius: 4px;
         }
-        .raw-data-box span { color: #ff0000; }
+        .ir-sensor.active-line {
+            background: rgba(0, 240, 255, 0.1);
+            border-color: var(--border-cyan);
+            color: var(--border-cyan);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        /* --- PESTAÑA 3: ANÁLISIS --- */
+        .formula-container {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            padding: 30px;
+            border-radius: 4px;
+            margin-bottom: 40px;
+        }
+
+        .math-display {
+            font-size: 1.6rem;
+            padding: 25px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin: 20px auto;
+            max-width: 600px;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .fraccion { display: inline-flex; flex-direction: column; vertical-align: middle; padding: 0 5px; }
+        .numerador { border-bottom: 2px solid white; padding-bottom: 2px; }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 1200px) {
+            .hud-massive-arrow { font-size: 5rem; left: 20px; right: 20px; } /* Más pequeñas y a la orilla en pantallas medianas */
+            .tab-content { max-width: 950px; }
+        }
+        @media (max-width: 992px) {
+            .specs-blocks-grid { grid-template-columns: repeat(2, 1fr); }
+            .hud-massive-arrow { font-size: 4rem; left: 10px; right: 10px; }
+        }
+        @media (max-width: 768px) {
+            .hud-tabs { display: none; } /* Ocultar pestañas de texto en móvil */
+            .specs-blocks-grid { grid-template-columns: 1fr; }
+            .hud-massive-arrow { font-size: 3rem; left: 5px; right: 5px; background: rgba(0,0,0,0.4); border-radius: 50%; width: 50px; height: 50px;} /* Flechas de botón táctil en móvil */
+        }
     </style>
 </head>
 <body>
 
-    <header>
+    <div class="header-banner">
         <h1>Carrito Evasor de Obstáculos con RF</h1>
-        <div id="status" class="status-badge status-connecting">CONECTANDO A ADAFRUIT IO...</div>
-    </header>
+        <div id="status-mqtt" class="status-indicator">📡 CONECTANDO TELEMETRÍA...</div>
+    </div>
 
-    <div class="dashboard">
-        <div class="card">
-            <div class="title">Distancia Ultrasónico</div>
-            <div class="value" id="val-distancia">0<span class="unit">cm</span></div>
-        </div>
+    <button class="hud-massive-arrow massive-arrow-left" onclick="adjustTab(-1)">&#10216;</button>
+    <button class="hud-massive-arrow massive-arrow-right" onclick="adjustTab(1)">&#10217;</button>
 
-        <div class="card">
-            <div class="title">Ángulo Servo</div>
-            <div class="value" id="val-servo">0<span class="unit">°</span></div>
-        </div>
-
-        <div class="card">
-            <div class="title">Sensor IR Izquierdo</div>
-            <div class="value" id="val-ir-izq">--</div>
-        </div>
-
-        <div class="card">
-            <div class="title">Sensor IR Derecho</div>
-            <div class="value" id="val-ir-der">--</div>
-        </div>
-
-        <div class="card">
-            <div class="title">Velocidad Motores</div>
-            <div class="value" id="val-rpm">0<span class="unit">RPM</span></div>
+    <div class="hud-tabs-container">
+        <div class="hud-tabs">
+            <button class="hud-tab-btn active" id="btn-0" onclick="switchTab(0)">01 // Ficha Técnica</button>
+            <button class="hud-tab-btn" id="btn-1" onclick="switchTab(1)">02 // Telemetría en Vivo</button>
+            <button class="hud-tab-btn" id="btn-2" onclick="switchTab(2)">03 // Análisis Dinámico</button>
         </div>
     </div>
 
-    <div class="raw-data-box">
-        >> Último paquete recibido (Cadena RF): <span id="raw-string">Esperando datos por transmisión...</span>
+    <div id="tab-0" class="tab-content active">
+        <div class="showcase-container">
+            <div class="robot-viewport">
+                <div class="laser-scanner"></div>
+                <img src="carrito.png" alt="Prototipo Robótico">
+            </div>
+
+            <div class="specs-panel">
+                <h4 class="panel-title">Especificaciones del Prototipo</h4>
+                <div class="specs-blocks-grid">
+                    
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Microcontrolador Maestro</span>
+                        <span class="spec-block-value highlight-red">ESP32 DevKit V1</span>
+                    </div>
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Procesamiento Esclavo</span>
+                        <span class="spec-block-value highlight-cyan">Arduino ATmega328P</span>
+                    </div>
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Transmisión Inalámbrica</span>
+                        <span class="spec-block-value">Radio HC-12 (433MHz)</span>
+                    </div>
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Detección Obstáculos</span>
+                        <span class="spec-block-value">HC-SR04 Ultrasónico</span>
+                    </div>
+                    
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Diámetro de Rueda</span>
+                        <span class="spec-block-value">6.60 cm</span>
+                    </div>
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Resolución Encoder</span>
+                        <span class="spec-block-value">20 Ranuras / Vuelta</span>
+                    </div>
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Seguidor de Línea</span>
+                        <span class="spec-block-value">Dual IR TCRT5000</span>
+                    </div>
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Actuador Evasión</span>
+                        <span class="spec-block-value">Micro Servo SG90</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script type="text/javascript">
-        // --- CREDENCIALES CONFIGURADAS DIRECTAMENTE ---
-        const AIO_USERNAME = "dieglot";
-        const AIO_KEY      = "aio_gkYf00LGwIMKpubC1PnQXdQ9MyMA"; 
-        const AIO_FEED     = AIO_USERNAME + "/feeds/telemetria";
+    <div id="tab-1" class="tab-content">
+        <div class="telemetry-grid">
+            <div class="telemetry-card">
+                <h4 class="panel-title">Distancia de Obstáculo</h4>
+                <div id="val-dist" class="big-numeric">--</div>
+                <div class="chart-box"><canvas id="chart-dist"></canvas></div>
+            </div>
+            <div class="telemetry-card">
+                <h4 class="panel-title">Tacómetro (RPM)</h4>
+                <div id="val-rpm" class="big-numeric">--</div>
+                <div class="chart-box"><canvas id="chart-rpm"></canvas></div>
+            </div>
+            <div class="telemetry-card">
+                <h4 class="panel-title">Barrido Servo HC-SR04</h4>
+                <div id="val-servo" class="big-numeric" style="color: var(--accent-red)">90&deg;</div>
+                <div class="chart-box"><canvas id="chart-servo"></canvas></div>
+            </div>
+            <div class="telemetry-card">
+                <h4 class="panel-title">Detección Infrarroja (Piso)</h4>
+                <div class="ir-row">
+                    <div id="ir-izq" class="ir-sensor">MÓDULO IZQUIERDO</div>
+                    <div id="ir-der" class="ir-sensor">MÓDULO DERECHO</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        // Servidor Seguro WebSockets de Adafruit IO
-        const MQTT_SERVER  = "io.adafruit.com";
-        const MQTT_PORT    = 443; 
-        const CLIENT_ID    = "web_dashboard_" + Math.random().toString(16).substr(2, 8);
-
-        // Inicializamos el cliente Paho MQTT
-        const client = new Paho.MQTT.Client(MQTT_SERVER, MQTT_PORT, CLIENT_ID);
-
-        // Configuración de callbacks
-        client.onConnectionLost = onConnectionLost;
-        client.onMessageArrived = onMessageArrived;
-
-        const options = {
-            useSSL: true,
-            userName: AIO_USERNAME,
-            password: AIO_KEY,
-            onSuccess: onConnect,
-            onFailure: onFailure,
-            reconnect: true,
-            keepAliveInterval: 30
-        };
-
-        // Conectar al Broker
-        client.connect(options);
-
-        function onConnect() {
-            console.log("Conectado con éxito a Adafruit IO MQTT");
-            const statusBadge = document.getElementById("status");
-            statusBadge.innerText = "ONLINE - MONITOREANDO CARRO";
-            statusBadge.className = "status-badge status-connected";
+    <div id="tab-2" class="tab-content">
+        <div class="formula-container">
+            <h4 class="panel-title">Cálculo Cinemático de Frenado (ISO)</h4>
+            <p style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">Evaluación de distancia mínima de parada basada en velocidad periférica.</p>
             
-            // Suscribirse al canal donde el ESP32 publica
+            <div class="math-display">
+                S<sub>b</sub> = (<span id="iso-f1" style="color:var(--border-cyan)">v</span> &middot; <span style="color:rgba(255,255,255,0.6)">0.05</span>) + 
+                <div class="fraccion">
+                    <div class="numerador">(<span id="iso-f2" style="color:var(--border-cyan)">v</span>)<sup>2</sup></div>
+                    <div>2 &middot; <span style="color:var(--accent-red)">1.50</span></div>
+                </div>
+                + <span style="color:rgba(0, 240, 255, 0.6)">0.10</span>
+            </div>
+
+            <div class="specs-panel" style="margin: 20px auto;">
+                <h4 class="panel-title">Parámetros de Entrada Activos</h4>
+                <div class="specs-blocks-grid" style="grid-template-columns: repeat(2, 1fr);">
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Velocidad Lineal Calculada (v)</span>
+                        <span id="iso-v" class="spec-block-value highlight-cyan">0.00 m/s</span>
+                    </div>
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Tiempo de Retraso de Red (t)</span>
+                        <span class="spec-block-value">0.05 s</span>
+                    </div>
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Desaceleración Mecánica (a)</span>
+                        <span class="spec-block-value">1.50 m/s²</span>
+                    </div>
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Margen Crítico ISO (Sm)</span>
+                        <span class="spec-block-value">0.10 m</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-top: 20px;">Distancia de Parada Mínima Exigida:</div>
+            <div id="iso-res" class="big-numeric" style="color: var(--accent-red); margin: 5px 0;">-- cm</div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURACIÓN MQTT ADAFRUIT
+        const AIO_USER = "diegLOT";
+        const AIO_KEY  = "aio_BjKV42vCquxCE2cBAhTOPqfhmmmf";
+        const AIO_FEED = "diegLOT/feeds/telemetria";
+        const BROKER   = "wss://io.adafruit.com:443/mqtt";
+
+        let activeTabIdx = 0;
+        const totalTabs = 3;
+
+        let storeDist = [], storeRPM = [], storeServo = [];
+        const maxPoints = 20;
+
+        function adjustTab(direction) {
+            activeTabIdx = (activeTabIdx + direction + totalTabs) % totalTabs;
+            switchTab(activeTabIdx);
+        }
+
+        function switchTab(index) {
+            activeTabIdx = index;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.hud-tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`tab-${index}`).classList.add('active');
+            const targetBtn = document.getElementById(`btn-${index}`);
+            if(targetBtn) targetBtn.classList.add('active');
+
+            if(index === 1) setTimeout(resizeCharts, 60);
+        }
+
+        function resizeCharts() {
+            ['chart-dist', 'chart-rpm', 'chart-servo'].forEach(id => {
+                const canvas = document.getElementById(id);
+                if(canvas) {
+                    canvas.width = canvas.parentElement.clientWidth;
+                    canvas.height = canvas.parentElement.clientHeight;
+                }
+            });
+            drawAll();
+        }
+
+        function draw(id, data, max, color) {
+            const canvas = document.getElementById(id);
+            if(!canvas || canvas.width === 0) return;
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width, H = canvas.height;
+            
+            ctx.clearRect(0,0,W,H);
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2.5;
+            
+            data.forEach((val, i) => {
+                const x = (W / (maxPoints - 1)) * i;
+                const y = H - (val / max * H * 0.75) - 12;
+                if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+        }
+
+        function drawAll() {
+            draw('chart-dist', storeDist, 150, '#00f0ff');
+            draw('chart-rpm', storeRPM, 250, '#ff2a2a');
+            draw('chart-servo', storeServo, 180, '#ffaa00');
+        }
+
+        // CONEXIÓN MQTT
+        const client = mqtt.connect(BROKER, { username: AIO_USER, password: AIO_KEY });
+
+        client.on('connect', () => {
+            const indicator = document.getElementById('status-mqtt');
+            indicator.innerText = "LIVE: TELEMETRÍA ONLINE";
+            indicator.style.color = "#00f0ff";
+            indicator.style.borderColor = "#00f0ff";
             client.subscribe(AIO_FEED);
-        }
+        });
 
-        function onFailure(message) {
-            console.log("Fallo de conexión: " + message.errorMessage);
-            const statusBadge = document.getElementById("status");
-            statusBadge.innerText = "❌ ERROR DE CREDENCIALES O SERVIDOR";
-            statusBadge.className = "status-badge status-error";
-        }
+        client.on('message', (topic, msg) => {
+            const raw = msg.toString().split(',');
+            if(raw.length >= 5) {
+                const d = parseInt(raw[0]), s = parseInt(raw[1]), il = parseInt(raw[2]), ir = parseInt(raw[3]), r = parseInt(raw[4]);
 
-        function onConnectionLost(responseObject) {
-            if (responseObject.errorCode !== 0) {
-                console.log("Conexión perdida: " + responseObject.errorMessage);
-                const statusBadge = document.getElementById("status");
-                statusBadge.innerText = "⚠️ DESCONECTADO - RECONECTANDO...";
-                statusBadge.className = "status-badge status-connecting";
+                // Telemetría Dinámica
+                document.getElementById('val-dist').innerText = d + " cm";
+                document.getElementById('val-rpm').innerText = r;
+                document.getElementById('val-servo').innerText = s + "°";
+
+                // Mapeo Infrarrojo
+                document.getElementById('ir-izq').className = il ? 'ir-sensor active-line' : 'ir-sensor';
+                document.getElementById('ir-der').className = ir ? 'ir-sensor active-line' : 'ir-sensor';
+
+                // Física Cinemática
+                const v = r * 0.003455;
+                const sb = ((v * 0.05) + (Math.pow(v, 2) / (2 * 1.5)) + 0.10) * 100;
+                
+                const vStr = v.toFixed(2);
+                document.getElementById('iso-v').innerText = vStr + " m/s";
+                document.getElementById('iso-f1').innerText = vStr;
+                document.getElementById('iso-f2').innerText = vStr;
+                document.getElementById('iso-res').innerText = sb.toFixed(1) + " cm";
+
+                // Historial de Gráficos
+                [storeDist, storeRPM, storeServo].forEach((arr, i) => {
+                    const val = [d, r, s][i];
+                    arr.push(val);
+                    if(arr.length > maxPoints) arr.shift();
+                });
+
+                if(activeTabIdx === 1) drawAll();
             }
-        }
-
-        // Procesar los datos que envía el ESP32 en tiempo real
-        function onMessageArrived(message) {
-            const payload = message.payloadString.trim();
-            document.getElementById("raw-string").innerText = payload;
-
-            // Formato esperado enviado por el ESP32: "Distancia,Servo,IR_Izq,IR_Der,RPM"
-            // Ejemplo: "57,90,1,1,0"
-            const datos = payload.split(",");
-
-            if (datos.length === 5) {
-                const distancia = datos[0];
-                const servo     = datos[1];
-                const irIzq     = parseInt(datos[2]);
-                const irDer     = parseInt(datos[3]);
-                const rpm       = datos[4];
-
-                // Actualizar los elementos visuales en el HTML
-                document.getElementById("val-distancia").innerHTML = `${distancia}<span class="unit">cm</span>`;
-                document.getElementById("val-servo").innerHTML     = `${servo}<span class="unit">°</span>`;
-                document.getElementById("val-rpm").innerHTML       = `${rpm}<span class="unit">RPM</span>`;
-
-                // Procesamiento de lectura de sensores de línea IR (1 = Línea/Objeto, 0 = Vacío)
-                const txtIrIzq = document.getElementById("val-ir-izq");
-                if (irIzq === 1) {
-                    txtIrIzq.innerText = "DETECTADO";
-                    txtIrIzq.style.color = "#ff0000";
-                } else {
-                    txtIrIzq.innerText = "LIBRE";
-                    txtIrIzq.style.color = "#00ff00";
-                }
-
-                const txtIrDer = document.getElementById("val-ir-der");
-                if (irDer === 1) {
-                    txtIrDer.innerText = "DETECTADO";
-                    txtIrDer.style.color = "#ff0000";
-                } else {
-                    txtIrDer.innerText = "LIBRE";
-                    txtIrDer.style.color = "#00ff00";
-                }
-            }
-        }
+        });
     </script>
 </body>
 </html>
