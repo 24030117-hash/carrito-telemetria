@@ -101,25 +101,24 @@
             background: none;
             border: none;
             color: var(--accent-red);
-            font-size: 8rem; /* Tamaño masivo para un efecto dramático */
-            font-weight: 100; /* Delgadas pero intensas */
+            font-size: 8rem; 
+            font-weight: 100; 
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease-in-out;
             text-shadow: 0 0 30px rgba(255, 42, 42, 0.9);
-            z-index: 10000; /* Sobre todo el contenido */
+            z-index: 10000; 
             padding: 20px;
         }
 
-        /* Posicionamiento más hacia el centro (menos a la orilla) */
         .massive-arrow-left {
-            left: 80px; /* Separación considerable de la orilla izquierda */
+            left: 80px; 
         }
 
         .massive-arrow-right {
-            right: 80px; /* Separación considerable de la orilla derecha */
+            right: 80px; 
         }
 
         .hud-massive-arrow:hover {
@@ -132,11 +131,11 @@
             transform: translateY(-50%) scale(0.95);
         }
 
-        /* --- CONTENIDOS (Max-width ajustado para no chocar con flechas) --- */
+        /* --- CONTENIDOS --- */
         .tab-content { 
             display: none; 
             width: 100%; 
-            max-width: 1100px; /* Reducido un poco para dar espacio a las flechas masivas */
+            max-width: 1100px; 
             margin: 0 auto; 
             padding: 0 20px; 
             box-sizing: border-box; 
@@ -219,7 +218,6 @@
             background: var(--accent-red);
         }
 
-        /* ESTRUCTURA DE BLOQUES PANORÁMICA 4x2 */
         .specs-blocks-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -335,7 +333,7 @@
 
         /* RESPONSIVE DESIGN */
         @media (max-width: 1200px) {
-            .hud-massive-arrow { font-size: 5rem; left: 20px; right: 20px; } /* Más pequeñas y a la orilla en pantallas medianas */
+            .hud-massive-arrow { font-size: 5rem; left: 20px; right: 20px; } 
             .tab-content { max-width: 950px; }
         }
         @media (max-width: 992px) {
@@ -343,9 +341,9 @@
             .hud-massive-arrow { font-size: 4rem; left: 10px; right: 10px; }
         }
         @media (max-width: 768px) {
-            .hud-tabs { display: none; } /* Ocultar pestañas de texto en móvil */
+            .hud-tabs { display: none; } 
             .specs-blocks-grid { grid-template-columns: 1fr; }
-            .hud-massive-arrow { font-size: 3rem; left: 5px; right: 5px; background: rgba(0,0,0,0.4); border-radius: 50%; width: 50px; height: 50px;} /* Flechas de botón táctil en móvil */
+            .hud-massive-arrow { font-size: 3rem; left: 5px; right: 5px; background: rgba(0,0,0,0.4); border-radius: 50%; width: 50px; height: 50px;} 
         }
     </style>
 </head>
@@ -361,7 +359,7 @@
 
     <div class="hud-tabs-container">
         <div class="hud-tabs">
-            <button class="hud-tab-btn active" id="btn-0" onclick="switchTab(0)">01 // Ficha Técnica</button>
+            <button class="hud-tab-btn active" id="btn-0" onclick="switchTab(0)">01 // Ficha Técnico</button>
             <button class="hud-tab-btn" id="btn-1" onclick="switchTab(1)">02 // Telemetría en Vivo</button>
             <button class="hud-tab-btn" id="btn-2" onclick="switchTab(2)">03 // Análisis Dinámico</button>
         </div>
@@ -486,10 +484,10 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN MQTT ADAFRUIT
-        const AIO_USER = "diegLOT";
-        const AIO_KEY  = "aio_BjKV42vCquxCE2cBAhTOPqfhmmmf";
-        const AIO_FEED = "diegLOT/feeds/telemetria";
+        // CONFIGURACIÓN MQTT ADAFRUIT CORREGIDA
+        const AIO_USER = "dieglot"; // 👈 Corregido a minúsculas obligatorias
+        const AIO_KEY  = "aio_gkYf00LGwIMKpubC1PnQXdQ9MyMA"; // 👈 Llave nueva y activa integrada
+        const AIO_FEED = "dieglot/feeds/telemetria"; // 👈 Canal alineado con el usuario correcto
         const BROKER   = "wss://io.adafruit.com:443/mqtt";
 
         let activeTabIdx = 0;
