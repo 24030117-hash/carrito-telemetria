@@ -94,7 +94,7 @@
             border-bottom: 2px solid var(--accent-red);
         }
 
-        /* --- FLECHAS LATERALES FLOTANTES MASIVAS --- */
+        /* --- FLECHAS LATERALES FLOTANTES --- */
         .hud-massive-arrow {
             position: fixed;
             top: 50%;
@@ -283,24 +283,94 @@
             margin-top: 10px;
         }
 
-        .ir-row { display: flex; justify-content: space-between; gap: 15px; margin-top: 25px; }
-        .ir-sensor {
-            flex: 1;
-            padding: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.05);
-            color: var(--text-muted);
+        /* --- REDISEÑO: SISTEMA DE CHASIS VECTORIAL PARA IR --- */
+        .chassis-viewport {
+            height: 130px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: auto;
+            background: rgba(0, 0, 0, 0.25);
             border-radius: 4px;
-            text-align: center;
+            border: 1px dashed rgba(255,255,255,0.03);
         }
-        .ir-sensor.active-line {
-            background: rgba(0, 240, 255, 0.1);
-            border-color: var(--border-cyan);
-            color: var(--border-cyan);
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+
+        /* Silueta central del carro */
+        .vector-car {
+            width: 50px;
+            height: 80px;
+            background: #1c2738;
+            border-radius: 6px;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.08);
         }
+
+        /* Ruedas genéricas */
+        .car-wheel {
+            position: absolute;
+            width: 10px;
+            height: 18px;
+            background: #0d131f;
+            border-radius: 2px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .w-fl { top: 10px; left: -11px; }
+        .w-fr { top: 10px; right: -11px; }
+        .w-rl { bottom: 10px; left: -11px; }
+        .w-rr { bottom: 10px; right: -11px; }
+
+        /* Faros de los Sensores IR Frontales */
+        .ir-faro {
+            position: absolute;
+            top: -4px;
+            width: 8px;
+            height: 8px;
+            background: #121924;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.2s ease;
+        }
+        .ir-faro-izq { left: 8px; }
+        .ir-faro-der { right: 8px; }
+
+        /* Proyecciones de haces de luz cónicos */
+        .ir-faro::after {
+            content: '';
+            position: absolute;
+            top: -35px;
+            left: -16px;
+            width: 40px;
+            height: 35px;
+            background: radial-gradient(ellipse at bottom, rgba(0, 240, 255, 0.4) 0%, transparent 70%);
+            clip-path: polygon(40% 100%, 60% 100%, 100% 0%, 0% 0%);
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            pointer-events: none;
+        }
+
+        /* Estado Encendido (Línea Detectada) */
+        .ir-faro.active-line {
+            background: var(--border-cyan);
+            box-shadow: 0 0 12px var(--border-cyan);
+            border-color: #fff;
+        }
+        .ir-faro.active-line::after {
+            opacity: 1;
+        }
+
+        /* Etiquetas de Texto flotantes */
+        .ir-label-tag {
+            position: absolute;
+            font-size: 0.62rem;
+            font-family: monospace;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            transition: color 0.2s;
+        }
+        .tag-izq { left: 20px; text-align: left; }
+        .tag-der { right: 20px; text-align: right; }
+        .active-text { color: var(--border-cyan); font-weight: bold; }
 
         /* --- PESTAÑA 3: ANÁLISIS --- */
         .formula-container {
@@ -346,7 +416,7 @@
 
     <div class="hud-tabs-container">
         <div class="hud-tabs">
-            <button class="hud-tab-btn active" id="btn-0" onclick="switchTab(0)">01 // Ficha Técnica</button>
+            <button class="hud-tab-btn active" id="btn-0" onclick="switchTab(0)">01 // Ficha Técnico</button>
             <button class="hud-tab-btn" id="btn-1" onclick="switchTab(1)">02 // Telemetría en Vivo</button>
             <button class="hud-tab-btn" id="btn-2" onclick="switchTab(2)">03 // Análisis Dinámico</button>
         </div>
@@ -402,9 +472,22 @@
 
             <div class="telemetry-card">
                 <h4 class="panel-title">Detección Infrarroja (Piso)</h4>
-                <div class="ir-row">
-                    <div id="ir-izq" class="ir-sensor">MÓDULO IZQUIERDO</div>
-                    <div id="ir-der" class="ir-sensor">MÓDULO DERECHO</div>
+                <div id="val-ir-status" class="big-numeric" style="font-size: 1.5rem; margin: 5px 0 10px 0; height: 24px; color: var(--text-muted)">TRACKING...</div>
+                
+                <div class="chassis-viewport">
+                    <div class="ir-label-tag tag-izq" id="txt-ir-izq">SENSOR<br>IZQUIERDO<br><span id="state-izq">OFF</span></div>
+                    
+                    <div class="vector-car">
+                        <div class="car-wheel w-fl"></div>
+                        <div class="car-wheel w-fr"></div>
+                        <div class="car-wheel w-rl"></div>
+                        <div class="car-wheel w-rr"></div>
+                        
+                        <div id="node-ir-izq" class="ir-faro ir-faro-izq"></div>
+                        <div id="node-ir-der" class="ir-faro ir-faro-der"></div>
+                    </div>
+                    
+                    <div class="ir-label-tag tag-der" id="txt-ir-der">SENSOR<br>DERECHO<br><span id="state-der">OFF</span></div>
                 </div>
             </div>
         </div>
@@ -441,7 +524,7 @@
         
         let currentRPMValue = 0; 
         let currentDistanceValue = 60; 
-        let currentServoValue = 90;   // Ángulo inicial por defecto (Centro)
+        let currentServoValue = 90;   
         let waveOffset = 0;           
 
         function adjustTab(direction) {
@@ -528,7 +611,7 @@
             ctx.fillRect(wallX, sensorY - 45, 8, 90); ctx.globalAlpha = 1.0;
         }
 
-        // --- 2. TACÓMETRO DE AGUJA (RPM) ---
+        // --- 2. TACÓMETRO DE REVOLUCIONES (RPM) ---
         function drawGauge(id, value, maxVal) {
             const canvas = document.getElementById(id);
             if (!canvas || canvas.width === 0) return;
@@ -571,7 +654,7 @@
             ctx.fillStyle = 'var(--text-muted)'; ctx.font = '9px system-ui'; ctx.fillText('RPM', cx, cy + 38);
         }
 
-        // --- 3. NUEVO: VISOR DE BARRIDO ANGULAR EN ABANICO (SERVO) ---
+        // --- 3. VISOR DE BARRIDO ANGULAR EN ABANICO (SERVO) ---
         function drawServoAngleGauge() {
             const canvas = document.getElementById('gauge-servo-angle');
             if (!canvas || canvas.width === 0) return;
@@ -579,66 +662,36 @@
             const W = canvas.width, H = canvas.height;
 
             ctx.clearRect(0, 0, W, H);
+            const cx = W / 2, cy = H - 15, radius = Math.min(W / 2, H) * 0.85;
 
-            // Posicionamiento en la base central baja de la tarjeta gráfica
-            const cx = W / 2;
-            const cy = H - 15;
-            const radius = Math.min(W / 2, H) * 0.85;
-
-            // Arco exterior de fondo guía del abanico (0 a 180 grados)
             ctx.beginPath();
             ctx.arc(cx, cy, radius, Math.PI, 2 * Math.PI, false);
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-            ctx.stroke();
+            ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)'; ctx.stroke();
 
-            // Dibujar Ticks y etiquetas cada 45 grados (0, 45, 90, 135, 180)
             const anglesTicks = [0, 45, 90, 135, 180];
             anglesTicks.forEach(tickDeg => {
-                // Mapear los grados a radianes invertidos para que 0 sea izquierda y 180 derecha
                 const rad = Math.PI + (Math.PI * (tickDeg / 180));
-                
                 ctx.beginPath();
                 ctx.moveTo(cx + (radius - 4) * Math.cos(rad), cy + (radius - 4) * Math.sin(rad));
                 ctx.lineTo(cx + radius * Math.cos(rad), cy + radius * Math.sin(rad));
-                ctx.lineWidth = 1.5;
-                ctx.strokeStyle = tickDeg === 90 ? 'var(--border-cyan)' : 'var(--text-muted)';
-                ctx.stroke();
+                ctx.lineWidth = 1.5; ctx.strokeStyle = tickDeg === 90 ? 'var(--border-cyan)' : 'var(--text-muted)'; ctx.stroke();
 
-                // Textos guía angulares
-                ctx.fillStyle = 'var(--text-muted)';
-                ctx.font = '8px monospace';
-                ctx.textAlign = 'center';
+                ctx.fillStyle = 'var(--text-muted)'; ctx.font = '8px monospace'; ctx.textAlign = 'center';
                 ctx.fillText(tickDeg + '°', cx + (radius - 14) * Math.cos(rad), cy + (radius - 14) * Math.sin(rad) + 3);
             });
 
-            // Convertir el valor actual en vivo del Servo a radianes
-            // Forzamos un rango seguro entre 0 y 180 grados
             const safeDegrees = Math.min(Math.max(currentServoValue, 0), 180);
             const targetRad = Math.PI + (Math.PI * (safeDegrees / 180));
 
-            // Dibujar el haz de luz semitransparente del radar
-            ctx.beginPath();
-            ctx.moveTo(cx, cy);
+            ctx.beginPath(); ctx.moveTo(cx, cy);
             ctx.arc(cx, cy, radius - 2, targetRad - 0.06, targetRad + 0.06, false);
-            ctx.closePath();
-            ctx.fillStyle = 'rgba(2ff, 170, 0, 0.15)'; // Estela naranja suave
-            ctx.fill();
+            ctx.closePath(); ctx.fillStyle = 'rgba(255, 170, 0, 0.15)'; ctx.fill();
 
-            // Dibujar la aguja de barrido del vector principal
-            ctx.beginPath();
-            ctx.moveTo(cx, cy);
+            ctx.beginPath(); ctx.moveTo(cx, cy);
             ctx.lineTo(cx + (radius - 2) * Math.cos(targetRad), cy + (radius - 2) * Math.sin(targetRad));
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = 'var(--accent-orange)';
-            ctx.lineCap = 'round';
-            ctx.stroke();
+            ctx.lineWidth = 3; ctx.strokeStyle = 'var(--accent-orange)'; ctx.lineCap = 'round'; ctx.stroke();
 
-            // Punto de pivote central de la dirección
-            ctx.beginPath();
-            ctx.arc(cx, cy, 5, 0, 2 * Math.PI);
-            ctx.fillStyle = '#ffffff';
-            ctx.fill();
+            ctx.beginPath(); ctx.arc(cx, cy, 5, 0, 2 * Math.PI); ctx.fillStyle = '#ffffff'; ctx.fill();
         }
 
         // Bucle central de renderizado continuo sincronizado por hardware
@@ -646,7 +699,7 @@
             if (activeTabIdx === 1) {
                 drawUltrasonicRadar();
                 drawGauge('gauge-rpm', currentRPMValue, 250);
-                drawServoAngleGauge(); // Renderizar el abanico del servo
+                drawServoAngleGauge(); 
             }
             requestAnimationFrame(loopGlobalRender);
         }
@@ -669,16 +722,58 @@
 
                 // Volcar variables al estado global de animación
                 currentDistanceValue = d;
-                currentServoValue = s; // Pasamos los grados actuales al renderizador del abanico
+                currentServoValue = s; 
                 currentRPMValue = r;
 
                 // Actualizar textos digitales directos
                 document.getElementById('val-dist').innerText = d + " cm";
                 document.getElementById('val-servo').innerText = s + "°";
 
-                // Cambiar estados lógicos de los infrarrojos de piso
-                document.getElementById('ir-izq').className = il ? 'ir-sensor active-line' : 'ir-sensor';
-                document.getElementById('ir-der').className = ir ? 'ir-sensor active-line' : 'ir-sensor';
+                // --- GESTIÓN INTERACTIVA DEL GEMELO DIGITAL (INFRARROJOS) ---
+                const nodeIzq = document.getElementById('node-ir-izq');
+                const nodeDer = document.getElementById('node-ir-der');
+                const txtIzq  = document.getElementById('txt-ir-izq');
+                const txtDer  = document.getElementById('txt-ir-der');
+                const lblStateIzq = document.getElementById('state-izq');
+                const lblStateDer = document.getElementById('state-der');
+                const mainIrStatus = document.getElementById('val-ir-status');
+
+                // Procesamiento Sensor Izquierdo
+                if (il === 1) {
+                    nodeIzq.className = "ir-faro ir-faro-izq active-line";
+                    txtIzq.className = "ir-label-tag tag-izq active-text";
+                    lblStateIzq.innerText = "LINE DETECTED";
+                } else {
+                    nodeIzq.className = "ir-faro ir-faro-izq";
+                    txtIzq.className = "ir-label-tag tag-izq";
+                    lblStateIzq.innerText = "OFF";
+                }
+
+                // Procesamiento Sensor Derecho
+                if (ir === 1) {
+                    nodeDer.className = "ir-faro ir-faro-der active-line";
+                    txtDer.className = "ir-label-tag tag-der active-text";
+                    lblStateDer.innerText = "LINE DETECTED";
+                } else {
+                    nodeDer.className = "ir-faro ir-faro-der";
+                    txtDer.className = "ir-label-tag tag-der";
+                    lblStateDer.innerText = "OFF";
+                }
+
+                // Título descriptivo rápido según combinación de línea
+                if(il && ir) {
+                    mainIrStatus.innerText = "FULL INTERSECTION";
+                    mainIrStatus.style.color = "var(--border-cyan)";
+                } else if(il) {
+                    mainIrStatus.innerText = "CORRECTING LEFT";
+                    mainIrStatus.style.color = "var(--accent-orange)";
+                } else if(ir) {
+                    mainIrStatus.innerText = "CORRECTING RIGHT";
+                    mainIrStatus.style.color = "var(--accent-orange)";
+                } else {
+                    mainIrStatus.innerText = "TRACKING LINE";
+                    mainIrStatus.style.color = "var(--text-muted)";
+                }
 
                 // Bloque Cinemático Dinámico (Pestaña 3)
                 const v = r * 0.003455;
