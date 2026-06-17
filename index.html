@@ -263,7 +263,6 @@
             overflow: hidden;
         }
 
-        /* Esquina decorativa tipo automotriz */
         .telemetry-card::before {
             content: '';
             position: absolute;
@@ -282,7 +281,7 @@
         }
 
         .chart-box {
-            height: 130px;
+            height: 150px;
             background: rgba(0,0,0,0.4);
             border-radius: 4px;
             overflow: hidden;
@@ -300,7 +299,7 @@
             margin-top: 5px;
         }
 
-        /* --- SISTEMA DE CHASIS VECTORIAL PARA IR --- */
+        /* --- CHASIS VECTORIAL IR --- */
         .chassis-viewport {
             height: 135px;
             position: relative;
@@ -434,7 +433,7 @@
         <div class="showcase-container">
             <div class="robot-viewport">
                 <div class="laser-scanner"></div>
-                <img src="carrito.png" alt="Prototipo Robótico">
+                <img src="carrito.png" alt="Prototipo Robótico" onerror="this.style.display='none'">
             </div>
             <div class="specs-panel">
                 <h4 class="panel-title">Especificaciones del Prototipo</h4>
@@ -472,8 +471,7 @@
             
             <div class="telemetry-card">
                 <h4 class="panel-title" style="color: var(--accent-orange)">Barrido Servo HC-SR04</h4>
-                <div id="val-servo" class="big-numeric" style="color: var(--accent-orange); font-size: 2.2rem; margin-bottom:0;">90&deg;</div>
-                <div class="chart-box">
+                <div class="gauge-box">
                     <canvas id="gauge-servo-angle"></canvas>
                 </div>
             </div>
@@ -533,7 +531,7 @@
         let currentRPMValue = 0; 
         let currentDistanceValue = 60; 
         let currentServoValue = 90;   
-        let waveOffset = 0;           
+        let waveOffset = 0;            
 
         function adjustTab(direction) {
             activeTabIdx = (activeTabIdx + direction + totalTabs) % totalTabs;
@@ -561,7 +559,7 @@
             });
         }
 
-        // --- 1. RADAR INTERACTIVO DE ONDAS ULTRASÓNICAS ---
+        // --- 1. RADAR DE ONDAS ULTRASÓNICAS ---
         function drawUltrasonicRadar() {
             const canvas = document.getElementById('radar-ultrasonic');
             if (!canvas || canvas.width === 0) return;
@@ -619,7 +617,7 @@
             ctx.fillRect(wallX, sensorY - 45, 8, 90); ctx.globalAlpha = 1.0;
         }
 
-        // --- 2. NUEVO: TACÓMETRO HIPERDEPORTIVO CON GRADIENTE DE REVOLUCIONES ---
+        // --- 2. TACÓMETRO HIPERDEPORTIVO CON GRADIENTE ---
         function drawSportsGauge(id, value, maxVal) {
             const canvas = document.getElementById(id);
             if (!canvas || canvas.width === 0) return;
@@ -627,17 +625,16 @@
             const W = canvas.width, H = canvas.height;
             
             ctx.clearRect(0, 0, W, H);
-            // Centrado optimizado y radio compacto deportivo
-            const cx = W / 2, cy = H * 0.72, radius = Math.min(W / 2, H) * 0.72;
+            const cx = W / 2, cy = H * 0.75, radius = Math.min(W / 2, H) * 0.72;
             
-            // 1. ARCO DE FONDO OSCURO GRADUADO
+            // Arco de fondo
             ctx.beginPath();
             ctx.arc(cx, cy, radius, Math.PI * 0.9, Math.PI * 2.1, false);
             ctx.lineWidth = 10; 
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)'; 
             ctx.stroke();
 
-            // 2. ARCO ACTIVO DE COLOR DE REVOLUCIONES MULTI-TONO (DISEÑO COMPETENCIA)
+            // Arco activo graduado
             const valueRatio = Math.min(Math.max(value / maxVal, 0), 1);
             const startAngle = Math.PI * 0.9;
             const endAngle = startAngle + (Math.PI * 1.2 * valueRatio);
@@ -647,99 +644,80 @@
                 ctx.arc(cx, cy, radius, startAngle, endAngle, false);
                 ctx.lineWidth = 10;
                 
-                // Creación del gradiente de velocidad cian -> amarillo -> rojo fuego
                 let grad = ctx.createLinearGradient(cx - radius, cy, cx + radius, cy);
-                grad.addColorStop(0, '#00f0ff');  // Bajas RPM
-                grad.addColorStop(0.6, '#ffee00'); // Medias RPM (Poder)
-                grad.addColorStop(0.9, '#ffaa00'); // Altas RPM (Advertencia)
-                grad.addColorStop(1, '#ff2a2a');   // Zona Roja (Corte)
+                grad.addColorStop(0, '#00f0ff');  
+                grad.addColorStop(0.5, '#ffee00'); 
+                grad.addColorStop(0.8, '#ffaa00'); 
+                grad.addColorStop(1, '#ff2a2a');   
                 
                 ctx.strokeStyle = grad;
                 ctx.stroke();
             }
 
-            // 3. DIAL CENTRAL DE FIBRA DE CARBONO DIGITAL (NÚCLEO NEGRO)
+            // Dial central oscuro
             ctx.beginPath();
-            ctx.arc(cx, cy, radius - 16, 0, 2 * Math.PI);
+            ctx.arc(cx, cy, radius - 14, 0, 2 * Math.PI);
             ctx.fillStyle = '#090e18';
             ctx.fill();
-            ctx.lineWidth = 1.5;
-            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-            ctx.stroke();
 
-            // Sutil anillo interior de luz reflectiva
-            ctx.beginPath();
-            ctx.arc(cx, cy, radius - 22, startAngle, Math.PI * 2.1, false);
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = 'rgba(0, 240, 255, 0.1)';
-            ctx.stroke();
-
-            // 4. RAYAS DE GRADUACIÓN DE COMPETENCIA (TICKS CORTO/LARGO)
-            const numTicks = 25;
+            // Líneas divisorias de revoluciones (Ticks)
+            const numTicks = 20;
             for (let i = 0; i <= numTicks; i++) {
                 const angle = startAngle + (Math.PI * 1.2 * (i / numTicks));
                 const isLong = i % 5 === 0;
-                const tLength = isLong ? 12 : 6;
+                const tLength = isLong ? 10 : 5;
                 
                 ctx.beginPath();
-                ctx.moveTo(cx + (radius + 5) * Math.cos(angle), cy + (radius + 5) * Math.sin(angle));
-                ctx.lineTo(cx + (radius + 5 - tLength) * Math.cos(angle), cy + (radius + 5 - tLength) * Math.sin(angle));
+                ctx.moveTo(cx + radius * Math.cos(angle), cy + radius * Math.sin(angle));
+                ctx.lineTo(cx + (radius - tLength) * Math.cos(angle), cy + (radius - tLength) * Math.sin(angle));
                 
                 ctx.lineWidth = isLong ? 2 : 1;
-                // El último tramo (Zona roja) se pinta de color rojo automáticamente
-                ctx.strokeStyle = i >= (numTicks * 0.8) ? '#ff2a2a' : 'rgba(255, 255, 255, 0.2)';
+                ctx.strokeStyle = i >= (numTicks * 0.8) ? '#ff2a2a' : 'rgba(255, 255, 255, 0.15)';
                 ctx.stroke();
 
-                // Números digitales de velocidad en las marcas largas
                 if (isLong) {
                     const tickVal = Math.round((maxVal / numTicks) * i);
                     const tx = cx + (radius - 22) * Math.cos(angle);
                     const ty = cy + (radius - 22) * Math.sin(angle) + 3;
                     ctx.fillStyle = i >= (numTicks * 0.8) ? '#ff2a2a' : 'var(--text-muted)';
                     ctx.font = 'bold 9px monospace';
-                    ctx.textAlign = 'center';
                     ctx.fillText(tickVal, tx, ty);
                 }
             }
 
-            // 5. AGUJA DE REVOLUCIONES ULTRA-DELGADA CON PUNTA DE TRACCIÓN ROJA
+            // Aguja de velocidad del motor
             const needleAngle = startAngle + (Math.PI * 1.2 * valueRatio);
-            
-            // Brillo de estela de la aguja activa
-            ctx.shadowBlur = 10;
+            ctx.shadowBlur = 12;
             ctx.shadowColor = value > (maxVal * 0.8) ? '#ff2a2a' : '#00f0ff';
 
             ctx.beginPath();
             ctx.moveTo(cx, cy);
-            ctx.lineTo(cx + (radius - 4) * Math.cos(needleAngle), cy + (radius - 4) * Math.sin(needleAngle));
+            ctx.lineTo(cx + (radius - 5) * Math.cos(needleAngle), cy + (radius - 5) * Math.sin(needleAngle));
             ctx.lineWidth = 3;
             ctx.strokeStyle = value > (maxVal * 0.8) ? '#ff2a2a' : '#ffffff';
             ctx.lineCap = 'round';
             ctx.stroke();
             
-            // Apagar sombras para el resto de elementos
-            ctx.shadowBlur = 0;
+            ctx.shadowBlur = 0; // Reset sombras
 
-            // Tapón central de la aguja con aro metálico
-            ctx.beginPath(); ctx.arc(cx, cy, 7, 0, 2 * Math.PI); ctx.fillStyle = '#1c2433'; ctx.fill();
-            ctx.beginPath(); ctx.arc(cx, cy, 3, 0, 2 * Math.PI); ctx.fillStyle = '#ff2a2a'; ctx.fill();
+            // Tapón central físico
+            ctx.beginPath(); ctx.arc(cx, cy, 6, 0, 2 * Math.PI); ctx.fillStyle = '#1c2433'; ctx.fill();
 
-            // 6. TEXTO DE TELEMETRÍA DIGITAL INTERNA (VALOR NUMÉRICO GRANDE)
+            // Telemetría digital interna
             ctx.fillStyle = value > (maxVal * 0.8) ? '#ff2a2a' : 'var(--text-main)';
-            ctx.font = '900 24px monospace'; ctx.textAlign = 'center';
-            ctx.fillText(value, cx, cy - 2);
+            ctx.font = '900 22px monospace'; ctx.textAlign = 'center';
+            ctx.fillText(value, cx, cy - 5);
             
-            ctx.fillStyle = 'var(--text-muted)'; ctx.font = 'bold 9px system-ui'; ctx.letterSpacing = '1px';
-            ctx.fillText('RPM', cx, cy + 12);
+            ctx.fillStyle = 'var(--text-muted)'; ctx.font = 'bold 9px system-ui';
+            ctx.fillText('RPM', cx, cy + 10);
 
-            // Letrero dinámico de Alerta de Corte "REV"
             if(value > (maxVal * 0.85)) {
                 ctx.fillStyle = '#ff2a2a'; ctx.font = '900 10px monospace';
-                ctx.fillText('¡SHIFT!', cx, cy - 24);
+                ctx.fillText('¡SHIFT!', cx, cy - 25);
             }
         }
 
-        // --- 3. NUEVO: TACÓMETRO DE BARRIDO ANGULAR (ESTILO HORIZONTAL RACING DE F1) ---
+        // --- 3. NUEVO: TACÓMETRO DE BARRIDO DE SERVO (DISEÑO HORIZONTAL SPORT) ---
         function drawSportsServoGauge() {
             const canvas = document.getElementById('gauge-servo-angle');
             if (!canvas || canvas.width === 0) return;
@@ -748,19 +726,18 @@
 
             ctx.clearRect(0, 0, W, H);
 
-            // Posicionado táctico bajo
-            const cx = W / 2, cy = H - 12, radius = Math.min(W / 2, H) * 0.88;
-            const startAngle = Math.PI * 1.0;
-            const endAngle = Math.PI * 2.0;
+            const cx = W / 2, cy = H - 20, radius = Math.min(W / 2, H) * 0.85;
+            const startAngle = Math.PI * 1.0; // 180 grados a la izquierda
+            const endAngle = Math.PI * 2.0;   // 360 grados a la derecha
 
-            // Arco exterior deportivo de guía segmentada
+            // Arco exterior deportivo segmentado
             ctx.beginPath();
             ctx.arc(cx, cy, radius, startAngle, endAngle, false);
             ctx.lineWidth = 2;
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
             ctx.stroke();
 
-            // Marcadores de Grados tipo Visor de Pista (0°, 45°, 90°, 135°, 180°)
+            // Marcadores angulares de carreras
             const anglesTicks = [0, 45, 90, 135, 180];
             anglesTicks.forEach(tickDeg => {
                 const rad = startAngle + (Math.PI * (tickDeg / 180));
@@ -772,127 +749,134 @@
                 ctx.strokeStyle = tickDeg === 90 ? 'var(--border-cyan)' : 'var(--text-muted)';
                 ctx.stroke();
 
-                // Números de referencia de pista
+                // Números digitales de la pista
                 ctx.fillStyle = tickDeg === 90 ? 'var(--border-cyan)' : 'var(--text-muted)';
-                ctx.font = 'bold 8px monospace';
+                ctx.font = 'bold 9px monospace';
                 ctx.textAlign = 'center';
-                ctx.fillText(tickDeg + '°', cx + (radius - 16) * Math.cos(rad), cy + (radius - 16) * Math.sin(rad) + 3);
+                ctx.fillText(tickDeg + '°', cx + (radius - 18) * Math.cos(rad), cy + (radius - 18) * Math.sin(rad) + 3);
             });
 
-            // Convertir la lectura actual del Servo a radianes
+            // Convertir posición del servo a radianes
             const safeDegrees = Math.min(Math.max(currentServoValue, 0), 180);
             const targetRad = startAngle + (Math.PI * (safeDegrees / 180));
 
-            // Haz de barrido deportivo con desvanecimiento (Glow Naranja)
+            // Haz de estela translúcida de escaneo deportivo
             ctx.beginPath();
             ctx.moveTo(cx, cy);
-            ctx.arc(cx, cy, radius - 3, targetRad - 0.07, targetRad + 0.07, false);
+            ctx.arc(cx, cy, radius - 2, targetRad - 0.08, targetRad + 0.08, false);
             ctx.closePath();
-            ctx.fillStyle = 'rgba(255, 170, 0, 0.15)';
+            ctx.fillStyle = 'rgba(255, 170, 0, 0.12)';
             ctx.fill();
 
-            // Aguja de vector de carreras con nodo de brillo activo
+            // Aguja de agrimensura vectorizada
             ctx.beginPath();
             ctx.moveTo(cx, cy);
             ctx.lineTo(cx + (radius - 2) * Math.cos(targetRad), cy + (radius - 2) * Math.sin(targetRad));
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 3.5;
             ctx.strokeStyle = 'var(--accent-orange)';
             ctx.lineCap = 'round';
             ctx.stroke();
 
-            // Núcleo de pivote central
-            ctx.beginPath(); ctx.arc(cx, cy, 5, 0, 2 * Math.PI); ctx.fillStyle = '#ffffff'; ctx.fill();
-            ctx.beginPath(); ctx.arc(cx, cy, 2, 0, 2 * Math.PI); ctx.fillStyle = '#ffaa00'; ctx.fill();
+            // Centro del eje pivotante
+            ctx.beginPath(); ctx.arc(cx, cy, 6, 0, 2 * Math.PI); ctx.fillStyle = '#0f1726'; ctx.fill();
+            ctx.beginPath(); ctx.arc(cx, cy, 3, 0, 2 * Math.PI); ctx.fillStyle = '#ffffff'; ctx.fill();
+
+            // Datos embebidos abajo
+            ctx.fillStyle = 'var(--text-main)'; ctx.font = '900 16px monospace';
+            ctx.fillText(safeDegrees + '°', cx, cy - 25);
         }
 
-        // Bucle central de renderizado continuo sincronizado por hardware
-        function loopGlobalRender() {
+        // --- PIPELINE DE PROCESAMIENTO DINÁMICO ---
+        function procesarTelemetria(payloadString) {
+            try {
+                const datos = JSON.parse(payloadString);
+                
+                if (datos.distancia !== undefined) {
+                    currentDistanceValue = parseInt(datos.distancia);
+                    document.getElementById('val-dist').innerText = currentDistanceValue;
+                }
+                if (datos.rpm !== undefined) {
+                    currentRPMValue = parseInt(datos.rpm);
+                }
+                if (datos.servo !== undefined) {
+                    currentServoValue = parseInt(datos.servo);
+                }
+                
+                if (datos.ir_izq !== undefined && datos.ir_der !== undefined) {
+                    const izq = parseInt(datos.ir_izq);
+                    const der = parseInt(datos.ir_der);
+                    
+                    const nodeIzq = document.getElementById('node-ir-izq');
+                    const nodeDer = document.getElementById('node-ir-der');
+                    const txtIzq = document.getElementById('state-izq');
+                    const txtDer = document.getElementById('state-der');
+                    const valStatus = document.getElementById('val-ir-status');
+                    
+                    if(izq === 1) { nodeIzq.classList.add('active-line'); txtIzq.innerText = 'LINE'; txtIzq.className = 'active-text'; }
+                    else { nodeIzq.classList.remove('active-line'); txtIzq.innerText = 'OFF'; txtIzq.className = ''; }
+                    
+                    if(der === 1) { nodeDer.classList.add('active-line'); txtDer.innerText = 'LINE'; txtDer.className = 'active-text'; }
+                    else { nodeDer.classList.remove('active-line'); txtDer.innerText = 'OFF'; txtDer.className = ''; }
+                    
+                    if(izq === 0 && der === 0) valStatus.innerText = 'CRUISING...';
+                    else valStatus.innerText = 'TRACKING...';
+                }
+
+                // Cálculo de cinemática en la Pestaña 3
+                const ruedaDiametroM = 0.066; 
+                const velocidadLineal = (currentRPMValue / 60) * Math.PI * ruedaDiametroM;
+                
+                document.getElementById('iso-v').innerText = velocidadLineal.toFixed(2) + " m/s";
+                document.getElementById('iso-f1').innerText = velocidadLineal.toFixed(2);
+                document.getElementById('iso-f2').innerText = velocidadLineal.toFixed(2);
+                
+                const s_b = (velocidadLineal * 0.05) + (Math.pow(velocidadLineal, 2) / (2 * 1.50)) + 0.10;
+                document.getElementById('iso-res').innerText = (s_b * 100).toFixed(1) + " cm";
+
+            } catch (e) {
+                console.error("Error descodificando trama JSON de telemetría:", e);
+            }
+        }
+
+        // --- CONFIGURACIÓN DEL BUCLE RENDER (60 FPS) ---
+        function loopRender() {
             if (activeTabIdx === 1) {
                 drawUltrasonicRadar();
-                drawSportsGauge('gauge-rpm', currentRPMValue, 250); // Inyección del nuevo tacómetro deportivo
-                drawSportsServoGauge(); // Inyección del servo-tacómetro F1
+                drawSportsGauge('gauge-rpm', currentRPMValue, 250);
+                drawSportsServoGauge();
             }
-            requestAnimationFrame(loopGlobalRender);
+            requestAnimationFrame(loopRender);
         }
-        loopGlobalRender();
 
-        // --- CONEXIÓN MQTT INTEGRAL ---
-        const client = mqtt.connect(BROKER, { username: AIO_USER, password: AIO_KEY });
+        // --- INICIALIZACIÓN CLIENTE MQTT ---
+        window.addEventListener('load', () => {
+            window.addEventListener('resize', resizeCharts);
+            resizeCharts();
+            requestAnimationFrame(loopRender);
 
-        client.on('connect', () => {
-            const indicator = document.getElementById('status-mqtt');
-            indicator.innerText = "LIVE: TELEMETRÍA ONLINE";
-            indicator.style.color = "#00f0ff"; indicator.style.borderColor = "#00f0ff";
-            client.subscribe(AIO_FEED);
-        });
+            const client = mqtt.connect(BROKER, {
+                username: AIO_USER,
+                password: AIO_KEY,
+                clientId: 'web_hud_' + Math.random().toString(16).substr(2, 8)
+            });
 
-        client.on('message', (topic, msg) => {
-            const raw = msg.toString().split(',');
-            if(raw.length >= 5) {
-                const d = parseInt(raw[0]), s = parseInt(raw[1]), il = parseInt(raw[2]), ir = parseInt(raw[3]), r = parseInt(raw[4]);
+            client.on('connect', () => {
+                document.getElementById('status-mqtt').innerText = '📡 TELEMETRÍA ONLINE';
+                document.getElementById('status-mqtt').style.borderColor = '#00f0ff';
+                document.getElementById('status-mqtt').style.color = '#ffffff';
+                client.subscribe(AIO_FEED, (err) => {
+                    if (err) console.error("Fallo al suscribirse al feed:", err);
+                });
+            });
 
-                // Volcar variables al estado global de animación
-                currentDistanceValue = d;
-                currentServoValue = s; 
-                currentRPMValue = r;
+            client.on('message', (topic, message) => {
+                procesarTelemetria(message.toString());
+            });
 
-                // Actualizar textos digitales directos
-                document.getElementById('val-dist').innerText = d + " cm";
-                document.getElementById('val-servo').innerText = s + "°";
-
-                // --- GESTIÓN INTERACTIVA DEL GEMELO DIGITAL (INFRARROJOS) ---
-                const nodeIzq = document.getElementById('node-ir-izq');
-                const nodeDer = document.getElementById('node-ir-der');
-                const txtIzq  = document.getElementById('txt-ir-izq');
-                const txtDer  = document.getElementById('txt-ir-der');
-                const lblStateIzq = document.getElementById('state-izq');
-                const lblStateDer = document.getElementById('state-der');
-                const mainIrStatus = document.getElementById('val-ir-status');
-
-                if (il === 1) {
-                    nodeIzq.className = "ir-faro ir-faro-izq active-line";
-                    txtIzq.className = "ir-label-tag tag-izq active-text";
-                    lblStateIzq.innerText = "LINE DETECTED";
-                } else {
-                    nodeIzq.className = "ir-faro ir-faro-izq";
-                    txtIzq.className = "ir-label-tag tag-izq";
-                    lblStateIzq.innerText = "OFF";
-                }
-
-                if (ir === 1) {
-                    nodeDer.className = "ir-faro ir-faro-der active-line";
-                    txtDer.className = "ir-label-tag tag-der active-text";
-                    lblStateDer.innerText = "LINE DETECTED";
-                } else {
-                    nodeDer.className = "ir-faro ir-faro-der";
-                    txtDer.className = "ir-label-tag tag-der";
-                    lblStateDer.innerText = "OFF";
-                }
-
-                if(il && ir) {
-                    mainIrStatus.innerText = "FULL INTERSECTION";
-                    mainIrStatus.style.color = "var(--border-cyan)";
-                } else if(il) {
-                    mainIrStatus.innerText = "CORRECTING LEFT";
-                    mainIrStatus.style.color = "var(--accent-orange)";
-                } else if(ir) {
-                    mainIrStatus.innerText = "CORRECTING RIGHT";
-                    mainIrStatus.style.color = "var(--accent-orange)";
-                } else {
-                    mainIrStatus.innerText = "TRACKING LINE";
-                    mainIrStatus.style.color = "var(--text-muted)";
-                }
-
-                // Bloque Cinemático Dinámico (Pestaña 3)
-                const v = r * 0.003455;
-                const sb = ((v * 0.05) + (Math.pow(v, 2) / (2 * 1.5)) + 0.10) * 100;
-                
-                const vStr = v.toFixed(2);
-                document.getElementById('iso-v').innerText = vStr + " m/s";
-                document.getElementById('iso-f1').innerText = vStr;
-                document.getElementById('iso-f2').innerText = vStr;
-                document.getElementById('iso-res').innerText = sb.toFixed(1) + " cm";
-            }
+            client.on('close', () => {
+                document.getElementById('status-mqtt').innerText = '❌ DESCONECTADO (REINTENTANDO)';
+                document.getElementById('status-mqtt').style.borderColor = '#ff2a2a';
+            });
         });
     </script>
 </body>
