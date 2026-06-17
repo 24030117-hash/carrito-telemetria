@@ -503,8 +503,8 @@
         <div class="formula-container">
             <h4 class="panel-title">Cálculo Cinemático de Frenado (ISO)</h4>
             <div class="math-display">
-                S<sub>b</sub> = (<span id="iso-f1" style="color:var(--border-cyan)">v</span> &middot; 0.05) + 
-                <div class="fraccion"><div class="numerador">(<span id="iso-f2" style="color:var(--border-cyan)">v</span>)<sup>2</sup></div><div>2 &middot; 1.50</div></div> + 0.10
+                S<sub>b</sub> = (<span id="iso-f1" style="color:var(--border-cyan)">0.00</span> &middot; 0.05) + 
+                <div class="fraccion"><div class="numerador">(<span id="iso-f2" style="color:var(--border-cyan)">0.00</span>)<sup>2</sup></div><div>2 &middot; 1.50</div></div> + 0.10
             </div>
             <div class="specs-panel">
                 <div class="specs-blocks-grid" style="grid-template-columns: repeat(2, 1fr);">
@@ -530,7 +530,8 @@
         
         let currentRPMValue = 0; 
         let currentDistanceValue = 60; 
-        let currentServoValue = 90;   
+        let currentServoValue = 90;    
+        let currentVelocity = 0;       // Nueva variable para velocidad
         let waveOffset = 0;            
 
         function adjustTab(direction) {
@@ -557,6 +558,18 @@
                     canvas.height = canvas.parentElement.clientHeight;
                 }
             });
+        }
+
+        // --- CÁLCULO FRENADO ---
+        function updateBrakingCalculation(v) {
+            // Sb = (v * t) + (v^2 / (2 * a)) + Sm
+            const t = 0.05, a = 1.50, Sm = 0.10;
+            const sb = (v * t) + (Math.pow(v, 2) / (2 * a)) + Sm;
+            
+            document.getElementById('iso-f1').innerText = v.toFixed(2);
+            document.getElementById('iso-f2').innerText = v.toFixed(2);
+            document.getElementById('iso-v').innerText = v.toFixed(2) + " m/s";
+            document.getElementById('iso-res').innerText = (sb * 100).toFixed(1) + " cm";
         }
 
         // --- 1. RADAR DE ONDAS ULTRASÓNICAS ---
@@ -617,7 +630,7 @@
             ctx.fillRect(wallX, sensorY - 45, 8, 90); ctx.globalAlpha = 1.0;
         }
 
-        // --- 2. TACÓMETRO HIPERDEPORTIVO CON GRADIENTE ---
+        // --- 2. TACÓMETRO ---
         function drawSportsGauge(id, value, maxVal) {
             const canvas = document.getElementById(id);
             if (!canvas || canvas.width === 0) return;
@@ -627,14 +640,12 @@
             ctx.clearRect(0, 0, W, H);
             const cx = W / 2, cy = H * 0.75, radius = Math.min(W / 2, H) * 0.72;
             
-            // Arco de fondo
             ctx.beginPath();
             ctx.arc(cx, cy, radius, Math.PI * 0.9, Math.PI * 2.1, false);
             ctx.lineWidth = 10; 
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)'; 
             ctx.stroke();
 
-            // Arco activo graduado
             const valueRatio = Math.min(Math.max(value / maxVal, 0), 1);
             const startAngle = Math.PI * 0.9;
             const endAngle = startAngle + (Math.PI * 1.2 * valueRatio);
@@ -654,13 +665,11 @@
                 ctx.stroke();
             }
 
-            // Dial central oscuro
             ctx.beginPath();
             ctx.arc(cx, cy, radius - 14, 0, 2 * Math.PI);
             ctx.fillStyle = '#090e18';
             ctx.fill();
 
-            // Líneas divisorias de revoluciones (Ticks)
             const numTicks = 20;
             for (let i = 0; i <= numTicks; i++) {
                 const angle = startAngle + (Math.PI * 1.2 * (i / numTicks));
@@ -685,11 +694,9 @@
                 }
             }
 
-            // Aguja de velocidad del motor
             const needleAngle = startAngle + (Math.PI * 1.2 * valueRatio);
             ctx.shadowBlur = 12;
             ctx.shadowColor = value > (maxVal * 0.8) ? '#ff2a2a' : '#00f0ff';
-
             ctx.beginPath();
             ctx.moveTo(cx, cy);
             ctx.lineTo(cx + (radius - 5) * Math.cos(needleAngle), cy + (radius - 5) * Math.sin(needleAngle));
@@ -697,78 +704,53 @@
             ctx.strokeStyle = value > (maxVal * 0.8) ? '#ff2a2a' : '#ffffff';
             ctx.lineCap = 'round';
             ctx.stroke();
-            
-            ctx.shadowBlur = 0; // Reset sombras
+            ctx.shadowBlur = 0;
 
-            // Tapón central físico
             ctx.beginPath(); ctx.arc(cx, cy, 6, 0, 2 * Math.PI); ctx.fillStyle = '#1c2433'; ctx.fill();
-
-            // Telemetría digital interna
             ctx.fillStyle = value > (maxVal * 0.8) ? '#ff2a2a' : 'var(--text-main)';
             ctx.font = '900 22px monospace'; ctx.textAlign = 'center';
             ctx.fillText(value, cx, cy - 5);
-            
             ctx.fillStyle = 'var(--text-muted)'; ctx.font = 'bold 9px system-ui';
             ctx.fillText('RPM', cx, cy + 10);
-
-            if(value > (maxVal * 0.85)) {
-                ctx.fillStyle = '#ff2a2a'; ctx.font = '900 10px monospace';
-                ctx.fillText('¡SHIFT!', cx, cy - 25);
-            }
         }
 
-        // --- 3. NUEVO: TACÓMETRO DE BARRIDO DE SERVO (DISEÑO HORIZONTAL SPORT) ---
+        // --- 3. SERVO GAUGE ---
         function drawSportsServoGauge() {
             const canvas = document.getElementById('gauge-servo-angle');
             if (!canvas || canvas.width === 0) return;
             const ctx = canvas.getContext('2d');
             const W = canvas.width, H = canvas.height;
-
             ctx.clearRect(0, 0, W, H);
-
             const cx = W / 2, cy = H - 20, radius = Math.min(W / 2, H) * 0.85;
-            const startAngle = Math.PI * 1.0; // 180 grados a la izquierda
-            const endAngle = Math.PI * 2.0;   // 360 grados a la derecha
-
-            // Arco exterior deportivo segmentado
+            const startAngle = Math.PI * 1.0; 
+            const endAngle = Math.PI * 2.0;   
             ctx.beginPath();
             ctx.arc(cx, cy, radius, startAngle, endAngle, false);
             ctx.lineWidth = 2;
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
             ctx.stroke();
-
-            // Marcadores angulares de carreras
             const anglesTicks = [0, 45, 90, 135, 180];
             anglesTicks.forEach(tickDeg => {
                 const rad = startAngle + (Math.PI * (tickDeg / 180));
-                
                 ctx.beginPath();
                 ctx.moveTo(cx + (radius - 6) * Math.cos(rad), cy + (radius - 6) * Math.sin(rad));
                 ctx.lineTo(cx + radius * Math.cos(rad), cy + radius * Math.sin(rad));
                 ctx.lineWidth = tickDeg === 90 ? 2.5 : 1.5;
                 ctx.strokeStyle = tickDeg === 90 ? 'var(--border-cyan)' : 'var(--text-muted)';
                 ctx.stroke();
-
-                // Números digitales de la pista
                 ctx.fillStyle = tickDeg === 90 ? 'var(--border-cyan)' : 'var(--text-muted)';
                 ctx.font = 'bold 9px monospace';
                 ctx.textAlign = 'center';
                 ctx.fillText(tickDeg + '°', cx + (radius - 18) * Math.cos(rad), cy + (radius - 18) * Math.sin(rad) + 3);
             });
-
-            // Convertir posición del servo a radianes
             const safeDegrees = Math.min(Math.max(currentServoValue, 0), 180);
             const targetRad = startAngle + (Math.PI * (safeDegrees / 180));
-
-            // Haz de estela translúcida de escaneo deportivo
             ctx.beginPath();
             ctx.moveTo(cx, cy);
             ctx.arc(cx, cy, radius - 2, targetRad - 0.08, targetRad + 0.08, false);
             ctx.closePath();
             ctx.fillStyle = 'rgba(255, 170, 0, 0.12)';
             ctx.fill();
-
-            // Aguja de agrimensura vectorizada
             ctx.beginPath();
             ctx.moveTo(cx, cy);
             ctx.lineTo(cx + (radius - 2) * Math.cos(targetRad), cy + (radius - 2) * Math.sin(targetRad));
@@ -776,17 +758,13 @@
             ctx.strokeStyle = 'var(--accent-orange)';
             ctx.lineCap = 'round';
             ctx.stroke();
-
-            // Centro del eje pivotante
             ctx.beginPath(); ctx.arc(cx, cy, 6, 0, 2 * Math.PI); ctx.fillStyle = '#0f1726'; ctx.fill();
             ctx.beginPath(); ctx.arc(cx, cy, 3, 0, 2 * Math.PI); ctx.fillStyle = '#ffffff'; ctx.fill();
-
-            // Datos embebidos abajo
             ctx.fillStyle = 'var(--text-main)'; ctx.font = '900 16px monospace';
             ctx.fillText(safeDegrees + '°', cx, cy - 25);
         }
 
-        // --- PIPELINE DE PROCESAMIENTO DINÁMICO ---
+        // --- PIPELINE MQTT ---
         function procesarTelemetria(payloadString) {
             try {
                 const datos = JSON.parse(payloadString);
@@ -801,11 +779,14 @@
                 if (datos.servo !== undefined) {
                     currentServoValue = parseInt(datos.servo);
                 }
+                if (datos.velocidad !== undefined) {
+                    currentVelocity = parseFloat(datos.velocidad);
+                    updateBrakingCalculation(currentVelocity);
+                }
                 
                 if (datos.ir_izq !== undefined && datos.ir_der !== undefined) {
                     const izq = parseInt(datos.ir_izq);
                     const der = parseInt(datos.ir_der);
-                    
                     const nodeIzq = document.getElementById('node-ir-izq');
                     const nodeDer = document.getElementById('node-ir-der');
                     const txtIzq = document.getElementById('state-izq');
@@ -817,67 +798,28 @@
                     
                     if(der === 1) { nodeDer.classList.add('active-line'); txtDer.innerText = 'LINE'; txtDer.className = 'active-text'; }
                     else { nodeDer.classList.remove('active-line'); txtDer.innerText = 'OFF'; txtDer.className = ''; }
-                    
-                    if(izq === 0 && der === 0) valStatus.innerText = 'CRUISING...';
-                    else valStatus.innerText = 'TRACKING...';
+
+                    if(izq === 1 || der === 1) valStatus.innerText = "DETECTANDO";
+                    else valStatus.innerText = "TRACKING...";
                 }
-
-                // Cálculo de cinemática en la Pestaña 3
-                const ruedaDiametroM = 0.066; 
-                const velocidadLineal = (currentRPMValue / 60) * Math.PI * ruedaDiametroM;
-                
-                document.getElementById('iso-v').innerText = velocidadLineal.toFixed(2) + " m/s";
-                document.getElementById('iso-f1').innerText = velocidadLineal.toFixed(2);
-                document.getElementById('iso-f2').innerText = velocidadLineal.toFixed(2);
-                
-                const s_b = (velocidadLineal * 0.05) + (Math.pow(velocidadLineal, 2) / (2 * 1.50)) + 0.10;
-                document.getElementById('iso-res').innerText = (s_b * 100).toFixed(1) + " cm";
-
-            } catch (e) {
-                console.error("Error descodificando trama JSON de telemetría:", e);
-            }
+            } catch (e) { console.error("Error parsing MQTT", e); }
         }
 
-        // --- CONFIGURACIÓN DEL BUCLE RENDER (60 FPS) ---
-        function loopRender() {
-            if (activeTabIdx === 1) {
-                drawUltrasonicRadar();
-                drawSportsGauge('gauge-rpm', currentRPMValue, 250);
-                drawSportsServoGauge();
-            }
-            requestAnimationFrame(loopRender);
-        }
-
-        // --- INICIALIZACIÓN CLIENTE MQTT ---
-        window.addEventListener('load', () => {
-            window.addEventListener('resize', resizeCharts);
-            resizeCharts();
-            requestAnimationFrame(loopRender);
-
-            const client = mqtt.connect(BROKER, {
-                username: AIO_USER,
-                password: AIO_KEY,
-                clientId: 'web_hud_' + Math.random().toString(16).substr(2, 8)
-            });
-
-            client.on('connect', () => {
-                document.getElementById('status-mqtt').innerText = '📡 TELEMETRÍA ONLINE';
-                document.getElementById('status-mqtt').style.borderColor = '#00f0ff';
-                document.getElementById('status-mqtt').style.color = '#ffffff';
-                client.subscribe(AIO_FEED, (err) => {
-                    if (err) console.error("Fallo al suscribirse al feed:", err);
-                });
-            });
-
-            client.on('message', (topic, message) => {
-                procesarTelemetria(message.toString());
-            });
-
-            client.on('close', () => {
-                document.getElementById('status-mqtt').innerText = '❌ DESCONECTADO (REINTENTANDO)';
-                document.getElementById('status-mqtt').style.borderColor = '#ff2a2a';
-            });
+        // --- INICIALIZACIÓN ---
+        const client = mqtt.connect(BROKER, { username: AIO_USER, password: AIO_KEY });
+        client.on('connect', () => {
+            document.getElementById('status-mqtt').innerText = "📡 TELEMETRÍA ONLINE";
+            client.subscribe(AIO_FEED);
         });
+        client.on('message', (topic, message) => procesarTelemetria(message.toString()));
+
+        function animate() {
+            drawUltrasonicRadar();
+            drawSportsGauge('gauge-rpm', currentRPMValue, 1000);
+            drawSportsServoGauge();
+            requestAnimationFrame(animate);
+        }
+        animate();
     </script>
 </body>
 </html>
