@@ -113,22 +113,13 @@
             padding: 20px;
         }
 
-        .massive-arrow-left {
-            left: 80px; 
-        }
-
-        .massive-arrow-right {
-            right: 80px; 
-        }
+        .massive-arrow-left { left: 80px; }
+        .massive-arrow-right { right: 80px; }
 
         .hud-massive-arrow:hover {
             color: var(--text-main);
             text-shadow: 0 0 30px rgba(0, 240, 255, 0.9);
             transform: translateY(-50%) scale(1.1);
-        }
-
-        .hud-massive-arrow:active {
-            transform: translateY(-50%) scale(0.95);
         }
 
         /* --- CONTENIDOS --- */
@@ -145,7 +136,7 @@
         
         .tab-content.active { display: block; }
 
-        /* --- PESTAÑA 1: SHOWCASE DEL VEHÍCULO --- */
+        /* --- PESTAÑA 1: SHOWCASE --- */
         .showcase-container {
             display: flex;
             flex-direction: column;
@@ -230,16 +221,10 @@
             padding: 14px 16px;
             border-radius: 6px;
             border: 1px solid rgba(255, 255, 255, 0.03);
-            transition: all 0.3s ease;
         }
 
         .spec-block-item.border-red { border-left: 3px solid var(--accent-red); }
         .spec-block-item.border-cyan { border-left: 3px solid var(--border-cyan); }
-
-        .spec-block-item:hover {
-            background: rgba(13, 22, 38, 0.9);
-            transform: translateY(-2px);
-        }
 
         .spec-block-label {
             font-size: 0.68rem;
@@ -250,12 +235,7 @@
             margin-bottom: 4px;
         }
 
-        .spec-block-value {
-            font-weight: bold;
-            font-size: 0.88rem;
-            color: var(--text-main);
-        }
-
+        .spec-block-value { font-weight: bold; font-size: 0.88rem; color: var(--text-main); }
         .highlight-red { color: var(--accent-red); font-family: monospace; }
         .highlight-cyan { color: var(--border-cyan); font-family: monospace; }
 
@@ -272,6 +252,8 @@
             border: 1px solid var(--panel-border);
             border-radius: 4px;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
         }
 
         .big-numeric {
@@ -283,14 +265,14 @@
         }
 
         .chart-box {
-            height: 100px;
+            height: 120px;
             background: rgba(0,0,0,0.3);
             border-radius: 4px;
             overflow: hidden;
-            margin-top: 15px;
+            margin-top: auto;
+            position: relative;
         }
 
-        /* Contenedor optimizado para el tacómetro analógico */
         .gauge-box {
             height: 160px;
             display: flex;
@@ -310,6 +292,7 @@
             border: 1px solid rgba(255,255,255,0.05);
             color: var(--text-muted);
             border-radius: 4px;
+            text-align: center;
         }
         .ir-sensor.active-line {
             background: rgba(0, 240, 255, 0.1);
@@ -335,25 +318,18 @@
             font-family: 'Courier New', monospace;
             margin: 20px auto;
             max-width: 600px;
-            border: 1px solid rgba(255,255,255,0.03);
+            text-align: center;
         }
 
         .fraccion { display: inline-flex; flex-direction: column; vertical-align: middle; padding: 0 5px; }
         .numerador { border-bottom: 2px solid white; padding-bottom: 2px; }
 
-        /* RESPONSIVE DESIGN */
         @media (max-width: 1200px) {
             .hud-massive-arrow { font-size: 5rem; left: 20px; right: 20px; } 
             .tab-content { max-width: 950px; }
         }
         @media (max-width: 992px) {
             .specs-blocks-grid { grid-template-columns: repeat(2, 1fr); }
-            .hud-massive-arrow { font-size: 4rem; left: 10px; right: 10px; }
-        }
-        @media (max-width: 768px) {
-            .hud-tabs { display: none; } 
-            .specs-blocks-grid { grid-template-columns: 1fr; }
-            .hud-massive-arrow { font-size: 3rem; left: 5px; right: 5px; background: rgba(0,0,0,0.4); border-radius: 50%; width: 50px; height: 50px;} 
         }
     </style>
 </head>
@@ -369,7 +345,7 @@
 
     <div class="hud-tabs-container">
         <div class="hud-tabs">
-            <button class="hud-tab-btn active" id="btn-0" onclick="switchTab(0)">01 // Ficha Técnico</button>
+            <button class="hud-tab-btn active" id="btn-0" onclick="switchTab(0)">01 // Ficha Técnica</button>
             <button class="hud-tab-btn" id="btn-1" onclick="switchTab(1)">02 // Telemetría en Vivo</button>
             <button class="hud-tab-btn" id="btn-2" onclick="switchTab(2)">03 // Análisis Dinámico</button>
         </div>
@@ -381,45 +357,17 @@
                 <div class="laser-scanner"></div>
                 <img src="carrito.png" alt="Prototipo Robótico">
             </div>
-
             <div class="specs-panel">
                 <h4 class="panel-title">Especificaciones del Prototipo</h4>
                 <div class="specs-blocks-grid">
-                    
-                    <div class="spec-block-item border-red">
-                        <span class="spec-block-label">Microcontrolador Maestro</span>
-                        <span class="spec-block-value highlight-red">ESP32 DevKit V1</span>
-                    </div>
-                    <div class="spec-block-item border-cyan">
-                        <span class="spec-block-label">Procesamiento Esclavo</span>
-                        <span class="spec-block-value highlight-cyan">Arduino ATmega328P</span>
-                    </div>
-                    <div class="spec-block-item border-cyan">
-                        <span class="spec-block-label">Transmisión Inalámbrica</span>
-                        <span class="spec-block-value">Radio HC-12 (433MHz)</span>
-                    </div>
-                    <div class="spec-block-item border-red">
-                        <span class="spec-block-label">Detección Obstáculos</span>
-                        <span class="spec-block-value">HC-SR04 Ultrasónico</span>
-                    </div>
-                    
-                    <div class="spec-block-item border-red">
-                        <span class="spec-block-label">Diámetro de Rueda</span>
-                        <span class="spec-block-value">6.60 cm</span>
-                    </div>
-                    <div class="spec-block-item border-cyan">
-                        <span class="spec-block-label">Resolución Encoder</span>
-                        <span class="spec-block-value">20 Ranuras / Vuelta</span>
-                    </div>
-                    <div class="spec-block-item border-cyan">
-                        <span class="spec-block-label">Seguidor de Línea</span>
-                        <span class="spec-block-value">Dual IR TCRT5000</span>
-                    </div>
-                    <div class="spec-block-item border-red">
-                        <span class="spec-block-label">Actuador Evasión</span>
-                        <span class="spec-block-value">Micro Servo SG90</span>
-                    </div>
-
+                    <div class="spec-block-item border-red"><span class="spec-block-label">Microcontrolador Maestro</span><span class="spec-block-value highlight-red">ESP32 DevKit V1</span></div>
+                    <div class="spec-block-item border-cyan"><span class="spec-block-label">Procesamiento Esclavo</span><span class="spec-block-value highlight-cyan">Arduino ATmega328P</span></div>
+                    <div class="spec-block-item border-cyan"><span class="spec-block-label">Transmisión Inalámbrica</span><span class="spec-block-value">Radio HC-12 (433MHz)</span></div>
+                    <div class="spec-block-item border-red"><span class="spec-block-label">Detección Obstáculos</span><span class="spec-block-value">HC-SR04 Ultrasónico</span></div>
+                    <div class="spec-block-item border-red"><span class="spec-block-label">Diámetro de Rueda</span><span class="spec-block-value">6.60 cm</span></div>
+                    <div class="spec-block-item border-cyan"><span class="spec-block-label">Resolución Encoder</span><span class="spec-block-value">20 Ranuras / Vuelta</span></div>
+                    <div class="spec-block-item border-cyan"><span class="spec-block-label">Seguidor de Línea</span><span class="spec-block-value">Dual IR TCRT5000</span></div>
+                    <div class="spec-block-item border-red"><span class="spec-block-label">Actuador Evasión</span><span class="spec-block-value">Micro Servo SG90</span></div>
                 </div>
             </div>
         </div>
@@ -427,10 +375,13 @@
 
     <div id="tab-1" class="tab-content">
         <div class="telemetry-grid">
+            
             <div class="telemetry-card">
                 <h4 class="panel-title">Distancia de Obstáculo</h4>
                 <div id="val-dist" class="big-numeric">--</div>
-                <div class="chart-box"><canvas id="chart-dist"></canvas></div>
+                <div class="chart-box">
+                    <canvas id="radar-ultrasonic"></canvas>
+                </div>
             </div>
             
             <div class="telemetry-card">
@@ -445,6 +396,7 @@
                 <div id="val-servo" class="big-numeric" style="color: var(--accent-red)">90&deg;</div>
                 <div class="chart-box"><canvas id="chart-servo"></canvas></div>
             </div>
+
             <div class="telemetry-card">
                 <h4 class="panel-title">Detección Infrarroja (Piso)</h4>
                 <div class="ir-row">
@@ -458,58 +410,37 @@
     <div id="tab-2" class="tab-content">
         <div class="formula-container">
             <h4 class="panel-title">Cálculo Cinemático de Frenado (ISO)</h4>
-            <p style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">Evaluación de distancia mínima de parada basada en velocidad periférica.</p>
-            
             <div class="math-display">
-                S<sub>b</sub> = (<span id="iso-f1" style="color:var(--border-cyan)">v</span> &middot; <span style="color:rgba(255,255,255,0.6)">0.05</span>) + 
-                <div class="fraccion">
-                    <div class="numerador">(<span id="iso-f2" style="color:var(--border-cyan)">v</span>)<sup>2</sup></div>
-                    <div>2 &middot; <span style="color:var(--accent-red)">1.50</span></div>
-                </div>
-                + <span style="color:rgba(0, 240, 255, 0.6)">0.10</span>
+                S<sub>b</sub> = (<span id="iso-f1" style="color:var(--border-cyan)">v</span> &middot; 0.05) + 
+                <div class="fraccion"><div class="numerador">(<span id="iso-f2" style="color:var(--border-cyan)">v</span>)<sup>2</sup></div><div>2 &middot; 1.50</div></div> + 0.10
             </div>
-
-            <div class="specs-panel" style="margin: 20px auto;">
-                <h4 class="panel-title">Parámetros de Entrada Activos</h4>
+            <div class="specs-panel">
                 <div class="specs-blocks-grid" style="grid-template-columns: repeat(2, 1fr);">
-                    <div class="spec-block-item border-cyan">
-                        <span class="spec-block-label">Velocidad Lineal Calculada (v)</span>
-                        <span id="iso-v" class="spec-block-value highlight-cyan">0.00 m/s</span>
-                    </div>
-                    <div class="spec-block-item border-red">
-                        <span class="spec-block-label">Tiempo de Retraso de Red (t)</span>
-                        <span class="spec-block-value">0.05 s</span>
-                    </div>
-                    <div class="spec-block-item border-red">
-                        <span class="spec-block-label">Desaceleración Mecánica (a)</span>
-                        <span class="spec-block-value">1.50 m/s²</span>
-                    </div>
-                    <div class="spec-block-item border-cyan">
-                        <span class="spec-block-label">Margen Crítico ISO (Sm)</span>
-                        <span class="spec-block-value">0.10 m</span>
-                    </div>
+                    <div class="spec-block-item border-cyan"><span class="spec-block-label">Velocidad Lineal (v)</span><span id="iso-v" class="spec-block-value highlight-cyan">0.00 m/s</span></div>
+                    <div class="spec-block-item border-red"><span class="spec-block-label">Tiempo Retraso (t)</span><span class="spec-block-value">0.05 s</span></div>
+                    <div class="spec-block-item border-red"><span class="spec-block-label">Desaceleración (a)</span><span class="spec-block-value">1.50 m/s²</span></div>
+                    <div class="spec-block-item border-cyan"><span class="spec-block-label">Margen Crítico (Sm)</span><span class="spec-block-value">0.10 m</span></div>
                 </div>
             </div>
-
-            <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-top: 20px;">Distancia de Parada Mínima Exigida:</div>
-            <div id="iso-res" class="big-numeric" style="color: var(--accent-red); margin: 5px 0;">-- cm</div>
+            <div id="iso-res" class="big-numeric" style="color: var(--accent-red); margin-top: 20px;">-- cm</div>
         </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN MQTT ADAFRUIT CON NUEVA LLAVE ACTUALIZADA
+        // CREDENCIALES ADAFRUIT IO
         const AIO_USER = "dieglot"; 
         const AIO_KEY  = "aio_ZDIL93htQcCNZPsK" + "GWzc2DiXU9Ii"; 
-        
         const AIO_FEED = "dieglot/feeds/telemetria"; 
         const BROKER   = "wss://io.adafruit.com:443/mqtt";
 
         let activeTabIdx = 0;
         const totalTabs = 3;
-
-        let storeDist = [], storeRPM = [], storeServo = [];
+        let storeServo = [];
         const maxPoints = 20;
+        
         let currentRPMValue = 0; 
+        let currentDistanceValue = 60; // Distancia inicial por defecto
+        let waveOffset = 0;            // Desplazamiento para la animación de ondas
 
         function adjustTab(direction) {
             activeTabIdx = (activeTabIdx + direction + totalTabs) % totalTabs;
@@ -522,24 +453,99 @@
             document.querySelectorAll('.hud-tab-btn').forEach(el => el.classList.remove('active'));
             
             document.getElementById(`tab-${index}`).classList.add('active');
-            const targetBtn = document.getElementById(`btn-${index}`);
-            if(targetBtn) targetBtn.classList.add('active');
+            document.getElementById(`btn-${index}`).classList.add('active');
 
             if(index === 1) setTimeout(resizeCharts, 60);
         }
 
         function resizeCharts() {
-            ['chart-dist', 'chart-servo', 'gauge-rpm'].forEach(id => {
+            ['radar-ultrasonic', 'chart-servo', 'gauge-rpm'].forEach(id => {
                 const canvas = document.getElementById(id);
                 if(canvas) {
                     canvas.width = canvas.parentElement.clientWidth;
                     canvas.height = canvas.parentElement.clientHeight;
                 }
             });
-            drawAll();
         }
 
-        // DIBUJO DEL TACÓMETRO DE AGUJA
+        // --- SISTEMA INTERACTIVO DE SIMULACIÓN DE ONDAS ULTRASÓNICAS ---
+        function drawUltrasonicRadar() {
+            const canvas = document.getElementById('radar-ultrasonic');
+            if (!canvas || canvas.width === 0) return;
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width, H = canvas.height;
+
+            ctx.clearRect(0, 0, W, H);
+
+            // Determinar colores y parámetros según proximidad
+            let colorTheme = '#00f0ff'; // Seguro por defecto (Cian)
+            let speedFactor = 0.5;      // Velocidad normal de onda
+            let isCritical = false;
+
+            if (currentDistanceValue < 20) {
+                colorTheme = '#ff2a2a'; // Crítico (Rojo)
+                speedFactor = 1.2;       // Ondas ultra rápidas
+                isCritical = true;
+            } else if (currentDistanceValue <= 50) {
+                colorTheme = '#ffaa00'; // Advertencia (Naranja)
+                speedFactor = 0.8;
+            }
+
+            // Aplicar efecto estrobo en zona crítica de colisión
+            if (isCritical && Math.floor(Date.now() / 150) % 2 === 0) {
+                ctx.fillStyle = 'rgba(255, 42, 42, 0.05)';
+                ctx.fillRect(0, 0, W, H);
+            }
+
+            // Posición base del sensor (Izquierda centrado verticalmente)
+            const sensorX = 40;
+            const sensorY = H / 2;
+
+            // 1. Dibujar silueta simplificada de perfil del sensor HC-SR04
+            ctx.fillStyle = '#223147';
+            ctx.fillRect(sensorX - 15, sensorY - 25, 15, 50); // Placa de circuito posterior
+            
+            ctx.fillStyle = '#6b7c96';
+            ctx.fillRect(sensorX, sensorY - 18, 12, 14); // Cilindro emisor superior
+            ctx.fillRect(sensorX, sensorY + 4, 12, 14);  // Cilindro receptor inferior
+
+            // 2. Mapear distancia en cm a píxeles de pantalla
+            const maxCm = 120; // Rango máximo visible en el HUD
+            const minPx = sensorX + 20;
+            const maxPx = W - 30;
+            const wallX = minPx + ((Math.min(currentDistanceValue, maxCm) / maxCm) * (maxPx - minPx));
+
+            // 3. Dibujar las Ondas Ultrasónicas Animadas (Arcos de radio creciente)
+            waveOffset += speedFactor;
+            if (waveOffset >= 25) waveOffset = 0;
+
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = colorTheme;
+
+            for (let r = waveOffset; r < (wallX - sensorX); r += 25) {
+                if (r > 10) {
+                    ctx.beginPath();
+                    // Dibujar arcos abriéndose hacia la derecha (dirección del obstáculo)
+                    ctx.arc(sensorX + 5, sensorY, r, -Math.PI / 3, Math.PI / 3, false);
+                    ctx.stroke();
+                }
+            }
+
+            // 4. Dibujar muro de impacto del obstáculo
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(wallX, sensorY - 45);
+            ctx.lineTo(wallX, sensorY + 45);
+            ctx.stroke();
+
+            // Sombra/Glow del muro de impacto
+            ctx.fillStyle = colorTheme;
+            ctx.globalAlpha = 0.25;
+            ctx.fillRect(wallX, sensorY - 45, 8, 90);
+            ctx.globalAlpha = 1.0;
+        }
+
+        // --- TACÓMETRO DE AGUJA ---
         function drawGauge(id, value, maxVal) {
             const canvas = document.getElementById(id);
             if (!canvas || canvas.width === 0) return;
@@ -547,91 +553,50 @@
             const W = canvas.width, H = canvas.height;
             
             ctx.clearRect(0, 0, W, H);
+            const cx = W / 2, cy = H * 0.75, radius = Math.min(W / 2, H) * 0.75;
             
-            const cx = W / 2;
-            const cy = H * 0.75;
-            const radius = Math.min(W / 2, H) * 0.75;
-            
-            // Arco de fondo
             ctx.beginPath();
             ctx.arc(cx, cy, radius, Math.PI, 2 * Math.PI, false);
-            ctx.lineWidth = 6;
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-            ctx.stroke();
+            ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)'; ctx.stroke();
 
-            // Arco activo
             ctx.beginPath();
             const valueRatio = Math.min(Math.max(value / maxVal, 0), 1);
-            const endAngle = Math.PI + (Math.PI * valueRatio);
-            ctx.arc(cx, cy, radius, Math.PI, endAngle, false);
-            ctx.lineWidth = 6;
-            ctx.strokeStyle = value > (maxVal * 0.8) ? 'var(--accent-red)' : 'var(--border-cyan)';
-            ctx.stroke();
+            ctx.arc(cx, cy, radius, Math.PI, Math.PI + (Math.PI * valueRatio), false);
+            ctx.lineWidth = 6; ctx.strokeStyle = value > (maxVal * 0.8) ? 'var(--accent-red)' : 'var(--border-cyan)'; ctx.stroke();
 
-            // Graduaciones (Ticks) y Escala de números
             const numTicks = 6; 
             for (let i = 0; i <= numTicks; i++) {
                 const angle = Math.PI + (Math.PI * (i / numTicks));
-                
-                const xStart = cx + (radius - 5) * Math.cos(angle);
-                const yStart = cy + (radius - 5) * Math.sin(angle);
-                const xEnd = cx + (radius + 5) * Math.cos(angle);
-                const yEnd = cy + (radius + 5) * Math.sin(angle);
-                
                 ctx.beginPath();
-                ctx.moveTo(xStart, yStart);
-                ctx.lineTo(xEnd, yEnd);
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = i >= 5 ? 'var(--accent-red)' : 'var(--text-muted)';
-                ctx.stroke();
+                ctx.moveTo(cx + (radius - 5) * Math.cos(angle), cy + (radius - 5) * Math.sin(angle));
+                ctx.lineTo(cx + (radius + 5) * Math.cos(angle), cy + (radius + 5) * Math.sin(angle));
+                ctx.lineWidth = 2; ctx.strokeStyle = i >= 5 ? 'var(--accent-red)' : 'var(--text-muted)'; ctx.stroke();
 
-                const valTick = Math.round((maxVal / numTicks) * i);
-                const xText = cx + (radius - 20) * Math.cos(angle);
-                const yText = cy + (radius - 20) * Math.sin(angle) + 4;
-                
                 ctx.fillStyle = i >= 5 ? 'var(--accent-red)' : 'var(--text-muted)';
-                ctx.font = '9px monospace';
-                ctx.textAlign = 'center';
-                ctx.fillText(valTick, xText, yText);
+                ctx.font = '9px monospace'; ctx.textAlign = 'center';
+                ctx.fillText(Math.round((maxVal / numTicks) * i), cx + (radius - 20) * Math.cos(angle), cy + (radius - 20) * Math.sin(angle) + 4);
             }
 
-            // Aguja Dinámica
-            const needleAngle = Math.PI + (Math.PI * valueRatio);
-            ctx.beginPath();
-            ctx.moveTo(cx, cy);
-            ctx.lineTo(cx + (radius - 8) * Math.cos(needleAngle), cy + (radius - 8) * Math.sin(needleAngle));
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = 'var(--accent-red)';
-            ctx.lineCap = 'round';
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + (radius - 8) * Math.cos(Math.PI + (Math.PI * valueRatio)), cy + (radius - 8) * Math.sin(Math.PI + (Math.PI * valueRatio)));
+            ctx.lineWidth = 3; ctx.strokeStyle = 'var(--accent-red)'; ctx.lineCap = 'round'; ctx.stroke();
 
-            // Pin central
-            ctx.beginPath();
-            ctx.arc(cx, cy, 6, 0, 2 * Math.PI);
-            ctx.fillStyle = '#ffffff';
-            ctx.fill();
+            ctx.beginPath(); ctx.arc(cx, cy, 6, 0, 2 * Math.PI); ctx.fillStyle = '#ffffff'; ctx.fill();
 
-            // Número entero en el centro/abajo
-            ctx.fillStyle = 'var(--border-cyan)';
-            ctx.font = 'bold 22px "Courier New", monospace';
-            ctx.textAlign = 'center';
+            ctx.fillStyle = 'var(--border-cyan)'; ctx.font = 'bold 22px "Courier New", monospace'; ctx.textAlign = 'center';
             ctx.fillText(value, cx, cy + 28);
-            
-            ctx.fillStyle = 'var(--text-muted)';
-            ctx.font = '9px system-ui';
-            ctx.fillText('RPM', cx, cy + 38);
+            ctx.fillStyle = 'var(--text-muted)'; ctx.font = '9px system-ui'; ctx.fillText('RPM', cx, cy + 38);
         }
 
-        function draw(id, data, max, color) {
+        // --- GRÁFICA DE CONTROL (SERVO) ---
+        function drawLineChart(id, data, max, color) {
             const canvas = document.getElementById(id);
             if(!canvas || canvas.width === 0) return;
             const ctx = canvas.getContext('2d');
             const W = canvas.width, H = canvas.height;
             
             ctx.clearRect(0,0,W,H);
-            ctx.beginPath();
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 2.5;
             
             data.forEach((val, i) => {
                 const x = (W / (maxPoints - 1)) * i;
@@ -641,20 +606,24 @@
             ctx.stroke();
         }
 
-        function drawAll() {
-            draw('chart-dist', storeDist, 150, '#00f0ff');
-            draw('chart-servo', storeServo, 180, '#ffaa00');
-            drawGauge('gauge-rpm', currentRPMValue, 250); 
+        // Bucle global de animación para las ondas de ultrasonido
+        function loopGlobalRender() {
+            if (activeTabIdx === 1) {
+                drawUltrasonicRadar();
+                drawGauge('gauge-rpm', currentRPMValue, 250);
+                drawLineChart('chart-servo', storeServo, 180, '#ffaa00');
+            }
+            requestAnimationFrame(loopGlobalRender);
         }
+        loopGlobalRender();
 
-        // CONEXIÓN MQTT
+        // --- CONEXIÓN MQTT INTEGRAL ---
         const client = mqtt.connect(BROKER, { username: AIO_USER, password: AIO_KEY });
 
         client.on('connect', () => {
             const indicator = document.getElementById('status-mqtt');
             indicator.innerText = "LIVE: TELEMETRÍA ONLINE";
-            indicator.style.color = "#00f0ff";
-            indicator.style.borderColor = "#00f0ff";
+            indicator.style.color = "#00f0ff"; indicator.style.borderColor = "#00f0ff";
             client.subscribe(AIO_FEED);
         });
 
@@ -663,16 +632,19 @@
             if(raw.length >= 5) {
                 const d = parseInt(raw[0]), s = parseInt(raw[1]), il = parseInt(raw[2]), ir = parseInt(raw[3]), r = parseInt(raw[4]);
 
-                // Telemetría Dinámica
+                // Actualizar valores en memoria global
+                currentDistanceValue = d;
+                currentRPMValue = r;
+
+                // Modificar textos informativos directos
                 document.getElementById('val-dist').innerText = d + " cm";
-                currentRPMValue = r; 
                 document.getElementById('val-servo').innerText = s + "°";
 
-                // Mapeo Infrarrojo
+                // Cambiar clases visuales de los sensores IR
                 document.getElementById('ir-izq').className = il ? 'ir-sensor active-line' : 'ir-sensor';
                 document.getElementById('ir-der').className = ir ? 'ir-sensor active-line' : 'ir-sensor';
 
-                // Física Cinemática
+                // Cálculos Físicos de la Pestaña de Análisis
                 const v = r * 0.003455;
                 const sb = ((v * 0.05) + (Math.pow(v, 2) / (2 * 1.5)) + 0.10) * 100;
                 
@@ -682,14 +654,9 @@
                 document.getElementById('iso-f2').innerText = vStr;
                 document.getElementById('iso-res').innerText = sb.toFixed(1) + " cm";
 
-                // Historial de Gráficos
-                [storeDist, storeRPM, storeServo].forEach((arr, i) => {
-                    const val = [d, r, s][i];
-                    arr.push(val);
-                    if(arr.length > maxPoints) arr.shift();
-                });
-
-                if(activeTabIdx === 1) drawAll();
+                // Historial para el gráfico del Servo
+                storeServo.push(s);
+                if(storeServo.length > maxPoints) storeServo.shift();
             }
         });
     </script>
