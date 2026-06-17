@@ -11,6 +11,7 @@
             --panel-bg: rgba(13, 22, 38, 0.75);
             --border-cyan: #00f0ff;
             --accent-red: #ff2a2a;
+            --accent-orange: #ffaa00;
             --text-main: #ffffff;
             --text-muted: #6b7c96;
             --panel-border: rgba(0, 240, 255, 0.15);
@@ -393,8 +394,10 @@
             
             <div class="telemetry-card">
                 <h4 class="panel-title">Barrido Servo HC-SR04</h4>
-                <div id="val-servo" class="big-numeric" style="color: var(--accent-red)">90&deg;</div>
-                <div class="chart-box"><canvas id="chart-servo"></canvas></div>
+                <div id="val-servo" class="big-numeric" style="color: var(--accent-orange)">90&deg;</div>
+                <div class="chart-box">
+                    <canvas id="gauge-servo-angle"></canvas>
+                </div>
             </div>
 
             <div class="telemetry-card">
@@ -435,12 +438,11 @@
 
         let activeTabIdx = 0;
         const totalTabs = 3;
-        let storeServo = [];
-        const maxPoints = 20;
         
         let currentRPMValue = 0; 
-        let currentDistanceValue = 60; // Distancia inicial por defecto
-        let waveOffset = 0;            // Desplazamiento para la animación de ondas
+        let currentDistanceValue = 60; 
+        let currentServoValue = 90;   // Ángulo inicial por defecto (Centro)
+        let waveOffset = 0;           
 
         function adjustTab(direction) {
             activeTabIdx = (activeTabIdx + direction + totalTabs) % totalTabs;
@@ -459,7 +461,7 @@
         }
 
         function resizeCharts() {
-            ['radar-ultrasonic', 'chart-servo', 'gauge-rpm'].forEach(id => {
+            ['radar-ultrasonic', 'gauge-rpm', 'gauge-servo-angle'].forEach(id => {
                 const canvas = document.getElementById(id);
                 if(canvas) {
                     canvas.width = canvas.parentElement.clientWidth;
@@ -468,7 +470,7 @@
             });
         }
 
-        // --- SISTEMA INTERACTIVO DE SIMULACIÓN DE ONDAS ULTRASÓNICAS ---
+        // --- 1. RADAR INTERACTIVO DE ONDAS ULTRASÓNICAS ---
         function drawUltrasonicRadar() {
             const canvas = document.getElementById('radar-ultrasonic');
             if (!canvas || canvas.width === 0) return;
@@ -477,75 +479,56 @@
 
             ctx.clearRect(0, 0, W, H);
 
-            // Determinar colores y parámetros según proximidad
-            let colorTheme = '#00f0ff'; // Seguro por defecto (Cian)
-            let speedFactor = 0.5;      // Velocidad normal de onda
+            let colorTheme = '#00f0ff'; 
+            let speedFactor = 0.5;      
             let isCritical = false;
 
             if (currentDistanceValue < 20) {
-                colorTheme = '#ff2a2a'; // Crítico (Rojo)
-                speedFactor = 1.2;       // Ondas ultra rápidas
+                colorTheme = '#ff2a2a'; 
+                speedFactor = 1.2;       
                 isCritical = true;
             } else if (currentDistanceValue <= 50) {
-                colorTheme = '#ffaa00'; // Advertencia (Naranja)
+                colorTheme = '#ffaa00'; 
                 speedFactor = 0.8;
             }
 
-            // Aplicar efecto estrobo en zona crítica de colisión
             if (isCritical && Math.floor(Date.now() / 150) % 2 === 0) {
                 ctx.fillStyle = 'rgba(255, 42, 42, 0.05)';
                 ctx.fillRect(0, 0, W, H);
             }
 
-            // Posición base del sensor (Izquierda centrado verticalmente)
-            const sensorX = 40;
-            const sensorY = H / 2;
+            const sensorX = 40, sensorY = H / 2;
 
-            // 1. Dibujar silueta simplificada de perfil del sensor HC-SR04
             ctx.fillStyle = '#223147';
-            ctx.fillRect(sensorX - 15, sensorY - 25, 15, 50); // Placa de circuito posterior
-            
+            ctx.fillRect(sensorX - 15, sensorY - 25, 15, 50); 
             ctx.fillStyle = '#6b7c96';
-            ctx.fillRect(sensorX, sensorY - 18, 12, 14); // Cilindro emisor superior
-            ctx.fillRect(sensorX, sensorY + 4, 12, 14);  // Cilindro receptor inferior
+            ctx.fillRect(sensorX, sensorY - 18, 12, 14); 
+            ctx.fillRect(sensorX, sensorY + 4, 12, 14);  
 
-            // 2. Mapear distancia en cm a píxeles de pantalla
-            const maxCm = 120; // Rango máximo visible en el HUD
-            const minPx = sensorX + 20;
-            const maxPx = W - 30;
+            const maxCm = 120; 
+            const minPx = sensorX + 20, maxPx = W - 30;
             const wallX = minPx + ((Math.min(currentDistanceValue, maxCm) / maxCm) * (maxPx - minPx));
 
-            // 3. Dibujar las Ondas Ultrasónicas Animadas (Arcos de radio creciente)
             waveOffset += speedFactor;
             if (waveOffset >= 25) waveOffset = 0;
 
-            ctx.lineWidth = 2.5;
-            ctx.strokeStyle = colorTheme;
-
+            ctx.lineWidth = 2.5; ctx.strokeStyle = colorTheme;
             for (let r = waveOffset; r < (wallX - sensorX); r += 25) {
                 if (r > 10) {
                     ctx.beginPath();
-                    // Dibujar arcos abriéndose hacia la derecha (dirección del obstáculo)
                     ctx.arc(sensorX + 5, sensorY, r, -Math.PI / 3, Math.PI / 3, false);
                     ctx.stroke();
                 }
             }
 
-            // 4. Dibujar muro de impacto del obstáculo
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.moveTo(wallX, sensorY - 45);
-            ctx.lineTo(wallX, sensorY + 45);
-            ctx.stroke();
+            ctx.lineWidth = 4; ctx.beginPath();
+            ctx.moveTo(wallX, sensorY - 45); ctx.lineTo(wallX, sensorY + 45); ctx.stroke();
 
-            // Sombra/Glow del muro de impacto
-            ctx.fillStyle = colorTheme;
-            ctx.globalAlpha = 0.25;
-            ctx.fillRect(wallX, sensorY - 45, 8, 90);
-            ctx.globalAlpha = 1.0;
+            ctx.fillStyle = colorTheme; ctx.globalAlpha = 0.25;
+            ctx.fillRect(wallX, sensorY - 45, 8, 90); ctx.globalAlpha = 1.0;
         }
 
-        // --- TACÓMETRO DE AGUJA ---
+        // --- 2. TACÓMETRO DE AGUJA (RPM) ---
         function drawGauge(id, value, maxVal) {
             const canvas = document.getElementById(id);
             if (!canvas || canvas.width === 0) return;
@@ -588,30 +571,82 @@
             ctx.fillStyle = 'var(--text-muted)'; ctx.font = '9px system-ui'; ctx.fillText('RPM', cx, cy + 38);
         }
 
-        // --- GRÁFICA DE CONTROL (SERVO) ---
-        function drawLineChart(id, data, max, color) {
-            const canvas = document.getElementById(id);
-            if(!canvas || canvas.width === 0) return;
+        // --- 3. NUEVO: VISOR DE BARRIDO ANGULAR EN ABANICO (SERVO) ---
+        function drawServoAngleGauge() {
+            const canvas = document.getElementById('gauge-servo-angle');
+            if (!canvas || canvas.width === 0) return;
             const ctx = canvas.getContext('2d');
             const W = canvas.width, H = canvas.height;
-            
-            ctx.clearRect(0,0,W,H);
-            ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 2.5;
-            
-            data.forEach((val, i) => {
-                const x = (W / (maxPoints - 1)) * i;
-                const y = H - (val / max * H * 0.75) - 12;
-                if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-            });
+
+            ctx.clearRect(0, 0, W, H);
+
+            // Posicionamiento en la base central baja de la tarjeta gráfica
+            const cx = W / 2;
+            const cy = H - 15;
+            const radius = Math.min(W / 2, H) * 0.85;
+
+            // Arco exterior de fondo guía del abanico (0 a 180 grados)
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, Math.PI, 2 * Math.PI, false);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
             ctx.stroke();
+
+            // Dibujar Ticks y etiquetas cada 45 grados (0, 45, 90, 135, 180)
+            const anglesTicks = [0, 45, 90, 135, 180];
+            anglesTicks.forEach(tickDeg => {
+                // Mapear los grados a radianes invertidos para que 0 sea izquierda y 180 derecha
+                const rad = Math.PI + (Math.PI * (tickDeg / 180));
+                
+                ctx.beginPath();
+                ctx.moveTo(cx + (radius - 4) * Math.cos(rad), cy + (radius - 4) * Math.sin(rad));
+                ctx.lineTo(cx + radius * Math.cos(rad), cy + radius * Math.sin(rad));
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = tickDeg === 90 ? 'var(--border-cyan)' : 'var(--text-muted)';
+                ctx.stroke();
+
+                // Textos guía angulares
+                ctx.fillStyle = 'var(--text-muted)';
+                ctx.font = '8px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(tickDeg + '°', cx + (radius - 14) * Math.cos(rad), cy + (radius - 14) * Math.sin(rad) + 3);
+            });
+
+            // Convertir el valor actual en vivo del Servo a radianes
+            // Forzamos un rango seguro entre 0 y 180 grados
+            const safeDegrees = Math.min(Math.max(currentServoValue, 0), 180);
+            const targetRad = Math.PI + (Math.PI * (safeDegrees / 180));
+
+            // Dibujar el haz de luz semitransparente del radar
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, radius - 2, targetRad - 0.06, targetRad + 0.06, false);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(2ff, 170, 0, 0.15)'; // Estela naranja suave
+            ctx.fill();
+
+            // Dibujar la aguja de barrido del vector principal
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + (radius - 2) * Math.cos(targetRad), cy + (radius - 2) * Math.sin(targetRad));
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'var(--accent-orange)';
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // Punto de pivote central de la dirección
+            ctx.beginPath();
+            ctx.arc(cx, cy, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
         }
 
-        // Bucle global de animación para las ondas de ultrasonido
+        // Bucle central de renderizado continuo sincronizado por hardware
         function loopGlobalRender() {
             if (activeTabIdx === 1) {
                 drawUltrasonicRadar();
                 drawGauge('gauge-rpm', currentRPMValue, 250);
-                drawLineChart('chart-servo', storeServo, 180, '#ffaa00');
+                drawServoAngleGauge(); // Renderizar el abanico del servo
             }
             requestAnimationFrame(loopGlobalRender);
         }
@@ -632,19 +667,20 @@
             if(raw.length >= 5) {
                 const d = parseInt(raw[0]), s = parseInt(raw[1]), il = parseInt(raw[2]), ir = parseInt(raw[3]), r = parseInt(raw[4]);
 
-                // Actualizar valores en memoria global
+                // Volcar variables al estado global de animación
                 currentDistanceValue = d;
+                currentServoValue = s; // Pasamos los grados actuales al renderizador del abanico
                 currentRPMValue = r;
 
-                // Modificar textos informativos directos
+                // Actualizar textos digitales directos
                 document.getElementById('val-dist').innerText = d + " cm";
                 document.getElementById('val-servo').innerText = s + "°";
 
-                // Cambiar clases visuales de los sensores IR
+                // Cambiar estados lógicos de los infrarrojos de piso
                 document.getElementById('ir-izq').className = il ? 'ir-sensor active-line' : 'ir-sensor';
                 document.getElementById('ir-der').className = ir ? 'ir-sensor active-line' : 'ir-sensor';
 
-                // Cálculos Físicos de la Pestaña de Análisis
+                // Bloque Cinemático Dinámico (Pestaña 3)
                 const v = r * 0.003455;
                 const sb = ((v * 0.05) + (Math.pow(v, 2) / (2 * 1.5)) + 0.10) * 100;
                 
@@ -653,10 +689,6 @@
                 document.getElementById('iso-f1').innerText = vStr;
                 document.getElementById('iso-f2').innerText = vStr;
                 document.getElementById('iso-res').innerText = sb.toFixed(1) + " cm";
-
-                // Historial para el gráfico del Servo
-                storeServo.push(s);
-                if(storeServo.length > maxPoints) storeServo.shift();
             }
         });
     </script>
