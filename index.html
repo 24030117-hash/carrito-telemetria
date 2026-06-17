@@ -290,16 +290,6 @@
             margin-top: 15px;
         }
 
-        /* Contenedor optimizado para el tacómetro analógico */
-        .gauge-box {
-            height: 160px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            margin-top: 10px;
-        }
-
         .ir-row { display: flex; justify-content: space-between; gap: 15px; margin-top: 25px; }
         .ir-sensor {
             flex: 1;
@@ -432,14 +422,11 @@
                 <div id="val-dist" class="big-numeric">--</div>
                 <div class="chart-box"><canvas id="chart-dist"></canvas></div>
             </div>
-            
             <div class="telemetry-card">
                 <h4 class="panel-title">Tacómetro (RPM)</h4>
-                <div class="gauge-box">
-                    <canvas id="gauge-rpm"></canvas>
-                </div>
+                <div id="val-rpm" class="big-numeric">--</div>
+                <div class="chart-box"><canvas id="chart-rpm"></canvas></div>
             </div>
-            
             <div class="telemetry-card">
                 <h4 class="panel-title">Barrido Servo HC-SR04</h4>
                 <div id="val-servo" class="big-numeric" style="color: var(--accent-red)">90&deg;</div>
@@ -511,7 +498,6 @@
 
         let storeDist = [], storeRPM = [], storeServo = [];
         const maxPoints = 20;
-        let currentRPMValue = 0; // Almacena el valor entero actual de RPM
 
         function adjustTab(direction) {
             activeTabIdx = (activeTabIdx + direction + totalTabs) % totalTabs;
@@ -531,7 +517,7 @@
         }
 
         function resizeCharts() {
-            ['chart-dist', 'chart-servo', 'gauge-rpm'].forEach(id => {
+            ['chart-dist', 'chart-rpm', 'chart-servo'].forEach(id => {
                 const canvas = document.getElementById(id);
                 if(canvas) {
                     canvas.width = canvas.parentElement.clientWidth;
@@ -539,92 +525,6 @@
                 }
             });
             drawAll();
-        }
-
-        // FUNCIÓN ENCARGADA DE DIBUJAR EL TACÓMETRO ANALÓGICO CON AGUJA
-        function drawGauge(id, value, maxVal) {
-            const canvas = document.getElementById(id);
-            if (!canvas || canvas.width === 0) return;
-            const ctx = canvas.getContext('2d');
-            const W = canvas.width, H = canvas.height;
-            
-            ctx.clearRect(0, 0, W, H);
-            
-            // Determinar centro y radio adaptativo
-            const cx = W / 2;
-            const cy = H * 0.75;
-            const radius = Math.min(W / 2, H) * 0.75;
-            
-            // 1. Dibujar el arco de fondo del tacómetro (Gris degradado)
-            ctx.beginPath();
-            ctx.arc(cx, cy, radius, Math.PI, 2 * Math.PI, false);
-            ctx.lineWidth = 6;
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-            ctx.stroke();
-
-            // 2. Dibujar el arco activo según las RPM actuales (De cian a rojo en zona crítica)
-            ctx.beginPath();
-            const valueRatio = Math.min(Math.max(value / maxVal, 0), 1);
-            const endAngle = Math.PI + (Math.PI * valueRatio);
-            ctx.arc(cx, cy, radius, Math.PI, endAngle, false);
-            ctx.lineWidth = 6;
-            ctx.strokeStyle = value > (maxVal * 0.8) ? 'var(--accent-red)' : 'var(--border-cyan)';
-            ctx.stroke();
-
-            // 3. Dibujar las líneas de marcas de velocidad (Ticks) y los números de escala
-            const numTicks = 6; 
-            for (let i = 0; i <= numTicks; i++) {
-                const angle = Math.PI + (Math.PI * (i / numTicks));
-                
-                // Líneas de graduación
-                const xStart = cx + (radius - 5) * Math.cos(angle);
-                const yStart = cy + (radius - 5) * Math.sin(angle);
-                const xEnd = cx + (radius + 5) * Math.cos(angle);
-                const yEnd = cy + (radius + 5) * Math.sin(angle);
-                
-                ctx.beginPath();
-                ctx.moveTo(xStart, yStart);
-                ctx.lineTo(xEnd, yEnd);
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = i >= 5 ? 'var(--accent-red)' : 'var(--text-muted)';
-                ctx.stroke();
-
-                // Números pequeños del tacómetro a los extremos/centro
-                const valTick = Math.round((maxVal / numTicks) * i);
-                const xText = cx + (radius - 20) * Math.cos(angle);
-                const yText = cy + (radius - 20) * Math.sin(angle) + 4;
-                
-                ctx.fillStyle = i >= 5 ? 'var(--accent-red)' : 'var(--text-muted)';
-                ctx.font = '9px monospace';
-                ctx.textAlign = 'center';
-                ctx.fillText(valTick, xText, yText);
-            }
-
-            // 4. Dibujar la Aguja Dinámica
-            const needleAngle = Math.PI + (Math.PI * valueRatio);
-            ctx.beginPath();
-            ctx.moveTo(cx, cy);
-            ctx.lineTo(cx + (radius - 8) * Math.cos(needleAngle), cy + (radius - 8) * Math.sin(needleAngle));
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = 'var(--accent-red)';
-            ctx.lineCap = 'round';
-            ctx.stroke();
-
-            // Pin central de la aguja
-            ctx.beginPath();
-            ctx.arc(cx, cy, 6, 0, 2 * Math.PI);
-            ctx.fillStyle = '#ffffff';
-            ctx.fill();
-
-            // 5. Mostrar el número entero pequeño abajo/centro del tacómetro
-            ctx.fillStyle = 'var(--border-cyan)';
-            ctx.font = 'bold 22px "Courier New", monospace';
-            ctx.textAlign = 'center';
-            ctx.fillText(value, cx, cy + 28);
-            
-            ctx.fillStyle = 'var(--text-muted)';
-            ctx.font = '9px system-ui';
-            ctx.fillText('RPM', cx, cy + 38);
         }
 
         function draw(id, data, max, color) {
@@ -648,8 +548,8 @@
 
         function drawAll() {
             draw('chart-dist', storeDist, 150, '#00f0ff');
+            draw('chart-rpm', storeRPM, 250, '#ff2a2a');
             draw('chart-servo', storeServo, 180, '#ffaa00');
-            drawGauge('gauge-rpm', currentRPMValue, 250); // Llama al tacómetro analógico
         }
 
         // CONEXIÓN MQTT
@@ -670,7 +570,7 @@
 
                 // Telemetría Dinámica
                 document.getElementById('val-dist').innerText = d + " cm";
-                currentRPMValue = r; // Asigna el valor entero para el render de la aguja
+                document.getElementById('val-rpm').innerText = r;
                 document.getElementById('val-servo').innerText = s + "°";
 
                 // Mapeo Infrarrojo
