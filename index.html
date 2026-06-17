@@ -299,9 +299,9 @@
             margin-top: 5px;
         }
 
-        /* --- MODIFICACIÓN DE TAMAÑO: CHASIS VECTORIAL IR --- */
+        /* --- CHASIS VECTORIAL IR --- */
         .chassis-viewport {
-            height: 190px; /* Incrementado de 135px a 190px para darle más área vertical */
+            height: 135px;
             position: relative;
             display: flex;
             justify-content: center;
@@ -313,8 +313,8 @@
         }
 
         .vector-car {
-            width: 70px;  /* Incrementado de 50px para hacerlo más ancho */
-            height: 112px; /* Incrementado de 80px para mantener la proporción de aspecto */
+            width: 50px;
+            height: 80px;
             background: #151e2b;
             border-radius: 6px;
             position: relative;
@@ -323,38 +323,37 @@
 
         .car-wheel {
             position: absolute;
-            width: 14px;  /* Escalado proporcional de las ruedas */
-            height: 25px; /* Escalado proporcional de las ruedas */
+            width: 10px;
+            height: 18px;
             background: #080c14;
             border-radius: 2px;
             border: 1px solid rgba(255,255,255,0.05);
         }
-        /* Ajuste de offsets laterales de las ruedas en base al nuevo ancho */
-        .w-fl { top: 14px; left: -15px; }
-        .w-fr { top: 14px; right: -15px; }
-        .w-rl { bottom: 14px; left: -15px; }
-        .w-rr { bottom: 14px; right: -15px; }
+        .w-fl { top: 10px; left: -11px; }
+        .w-fr { top: 10px; right: -11px; }
+        .w-rl { bottom: 10px; left: -11px; }
+        .w-rr { bottom: 10px; right: -11px; }
 
         .ir-faro {
             position: absolute;
-            top: -5px;
-            width: 11px; /* Sensores infrarrojos levemente más grandes */
-            height: 11px;
+            top: -4px;
+            width: 8px;
+            height: 8px;
             background: #0f1520;
             border-radius: 50%;
             border: 1px solid rgba(255,255,255,0.1);
             transition: all 0.2s ease;
         }
-        .ir-faro-izq { left: 11px; }
-        .ir-faro-der { right: 11px; }
+        .ir-faro-izq { left: 8px; }
+        .ir-faro-der { right: 8px; }
 
         .ir-faro::after {
             content: '';
             position: absolute;
-            top: -45px; /* Escalado de la proyección del haz de luz */
-            left: -20px;
-            width: 50px;
-            height: 45px;
+            top: -35px;
+            left: -16px;
+            width: 40px;
+            height: 35px;
             background: radial-gradient(ellipse at bottom, rgba(0, 240, 255, 0.4) 0%, transparent 70%);
             clip-path: polygon(40% 100%, 60% 100%, 100% 0%, 0% 0%);
             opacity: 0;
@@ -424,7 +423,7 @@
 
     <div class="hud-tabs-container">
         <div class="hud-tabs">
-            <button class="hud-tab-btn active" id="btn-0" onclick="switchTab(0)">01 // Ficha Técnico</button>
+            <button class="hud-tab-btn active" id="btn-0" onclick="switchTab(0)">01 // Ficha Técnica</button>
             <button class="hud-tab-btn" id="btn-1" onclick="switchTab(1)">02 // Telemetría en Vivo</button>
             <button class="hud-tab-btn" id="btn-2" onclick="switchTab(2)">03 // Análisis Dinámico</button>
         </div>
@@ -718,7 +717,7 @@
             }
         }
 
-        // --- 3. TACÓMETRO DE BARRIDO DE SERVO (DISEÑO HORIZONTAL SPORT) ---
+        // --- 3. NUEVO: TACÓMETRO DE BARRIDO DE SERVO (DISEÑO HORIZONTAL SPORT) ---
         function drawSportsServoGauge() {
             const canvas = document.getElementById('gauge-servo-angle');
             if (!canvas || canvas.width === 0) return;
@@ -728,8 +727,8 @@
             ctx.clearRect(0, 0, W, H);
 
             const cx = W / 2, cy = H - 20, radius = Math.min(W / 2, H) * 0.85;
-            const startAngle = Math.PI * 1.0; 
-            const endAngle = Math.PI * 2.0;   
+            const startAngle = Math.PI * 1.0; // 180 grados a la izquierda
+            const endAngle = Math.PI * 2.0;   // 360 grados a la derecha
 
             // Arco exterior deportivo segmentado
             ctx.beginPath();
@@ -786,6 +785,99 @@
             ctx.fillStyle = 'var(--text-main)'; ctx.font = '900 16px monospace';
             ctx.fillText(safeDegrees + '°', cx, cy - 25);
         }
+
+        // --- PIPELINE DE PROCESAMIENTO DINÁMICO ---
+        function procesarTelemetria(payloadString) {
+            try {
+                const datos = JSON.parse(payloadString);
+                
+                if (datos.distancia !== undefined) {
+                    currentDistanceValue = parseInt(datos.distancia);
+                    document.getElementById('val-dist').innerText = currentDistanceValue;
+                }
+                if (datos.rpm !== undefined) {
+                    currentRPMValue = parseInt(datos.rpm);
+                }
+                if (datos.servo !== undefined) {
+                    currentServoValue = parseInt(datos.servo);
+                }
+                
+                if (datos.ir_izq !== undefined && datos.ir_der !== undefined) {
+                    const izq = parseInt(datos.ir_izq);
+                    const der = parseInt(datos.ir_der);
+                    
+                    const nodeIzq = document.getElementById('node-ir-izq');
+                    const nodeDer = document.getElementById('node-ir-der');
+                    const txtIzq = document.getElementById('state-izq');
+                    const txtDer = document.getElementById('state-der');
+                    const valStatus = document.getElementById('val-ir-status');
+                    
+                    if(izq === 1) { nodeIzq.classList.add('active-line'); txtIzq.innerText = 'LINE'; txtIzq.className = 'active-text'; }
+                    else { nodeIzq.classList.remove('active-line'); txtIzq.innerText = 'OFF'; txtIzq.className = ''; }
+                    
+                    if(der === 1) { nodeDer.classList.add('active-line'); txtDer.innerText = 'LINE'; txtDer.className = 'active-text'; }
+                    else { nodeDer.classList.remove('active-line'); txtDer.innerText = 'OFF'; txtDer.className = ''; }
+                    
+                    if(izq === 0 && der === 0) valStatus.innerText = 'CRUISING...';
+                    else valStatus.innerText = 'TRACKING...';
+                }
+
+                // Cálculo de cinemática en la Pestaña 3
+                const ruedaDiametroM = 0.066; 
+                const velocidadLineal = (currentRPMValue / 60) * Math.PI * ruedaDiametroM;
+                
+                document.getElementById('iso-v').innerText = velocidadLineal.toFixed(2) + " m/s";
+                document.getElementById('iso-f1').innerText = velocidadLineal.toFixed(2);
+                document.getElementById('iso-f2').innerText = velocidadLineal.toFixed(2);
+                
+                const s_b = (velocidadLineal * 0.05) + (Math.pow(velocidadLineal, 2) / (2 * 1.50)) + 0.10;
+                document.getElementById('iso-res').innerText = (s_b * 100).toFixed(1) + " cm";
+
+            } catch (e) {
+                console.error("Error descodificando trama JSON de telemetría:", e);
+            }
+        }
+
+        // --- CONFIGURACIÓN DEL BUCLE RENDER (60 FPS) ---
+        function loopRender() {
+            if (activeTabIdx === 1) {
+                drawUltrasonicRadar();
+                drawSportsGauge('gauge-rpm', currentRPMValue, 250);
+                drawSportsServoGauge();
+            }
+            requestAnimationFrame(loopRender);
+        }
+
+        // --- INICIALIZACIÓN CLIENTE MQTT ---
+        window.addEventListener('load', () => {
+            window.addEventListener('resize', resizeCharts);
+            resizeCharts();
+            requestAnimationFrame(loopRender);
+
+            const client = mqtt.connect(BROKER, {
+                username: AIO_USER,
+                password: AIO_KEY,
+                clientId: 'web_hud_' + Math.random().toString(16).substr(2, 8)
+            });
+
+            client.on('connect', () => {
+                document.getElementById('status-mqtt').innerText = '📡 TELEMETRÍA ONLINE';
+                document.getElementById('status-mqtt').style.borderColor = '#00f0ff';
+                document.getElementById('status-mqtt').style.color = '#ffffff';
+                client.subscribe(AIO_FEED, (err) => {
+                    if (err) console.error("Fallo al suscribirse al feed:", err);
+                });
+            });
+
+            client.on('message', (topic, message) => {
+                procesarTelemetria(message.toString());
+            });
+
+            client.on('close', () => {
+                document.getElementById('status-mqtt').innerText = '❌ DESCONECTADO (REINTENTANDO)';
+                document.getElementById('status-mqtt').style.borderColor = '#ff2a2a';
+            });
+        });
     </script>
 </body>
 </html>
