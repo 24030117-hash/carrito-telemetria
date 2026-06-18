@@ -25,6 +25,7 @@
             overflow-x: hidden;
         }
 
+        /* --- BANNER SUPERIOR ASIMÉTRICO --- */
         .header-banner {
             background: linear-gradient(135deg, var(--accent-red) 0%, #111 25%, #111 75%, var(--panel-border) 100%);
             padding: 15px 20px;
@@ -42,6 +43,7 @@
             letter-spacing: 3px;
         }
 
+        /* --- BARRA DE ESTADO COMPACTA --- */
         .status-indicator {
             display: inline-block;
             font-size: 0.65rem;
@@ -55,6 +57,7 @@
             background: rgba(0, 240, 255, 0.05);
         }
 
+        /* --- PESTAÑAS SUPERIORES --- */
         .hud-tabs-container {
             display: flex;
             align-items: center;
@@ -90,6 +93,7 @@
             border-bottom: 2px solid var(--accent-red);
         }
 
+        /* --- FLECHAS LATERALES FLOTANTES MASIVAS --- */
         .hud-massive-arrow {
             position: fixed;
             top: 50%;
@@ -118,6 +122,11 @@
             transform: translateY(-50%) scale(1.1);
         }
 
+        .hud-massive-arrow:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        /* --- CONTENIDOS --- */
         .tab-content { 
             display: none; 
             width: 100%; 
@@ -131,6 +140,7 @@
         
         .tab-content.active { display: block; }
 
+        /* --- PESTAÑA 1: SHOWCASE DEL VEHÍCULO --- */
         .showcase-container {
             display: flex;
             flex-direction: column;
@@ -215,13 +225,36 @@
             padding: 14px 16px;
             border-radius: 6px;
             border: 1px solid rgba(255, 255, 255, 0.03);
-            border-left: 3px solid var(--accent-red);
+            transition: all 0.3s ease;
         }
 
-        .spec-block-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 4px; }
-        .spec-block-value { font-weight: bold; font-size: 0.88rem; color: var(--text-main); }
+        .spec-block-item.border-red { border-left: 3px solid var(--accent-red); }
+        .spec-block-item.border-cyan { border-left: 3px solid var(--border-cyan); }
 
-        /* --- TELEMETRÍA 2x2 --- */
+        .spec-block-item:hover {
+            background: rgba(13, 22, 38, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .spec-block-label {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .spec-block-value {
+            font-weight: bold;
+            font-size: 0.88rem;
+            color: var(--text-main);
+        }
+
+        .highlight-red { color: var(--accent-red); font-family: monospace; }
+        .highlight-cyan { color: var(--border-cyan); font-family: monospace; }
+
+        /* --- PESTAÑA 2: TELEMETRÍA (MODIFICADA A RIGIDA 2x2) --- */
         .telemetry-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -237,16 +270,14 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
         }
 
         .big-numeric {
-            font-size: 3.5rem;
+            font-size: 3rem;
             font-weight: 800;
             color: var(--border-cyan);
             margin: 10px 0;
             font-family: 'Courier New', monospace;
-            text-align: center;
         }
 
         .gauge-box {
@@ -258,10 +289,10 @@
             margin-top: 10px;
         }
 
-        .ir-row { display: flex; justify-content: space-between; gap: 15px; margin-top: 10px; }
+        .ir-row { display: flex; justify-content: space-between; gap: 15px; margin-top: auto; }
         .ir-sensor {
             flex: 1;
-            padding: 20px;
+            padding: 15px;
             font-size: 0.8rem;
             font-weight: bold;
             background: rgba(255,255,255,0.02);
@@ -274,17 +305,45 @@
             background: rgba(0, 240, 255, 0.1);
             border-color: var(--border-cyan);
             color: var(--border-cyan);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
         }
 
-        .formula-container { background: var(--panel-bg); border: 1px solid var(--panel-border); padding: 30px; border-radius: 4px; margin-bottom: 40px; }
-        .math-display { font-size: 1.6rem; padding: 25px; background: rgba(0,0,0,0.4); border-radius: 4px; font-family: 'Courier New', monospace; margin: 20px auto; max-width: 600px; text-align: center; }
+        /* --- PESTAÑA 3: ANÁLISIS --- */
+        .formula-container {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            padding: 30px;
+            border-radius: 4px;
+            margin-bottom: 40px;
+        }
+
+        .math-display {
+            font-size: 1.6rem;
+            padding: 25px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin: 20px auto;
+            max-width: 600px;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+
         .fraccion { display: inline-flex; flex-direction: column; vertical-align: middle; padding: 0 5px; }
         .numerador { border-bottom: 2px solid white; padding-bottom: 2px; }
 
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 1200px) {
+            .hud-massive-arrow { font-size: 5rem; left: 20px; right: 20px; } 
+            .tab-content { max-width: 950px; }
+        }
+        @media (max-width: 992px) {
+            .specs-blocks-grid { grid-template-columns: repeat(2, 1fr); }
+            .hud-massive-arrow { font-size: 4rem; left: 10px; right: 10px; }
+        }
         @media (max-width: 768px) {
             .hud-tabs { display: none; } 
             .specs-blocks-grid { grid-template-columns: 1fr; }
-            .telemetry-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
+            .hud-massive-arrow { font-size: 3rem; left: 5px; right: 5px; background: rgba(0,0,0,0.4); border-radius: 50%; width: 50px; height: 50px;} 
         }
     </style>
 </head>
@@ -308,14 +367,46 @@
 
     <div id="tab-0" class="tab-content active">
         <div class="showcase-container">
-            <div class="robot-viewport"><div class="laser-scanner"></div><img src="carrito.png"></div>
+            <div class="robot-viewport">
+                <div class="laser-scanner"></div>
+                <img src="carrito.png" alt="Prototipo Robótico">
+            </div>
+
             <div class="specs-panel">
-                <h4 class="panel-title">Especificaciones</h4>
+                <h4 class="panel-title">Especificaciones del Prototipo</h4>
                 <div class="specs-blocks-grid">
-                    <div class="spec-block-item"><span class="spec-block-label">MCU</span><span class="spec-block-value">ESP32</span></div>
-                    <div class="spec-block-item"><span class="spec-block-label">Esclavo</span><span class="spec-block-value">ATmega328P</span></div>
-                    <div class="spec-block-item"><span class="spec-block-label">Radio</span><span class="spec-block-value">HC-12</span></div>
-                    <div class="spec-block-item"><span class="spec-block-label">Servo</span><span class="spec-block-value">SG90</span></div>
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Microcontrolador Maestro</span>
+                        <span class="spec-block-value highlight-red">ESP32 DevKit V1</span>
+                    </div>
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Procesamiento Esclavo</span>
+                        <span class="spec-block-value highlight-cyan">Arduino ATmega328P</span>
+                    </div>
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Transmisión Inalámbrica</span>
+                        <span class="spec-block-value">Radio HC-12 (433MHz)</span>
+                    </div>
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Detección Obstáculos</span>
+                        <span class="spec-block-value">HC-SR04 Ultrasónico</span>
+                    </div>
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Diámetro de Rueda</span>
+                        <span class="spec-block-value">6.60 cm</span>
+                    </div>
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Resolución Encoder</span>
+                        <span class="spec-block-value">20 Ranuras / Vuelta</span>
+                    </div>
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Seguidor de Línea</span>
+                        <span class="spec-block-value">Dual IR TCRT5000</span>
+                    </div>
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Actuador Evasión</span>
+                        <span class="spec-block-value">Micro Servo SG90</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -324,22 +415,26 @@
     <div id="tab-1" class="tab-content">
         <div class="telemetry-grid">
             <div class="telemetry-card">
-                <h4 class="panel-title">Distancia (cm)</h4>
+                <h4 class="panel-title">Distancia de Obstáculo</h4>
                 <div id="val-dist" class="big-numeric">--</div>
             </div>
+            
             <div class="telemetry-card">
-                <h4 class="panel-title">Velocidad (RPM)</h4>
-                <div class="gauge-box"><canvas id="gauge-rpm"></canvas></div>
+                <h4 class="panel-title">Tacómetro (RPM)</h4>
+                <div class="gauge-box">
+                    <canvas id="gauge-rpm"></canvas>
+                </div>
             </div>
+            
             <div class="telemetry-card">
                 <h4 class="panel-title">Ángulo Servo</h4>
-                <div id="val-servo" class="big-numeric">90&deg;</div>
+                <div id="val-servo" class="big-numeric" style="color: var(--accent-red)">90&deg;</div>
             </div>
             <div class="telemetry-card">
-                <h4 class="panel-title">Sensores IR</h4>
+                <h4 class="panel-title">Detección Infrarroja (Piso)</h4>
                 <div class="ir-row">
-                    <div id="ir-izq" class="ir-sensor">IZQ</div>
-                    <div id="ir-der" class="ir-sensor">DER</div>
+                    <div id="ir-izq" class="ir-sensor">MÓDULO IZQUIERDO</div>
+                    <div id="ir-der" class="ir-sensor">MÓDULO DERECHO</div>
                 </div>
             </div>
         </div>
@@ -347,9 +442,42 @@
 
     <div id="tab-2" class="tab-content">
         <div class="formula-container">
-            <h4 class="panel-title">Cálculo Cinemático</h4>
-            <div class="math-display">S<sub>b</sub> = (v &middot; 0.05) + (v<sup>2</sup> / 3.0) + 0.10</div>
-            <div id="iso-res" class="big-numeric" style="color: var(--accent-red)">-- cm</div>
+            <h4 class="panel-title">Cálculo Cinemático de Frenado (ISO)</h4>
+            <p style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">Evaluación de distancia mínima de parada basada en velocidad periférica.</p>
+            
+            <div class="math-display">
+                S<sub>b</sub> = (<span id="iso-f1" style="color:var(--border-cyan)">v</span> &middot; <span style="color:rgba(255,255,255,0.6)">0.05</span>) + 
+                <div class="fraccion">
+                    <div class="numerador">(<span id="iso-f2" style="color:var(--border-cyan)">v</span>)<sup>2</sup></div>
+                    <div>2 &middot; <span style="color:var(--accent-red)">1.50</span></div>
+                </div>
+                + <span style="color:rgba(0, 240, 255, 0.6)">0.10</span>
+            </div>
+
+            <div class="specs-panel" style="margin: 20px auto;">
+                <h4 class="panel-title">Parámetros de Entrada Activos</h4>
+                <div class="specs-blocks-grid" style="grid-template-columns: repeat(2, 1fr);">
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Velocidad Lineal Calculada (v)</span>
+                        <span id="iso-v" class="spec-block-value highlight-cyan">0.00 m/s</span>
+                    </div>
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Tiempo de Retraso de Red (t)</span>
+                        <span class="spec-block-value">0.05 s</span>
+                    </div>
+                    <div class="spec-block-item border-red">
+                        <span class="spec-block-label">Desaceleración Mecánica (a)</span>
+                        <span class="spec-block-value">1.50 m/s²</span>
+                    </div>
+                    <div class="spec-block-item border-cyan">
+                        <span class="spec-block-label">Margen Crítico ISO (Sm)</span>
+                        <span class="spec-block-value">0.10 m</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-top: 20px;">Distancia de Parada Mínima Exigida:</div>
+            <div id="iso-res" class="big-numeric" style="color: var(--accent-red); margin: 5px 0;">-- cm</div>
         </div>
     </div>
 
@@ -359,12 +487,27 @@
         const AIO_FEED = "dieglot/feeds/telemetria"; 
         const BROKER   = "wss://io.adafruit.com:443/mqtt";
 
+        let activeTabIdx = 0;
+        const totalTabs = 3;
+        let currentRPMValue = 0; 
+
+        function adjustTab(direction) {
+            activeTabIdx = (activeTabIdx + direction + totalTabs) % totalTabs;
+            switchTab(activeTabIdx);
+        }
+
         function switchTab(index) {
+            activeTabIdx = index;
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.hud-tab-btn').forEach(el => el.classList.remove('active'));
+            
             document.getElementById(`tab-${index}`).classList.add('active');
-            document.getElementById(`btn-${index}`).classList.add('active');
-            if(index === 1) resizeCharts();
+            const targetBtn = document.getElementById(`btn-${index}`);
+            if(targetBtn) targetBtn.classList.add('active');
+
+            if(index === 1) {
+                resizeCharts();
+            }
         }
 
         function resizeCharts() {
@@ -372,48 +515,96 @@
             if(canvas && canvas.parentElement) {
                 canvas.width = canvas.parentElement.clientWidth;
                 canvas.height = canvas.parentElement.clientHeight;
-                drawGauge('gauge-rpm', currentRPM, 250);
+                drawGauge('gauge-rpm', currentRPMValue, 250);
             }
         }
 
-        let currentRPM = 0;
         function drawGauge(id, value, maxVal) {
             const canvas = document.getElementById(id);
-            if (!canvas) return;
+            if (!canvas || canvas.width === 0) return;
             const ctx = canvas.getContext('2d');
             const W = canvas.width, H = canvas.height;
             ctx.clearRect(0, 0, W, H);
-            const cx = W / 2, cy = H * 0.8;
-            const radius = Math.min(W, H) * 0.6;
+            const cx = W / 2;
+            const cy = H * 0.75;
+            const radius = Math.min(W / 2, H) * 0.75;
             
             ctx.beginPath();
-            ctx.arc(cx, cy, radius, Math.PI, 2 * Math.PI);
-            ctx.strokeStyle = '#333'; ctx.lineWidth = 10; ctx.stroke();
+            ctx.arc(cx, cy, radius, Math.PI, 2 * Math.PI, false);
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.stroke();
 
             ctx.beginPath();
-            const ratio = Math.min(value / maxVal, 1);
-            ctx.arc(cx, cy, radius, Math.PI, Math.PI + (Math.PI * ratio));
-            ctx.strokeStyle = '#00f0ff'; ctx.lineWidth = 10; ctx.stroke();
+            const valueRatio = Math.min(Math.max(value / maxVal, 0), 1);
+            const endAngle = Math.PI + (Math.PI * valueRatio);
+            ctx.arc(cx, cy, radius, Math.PI, endAngle, false);
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = value > (maxVal * 0.8) ? '#ff2a2a' : '#00f0ff';
+            ctx.stroke();
 
-            ctx.fillStyle = '#fff'; ctx.font = 'bold 20px monospace';
-            ctx.textAlign = 'center'; ctx.fillText(value + " RPM", cx, cy - 10);
+            const numTicks = 6; 
+            for (let i = 0; i <= numTicks; i++) {
+                const angle = Math.PI + (Math.PI * (i / numTicks));
+                const xStart = cx + (radius - 5) * Math.cos(angle);
+                const yStart = cy + (radius - 5) * Math.sin(angle);
+                const xEnd = cx + (radius + 5) * Math.cos(angle);
+                const yEnd = cy + (radius + 5) * Math.sin(angle);
+                ctx.beginPath();
+                ctx.moveTo(xStart, yStart);
+                ctx.lineTo(xEnd, yEnd);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = i >= 5 ? '#ff2a2a' : '#6b7c96';
+                ctx.stroke();
+            }
+
+            const needleAngle = Math.PI + (Math.PI * valueRatio);
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + (radius - 8) * Math.cos(needleAngle), cy + (radius - 8) * Math.sin(needleAngle));
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#ff2a2a';
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, 6, 0, 2 * Math.PI);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+
+            ctx.fillStyle = '#00f0ff';
+            ctx.font = 'bold 22px "Courier New", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(value, cx, cy + 28);
         }
 
         const client = mqtt.connect(BROKER, { username: AIO_USER, password: AIO_KEY });
+        client.on('connect', () => {
+            document.getElementById('status-mqtt').innerText = "LIVE: TELEMETRÍA ONLINE";
+            client.subscribe(AIO_FEED);
+        });
+
         client.on('message', (topic, msg) => {
             const raw = msg.toString().split(',');
             if(raw.length >= 5) {
-                document.getElementById('val-dist').innerText = raw[0];
-                document.getElementById('val-servo').innerText = raw[1] + "°";
-                document.getElementById('ir-izq').className = parseInt(raw[2]) ? 'ir-sensor active-line' : 'ir-sensor';
-                document.getElementById('ir-der').className = parseInt(raw[3]) ? 'ir-sensor active-line' : 'ir-sensor';
-                currentRPM = parseInt(raw[4]);
-                drawGauge('gauge-rpm', currentRPM, 250);
-                document.getElementById('iso-res').innerText = (currentRPM * 0.012).toFixed(1) + " cm";
+                const d = parseInt(raw[0]), s = parseInt(raw[1]), il = parseInt(raw[2]), ir = parseInt(raw[3]), r = parseInt(raw[4]);
+                document.getElementById('val-dist').innerText = d + " cm";
+                currentRPMValue = r; 
+                document.getElementById('val-servo').innerText = s + "°";
+                document.getElementById('ir-izq').className = il ? 'ir-sensor active-line' : 'ir-sensor';
+                document.getElementById('ir-der').className = ir ? 'ir-sensor active-line' : 'ir-sensor';
+                const v = r * 0.003455;
+                const sb = ((v * 0.05) + (Math.pow(v, 2) / (2 * 1.5)) + 0.10) * 100;
+                const vStr = v.toFixed(2);
+                document.getElementById('iso-v').innerText = vStr + " m/s";
+                document.getElementById('iso-f1').innerText = vStr;
+                document.getElementById('iso-f2').innerText = vStr;
+                document.getElementById('iso-res').innerText = sb.toFixed(1) + " cm";
+                drawGauge('gauge-rpm', currentRPMValue, 250);
             }
         });
-        
-        client.on('connect', () => { client.subscribe(AIO_FEED); });
+
+        window.onload = resizeCharts;
     </script>
 </body>
 </html>
