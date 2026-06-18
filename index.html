@@ -6,7 +6,15 @@
     <meta charset="utf-8">
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <style>
-        :root { --bg-color: #060a13; --panel-bg: rgba(13, 22, 38, 0.75); --border-cyan: #00f0ff; --accent-red: #ff2a2a; --text-main: #ffffff; --text-muted: #6b7c96; --panel-border: rgba(0, 240, 255, 0.15); }
+        :root {
+            --bg-color: #060a13;
+            --panel-bg: rgba(13, 22, 38, 0.75);
+            --border-cyan: #00f0ff;
+            --accent-red: #ff2a2a;
+            --text-main: #ffffff;
+            --text-muted: #6b7c96;
+            --panel-border: rgba(0, 240, 255, 0.15);
+        }
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; overflow-x: hidden; }
         .header-banner { background: linear-gradient(135deg, var(--accent-red) 0%, #111 25%, #111 75%, var(--panel-border) 100%); padding: 15px 20px; text-align: center; border-bottom: 2px solid var(--accent-red); position: relative; z-index: 5000; }
         .header-banner h1 { margin: 0; font-size: 1.4rem; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; }
@@ -15,15 +23,21 @@
         .hud-tabs { display: flex; background: rgba(255, 255, 255, 0.03); padding: 4px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); }
         .hud-tab-btn { background: none; border: none; color: var(--text-muted); padding: 10px 24px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.3s; }
         .hud-tab-btn.active { color: var(--text-main); background: linear-gradient(to bottom, rgba(255, 42, 42, 0.2), transparent); border-bottom: 2px solid var(--accent-red); }
-        .hud-massive-arrow { position: fixed; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--accent-red); font-size: 8rem; cursor: pointer; z-index: 10000; padding: 20px; }
+        .hud-massive-arrow { position: fixed; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--accent-red); font-size: 8rem; cursor: pointer; transition: all 0.2s; z-index: 10000; padding: 20px; }
         .massive-arrow-left { left: 80px; } .massive-arrow-right { right: 80px; }
-        .tab-content { display: none; width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; }
+        .tab-content { display: none; width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; position: relative; z-index: 10; }
         .tab-content.active { display: block; }
-        /* Reutilizando tus clases de diseño originales */
         .showcase-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 40px; }
-        .robot-viewport { position: relative; width: 100%; max-width: 380px; margin: 20px 0; }
-        .specs-panel { background: var(--panel-bg); border: 1px solid var(--panel-border); width: 100%; border-radius: 4px; padding: 25px; }
-        .panel-title { color: var(--accent-red); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .robot-viewport { position: relative; width: 100%; max-width: 380px; margin: 20px 0; display: flex; justify-content: center; align-items: center; }
+        .laser-scanner { position: absolute; width: 140%; height: 2px; background: linear-gradient(to right, transparent, var(--border-cyan), transparent); box-shadow: 0 0 12px var(--border-cyan); z-index: 3; animation: scanMove 4s infinite ease-in-out; }
+        @keyframes scanMove { 0% { top: 15%; opacity: 0.3; } 50% { top: 85%; opacity: 1; } 100% { top: 15%; opacity: 0.3; } }
+        .specs-panel { background: var(--panel-bg); border: 1px solid var(--panel-border); width: 100%; border-radius: 4px; padding: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        .panel-title { color: var(--accent-red); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .panel-title::before { content: ''; display: inline-block; width: 6px; height: 6px; background: var(--accent-red); }
+        .specs-blocks-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .spec-block-item { background: rgba(6, 10, 19, 0.6); padding: 14px 16px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.03); }
+        .spec-block-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 4px; }
+        .spec-block-value { font-weight: bold; font-size: 0.88rem; color: var(--text-main); }
         .telemetry-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
         .telemetry-card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 4px; padding: 20px; }
         .big-numeric { font-size: 3rem; font-weight: 800; color: var(--border-cyan); margin: 10px 0; font-family: 'Courier New', monospace; }
@@ -31,23 +45,26 @@
         .gauge-box { height: 160px; display: flex; justify-content: center; align-items: center; position: relative; margin-top: 10px; }
         .ir-row { display: flex; justify-content: space-between; gap: 15px; margin-top: 25px; }
         .ir-sensor { flex: 1; padding: 15px; font-size: 0.8rem; font-weight: bold; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); color: var(--text-muted); border-radius: 4px; }
-        .ir-sensor.active-line { background: rgba(0, 240, 255, 0.1); border-color: var(--border-cyan); color: var(--border-cyan); }
+        .ir-sensor.active-line { background: rgba(0, 240, 255, 0.1); border-color: var(--border-cyan); color: var(--border-cyan); box-shadow: 0 0 10px rgba(0, 240, 255, 0.2); }
         .formula-container { background: var(--panel-bg); border: 1px solid var(--panel-border); padding: 30px; border-radius: 4px; margin-bottom: 40px; }
         .math-display { font-size: 1.6rem; padding: 25px; background: rgba(0,0,0,0.4); border-radius: 4px; font-family: 'Courier New', monospace; margin: 20px auto; max-width: 600px; border: 1px solid rgba(255,255,255,0.03); }
-        .spec-block-item { background: rgba(6, 10, 19, 0.6); padding: 14px 16px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.03); margin-bottom: 10px; }
-        .specs-blocks-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .fraccion { display: inline-flex; flex-direction: column; vertical-align: middle; padding: 0 5px; }
+        .numerador { border-bottom: 2px solid white; padding-bottom: 2px; }
     </style>
 </head>
 <body>
 
-    <div class="header-banner"><h1>Carrito Evasor de Obstáculos con RF</h1><div id="status-mqtt" class="status-indicator">📡 CONECTANDO TELEMETRÍA...</div></div>
+    <div class="header-banner">
+        <h1>Carrito Evasor de Obstáculos con RF</h1>
+        <div id="status-mqtt" class="status-indicator">📡 CONECTANDO TELEMETRÍA...</div>
+    </div>
 
     <button class="hud-massive-arrow massive-arrow-left" onclick="adjustTab(-1)">&#10216;</button>
     <button class="hud-massive-arrow massive-arrow-right" onclick="adjustTab(1)">&#10217;</button>
 
     <div class="hud-tabs-container">
         <div class="hud-tabs">
-            <button class="hud-tab-btn active" id="btn-0" onclick="switchTab(0)">01 // Ficha Técnica</button>
+            <button class="hud-tab-btn active" id="btn-0" onclick="switchTab(0)">01 // Ficha Técnico</button>
             <button class="hud-tab-btn" id="btn-1" onclick="switchTab(1)">02 // Telemetría en Vivo</button>
             <button class="hud-tab-btn" id="btn-2" onclick="switchTab(2)">03 // Análisis Dinámico</button>
         </div>
@@ -55,6 +72,7 @@
 
     <div id="tab-0" class="tab-content active">
         <div class="showcase-container">
+            <div class="robot-viewport"><div class="laser-scanner"></div><img src="carrito.png" alt="Prototipo Robótico"></div>
             <div class="specs-panel">
                 <h4 class="panel-title">Especificaciones del Prototipo</h4>
                 <div class="specs-blocks-grid">
@@ -71,28 +89,33 @@
         <div class="telemetry-grid">
             <div class="telemetry-card"><h4 class="panel-title">Distancia</h4><div id="val-dist" class="big-numeric">--</div><div class="chart-box"><canvas id="chart-dist"></canvas></div></div>
             <div class="telemetry-card"><h4 class="panel-title">Tacómetro (RPM)</h4><div class="gauge-box"><canvas id="gauge-rpm"></canvas></div></div>
-            <div class="telemetry-card"><h4 class="panel-title">Barrido Servo</h4><div id="val-servo" class="big-numeric">90&deg;</div><div class="chart-box"><canvas id="chart-servo"></canvas></div></div>
-            <div class="telemetry-card"><h4 class="panel-title">Detección Infrarroja</h4><div class="ir-row"><div id="ir-izq" class="ir-sensor">IZQ</div><div id="ir-der" class="ir-sensor">DER</div></div></div>
-            <div class="telemetry-card" style="grid-column: 1 / -1;"><h4 class="panel-title">Gráfica General de Flujo</h4><div class="chart-box"><canvas id="chart-main"></canvas></div></div>
+            <div class="telemetry-card"><h4 class="panel-title">Servo</h4><div id="val-servo" class="big-numeric">90&deg;</div><div class="chart-box"><canvas id="chart-servo"></canvas></div></div>
+            <div class="telemetry-card"><h4 class="panel-title">Infrarrojo</h4><div class="ir-row"><div id="ir-izq" class="ir-sensor">IZQ</div><div id="ir-der" class="ir-sensor">DER</div></div></div>
+            
+            <div class="telemetry-card" style="grid-column: 1 / -1;">
+                <h4 class="panel-title">Gráfica General (Dist/Servo/RPM)</h4>
+                <div class="chart-box"><canvas id="chart-main"></canvas></div>
+            </div>
         </div>
     </div>
 
     <div id="tab-2" class="tab-content">
         <div class="formula-container">
             <h4 class="panel-title">Cálculo Cinemático</h4>
-            <div class="math-display">S<sub>b</sub> = (v &middot; 0.05) + (v<sup>2</sup> / (2 &middot; 1.5)) + 0.10</div>
+            <div class="math-display">S<sub>b</sub> = (v &middot; 0.05) + <div class="fraccion"><div class="numerador">(v)<sup>2</sup></div><div>2 &middot; 1.50</div></div> + 0.10</div>
         </div>
     </div>
 
     <script>
-        let storeDist = [], storeServo = [], storeRPM = [], storeMain = [];
+        const AIO_USER = "dieglot"; const AIO_KEY = "aio_ZDIL93htQcCNZPsK" + "GWzc2DiXU9Ii";
+        const AIO_FEED = "dieglot/feeds/telemetria"; const BROKER = "wss://io.adafruit.com:443/mqtt";
+        let activeTabIdx = 0, storeDist = [], storeRPM = [], storeServo = [], storeMain = [];
         const maxPoints = 20;
-        let activeTabIdx = 0;
 
-        function switchTab(idx) {
-            activeTabIdx = idx;
-            document.querySelectorAll('.tab-content').forEach((el, i) => el.style.display = (i === idx) ? 'block' : 'none');
-            document.querySelectorAll('.hud-tab-btn').forEach((el, i) => el.classList.toggle('active', i === idx));
+        function switchTab(index) {
+            activeTabIdx = index;
+            document.querySelectorAll('.tab-content').forEach((el, i) => el.classList.toggle('active', i === index));
+            document.querySelectorAll('.hud-tab-btn').forEach((el, i) => el.classList.toggle('active', i === index));
         }
 
         function draw(id, data, max, color) {
@@ -103,14 +126,31 @@
             ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 2;
             data.forEach((val, i) => {
                 const x = (canvas.width / (maxPoints - 1)) * i;
-                const y = canvas.height - (val / max * canvas.height * 0.8);
+                const y = canvas.height - (val / max * canvas.height * 0.7);
                 i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
             });
             ctx.stroke();
         }
 
-        // MQTT Lógica
-        // ... (Tu resto de lógica original sigue aquí intacta)
+        const client = mqtt.connect(BROKER, { username: AIO_USER, password: AIO_KEY });
+        client.on('message', (topic, msg) => {
+            const raw = msg.toString().split(',');
+            if(raw.length >= 5) {
+                const d = parseInt(raw[0]), s = parseInt(raw[1]), r = parseInt(raw[4]);
+                storeDist.push(d); storeServo.push(s); storeRPM.push(r);
+                storeMain.push((d + s + r) / 3);
+                [storeDist, storeServo, storeRPM, storeMain].forEach(a => { if(a.length > maxPoints) a.shift(); });
+                
+                document.getElementById('val-dist').innerText = d + " cm";
+                document.getElementById('val-servo').innerText = s + "°";
+                
+                if(activeTabIdx === 1) {
+                    draw('chart-dist', storeDist, 150, '#00f0ff');
+                    draw('chart-servo', storeServo, 180, '#ffaa00');
+                    draw('chart-main', storeMain, 200, '#ff2a2a');
+                }
+            }
+        });
     </script>
 </body>
 </html>
