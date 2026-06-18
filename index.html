@@ -556,7 +556,7 @@
             
             data.forEach((val, i) => {
                 const x = (W / (maxPoints - 1)) * i;
-                const y = H - (val / max * H * 0.8) - 5;
+                const y = H - (val / max * H * 0.8) - 15; // Ajustado para dejar espacio arriba
                 if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
             });
             ctx.stroke();
@@ -564,11 +564,11 @@
 
         function drawLegend(ctx) {
             const items = [
-                {label: 'Dist (cm)', color: 'var(--color-dist)'},
-                {label: 'RPM', color: 'var(--color-rpm)'},
-                {label: 'Servo (deg)', color: 'var(--color-servo)'},
-                {label: 'IR-I', color: 'var(--color-ir-izq)'},
-                {label: 'IR-D', color: 'var(--color-ir-der)'}
+                {label: 'Dist', color: getComputedStyle(document.documentElement).getPropertyValue('--color-dist')},
+                {label: 'RPM', color: getComputedStyle(document.documentElement).getPropertyValue('--color-rpm')},
+                {label: 'Servo', color: getComputedStyle(document.documentElement).getPropertyValue('--color-servo')},
+                {label: 'IR-I', color: getComputedStyle(document.documentElement).getPropertyValue('--color-ir-izq')},
+                {label: 'IR-D', color: getComputedStyle(document.documentElement).getPropertyValue('--color-ir-der')}
             ];
             let x = 10;
             items.forEach(item => {
@@ -577,7 +577,7 @@
                 ctx.fillStyle = '#fff';
                 ctx.font = '10px Arial';
                 ctx.fillText(item.label, x + 15, 15);
-                x += 70;
+                x += 60;
             });
         }
 
@@ -590,11 +590,12 @@
             const ctxGen = canvasGen.getContext('2d');
             ctxGen.clearRect(0, 0, canvasGen.width, canvasGen.height);
             
-            draw('chart-general', storeDist, 200, 'var(--color-dist)');
-            draw('chart-general', storeRPM.map(v => v/2), 200, 'var(--color-rpm)');
-            draw('chart-general', storeServo, 200, 'var(--color-servo)');
-            draw('chart-general', storeIRIzq.map(v => v*150), 200, 'var(--color-ir-izq)');
-            draw('chart-general', storeIRDer.map(v => v*150), 200, 'var(--color-ir-der)');
+            // Dibujar cada línea con su color específico
+            draw('chart-general', storeDist, 200, getComputedStyle(document.documentElement).getPropertyValue('--color-dist'));
+            draw('chart-general', storeRPM.map(v => v/2), 200, getComputedStyle(document.documentElement).getPropertyValue('--color-rpm'));
+            draw('chart-general', storeServo, 200, getComputedStyle(document.documentElement).getPropertyValue('--color-servo'));
+            draw('chart-general', storeIRIzq.map(v => v * 150), 200, getComputedStyle(document.documentElement).getPropertyValue('--color-ir-izq'));
+            draw('chart-general', storeIRDer.map(v => v * 150), 200, getComputedStyle(document.documentElement).getPropertyValue('--color-ir-der'));
             
             drawLegend(ctxGen);
         }
@@ -624,9 +625,9 @@
                 document.getElementById('iso-v').innerText = v.toFixed(2) + " m/s";
                 document.getElementById('iso-res').innerText = sb.toFixed(1) + " cm";
 
+                const dataPack = [d, r, s, il, ir];
                 [storeDist, storeRPM, storeServo, storeIRIzq, storeIRDer].forEach((arr, i) => {
-                    const vals = [d, r, s, il, ir];
-                    arr.push(vals[i]);
+                    arr.push(dataPack[i]);
                     if(arr.length > maxPoints) arr.shift();
                 });
 
