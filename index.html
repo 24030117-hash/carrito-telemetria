@@ -255,40 +255,33 @@
         .highlight-cyan { color: var(--border-cyan); font-family: monospace; }
 
         /* --- PESTAÑA 2: TELEMETRÍA (MODIFICADA A RIGIDA 2x2) --- */
-        .telemetry-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 280px 280px;
-            gap: 20px;
-            margin-bottom: 40px;
-        }
+  /* Ajuste del contenedor de telemetría */
+.telemetry-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Divide el ancho en dos partes iguales */
+    grid-template-rows: repeat(2, 1fr); /* Divide la altura disponible en dos filas iguales */
+    gap: 20px;
+    height: calc(100vh - 250px); /* Ocupa casi toda la altura de la pantalla menos el header/tabs */
+    margin-bottom: 20px;
+}
 
-        .telemetry-card {
-            background: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 4px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-        }
+/* Asegurar que las tarjetas llenen el espacio del grid */
+.telemetry-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Necesario para que el grid no se desborde */
+}
 
-        .big-numeric {
-            font-size: 3rem;
-            font-weight: 800;
-            color: var(--border-cyan);
-            margin: 10px 0;
-            font-family: 'Courier New', monospace;
-        }
-
-        .gauge-box {
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            margin-top: 10px;
-        }
-
+/* Para que los contenidos internos (canvas, sensores) se estiren */
+.gauge-box {
+    flex-grow: 1;
+    min-height: 0; /* Permite que el canvas se encoja/crezca según el contenedor */
+    position: relative;
+}
         .ir-row { display: flex; justify-content: space-between; gap: 15px; margin-top: auto; }
       .ir-sensor {
     flex: 1;
@@ -640,22 +633,19 @@
             }
         }
 function resizeCharts() {
-    // Redimensionar tacómetro
-    const gauge = document.getElementById('gauge-rpm');
-    if(gauge && gauge.parentElement) {
-        gauge.width = gauge.parentElement.clientWidth;
-        gauge.height = gauge.parentElement.clientHeight;
-        drawGauge('gauge-rpm', currentRPMValue, 250);
-    }
-    
-    // Redimensionar radar
-    const radar = document.getElementById('radar-servo');
-    if(radar && radar.parentElement) {
-        radar.width = radar.parentElement.clientWidth;
-        radar.height = radar.parentElement.clientHeight;
-        // Dibujamos con el último valor conocido o 90
-        drawRadar(typeof s !== 'undefined' ? s : 90); 
-    }
+    const charts = [
+        { id: 'gauge-rpm', draw: () => drawGauge('gauge-rpm', currentRPMValue, 250) },
+        { id: 'radar-servo', draw: () => drawRadar(typeof s !== 'undefined' ? s : 90) }
+    ];
+
+    charts.forEach(chart => {
+        const el = document.getElementById(chart.id);
+        if(el && el.parentElement) {
+            el.width = el.parentElement.clientWidth;
+            el.height = el.parentElement.clientHeight;
+            chart.draw();
+        }
+    });
 }
 
         function drawGauge(id, value, maxVal) {
