@@ -541,10 +541,14 @@
                 </div>
             </div>
             
-            <div class="telemetry-card">
-                <h4 class="panel-title">Ángulo Servo</h4>
-                <div id="val-servo" class="big-numeric" style="color: var(--accent-red)">90&deg;</div>
-            </div>
+          <div class="telemetry-card">
+    <h4 class="panel-title">Radar de Detección</h4>
+    <div class="gauge-box">
+        <canvas id="radar-servo"></canvas>
+    </div>
+    <div id="val-servo" style="text-align: center; color: var(--accent-red); font-weight: bold;">90&deg;</div>
+</div>
+            
             <div class="telemetry-card">
                 <h4 class="panel-title">Detección Infrarroja (Piso)</h4>
                 <div class="ir-row">
@@ -622,17 +626,27 @@
 
             if(index === 1) {
                 resizeCharts();
+                drawRadar(90);
             }
         }
-
-        function resizeCharts() {
-            const canvas = document.getElementById('gauge-rpm');
-            if(canvas && canvas.parentElement) {
-                canvas.width = canvas.parentElement.clientWidth;
-                canvas.height = canvas.parentElement.clientHeight;
-                drawGauge('gauge-rpm', currentRPMValue, 250);
-            }
-        }
+function resizeCharts() {
+    // Redimensionar tacómetro
+    const gauge = document.getElementById('gauge-rpm');
+    if(gauge && gauge.parentElement) {
+        gauge.width = gauge.parentElement.clientWidth;
+        gauge.height = gauge.parentElement.clientHeight;
+        drawGauge('gauge-rpm', currentRPMValue, 250);
+    }
+    
+    // Redimensionar radar
+    const radar = document.getElementById('radar-servo');
+    if(radar && radar.parentElement) {
+        radar.width = radar.parentElement.clientWidth;
+        radar.height = radar.parentElement.clientHeight;
+        // Dibujamos con el último valor conocido o 90
+        drawRadar(typeof s !== 'undefined' ? s : 90); 
+    }
+}
 
         function drawGauge(id, value, maxVal) {
             const canvas = document.getElementById(id);
@@ -692,7 +706,32 @@
             ctx.textAlign = 'center';
             ctx.fillText(value, cx, cy + 28);
         }
+function drawRadar(angle) {
+    const canvas = document.getElementById('radar-servo');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    
+    // Configuración del radar
+    const cx = W / 2, cy = H - 20;
+    const radius = W * 0.4;
+    const radAngle = (angle * Math.PI) / 180;
 
+    // Dibujar arco base
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, Math.PI, 0);
+    ctx.strokeStyle = '#6b7c96';
+    ctx.stroke();
+
+    // Dibujar línea del radar
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + radius * Math.cos(radAngle - Math.PI), cy + radius * Math.sin(radAngle - Math.PI));
+    ctx.strokeStyle = '#ff2a2a';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+}
         const client = mqtt.connect(BROKER, { username: AIO_USER, password: AIO_KEY });
         client.on('connect', () => {
             document.getElementById('status-mqtt').innerText = "LIVE: TELEMETRÍA ONLINE";
@@ -727,6 +766,8 @@ if(marker){
 }
                 currentRPMValue = r; 
                 document.getElementById('val-servo').innerText = s + "°";
+drawRadar(s); // <--- ESTO DIBUJARÁ EL RADAR
+                drawGauge('gauge-rpm', r, 250);
                 document.getElementById('ir-izq').className = il ? 'ir-sensor active-line' : 'ir-sensor';
                 document.getElementById('ir-der').className = ir ? 'ir-sensor active-line' : 'ir-sensor';
                 const v = r * 0.003455;
