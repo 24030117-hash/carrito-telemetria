@@ -183,14 +183,16 @@
         }
 
         .specs-panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            width: 100%;
-            border-radius: 4px;
-            padding: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            box-sizing: border-box;
-        }
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    width: 95%;          /* Cambiado de 100% a 95% para un margen suave */
+    max-width: 1100px;    /* AUMENTA ESTE VALOR para ensanchar el panel */
+    margin: 0 auto;       /* Esto lo mantiene centrado */
+    border-radius: 4px;
+    padding: 30px;        /* Un poco más de padding interno mejora la vista */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    box-sizing: border-box;
+}
 
         .panel-title {
             color: var(--accent-red);
@@ -216,7 +218,7 @@
         .specs-blocks-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            gap: 20px;
             text-align: left;
         }
 
