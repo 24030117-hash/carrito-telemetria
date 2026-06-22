@@ -307,7 +307,85 @@
             color: var(--border-cyan);
             box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
         }
+/* ==========================
+   RADAR DE DISTANCIA
+========================== */
 
+.obstacle-radar-card{
+    overflow:hidden;
+}
+
+.radar-container{
+    position:relative;
+    flex-grow:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.radar-circle{
+    position:absolute;
+    border-radius:50%;
+    border:1px solid rgba(0,240,255,.25);
+}
+
+.radar-1{
+    width:220px;
+    height:220px;
+}
+
+.radar-2{
+    width:160px;
+    height:160px;
+}
+
+.radar-3{
+    width:100px;
+    height:100px;
+}
+
+.radar-sweep{
+    position:absolute;
+    width:220px;
+    height:220px;
+    border-radius:50%;
+    background:conic-gradient(
+        transparent 0deg,
+        transparent 320deg,
+        rgba(0,240,255,.55) 360deg
+    );
+
+    animation:radarSpin 3s linear infinite;
+}
+
+@keyframes radarSpin{
+    from{
+        transform:rotate(0deg);
+    }
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+.radar-center{
+    z-index:10;
+    text-align:center;
+}
+
+.radar-value{
+    color:#00f0ff;
+    font-size:2.8rem;
+    font-weight:900;
+    font-family:'Courier New', monospace;
+    text-shadow:0 0 12px rgba(0,240,255,.7);
+}
+
+.radar-label{
+    color:#6b7c96;
+    letter-spacing:2px;
+    font-size:.8rem;
+    margin-top:6px;
+}
         /* --- PESTAÑA 3: ANÁLISIS --- */
         .formula-container {
             background: var(--panel-bg);
@@ -414,10 +492,26 @@
 
     <div id="tab-1" class="tab-content">
         <div class="telemetry-grid">
-            <div class="telemetry-card">
-                <h4 class="panel-title">Distancia de Obstáculo</h4>
-                <div id="val-dist" class="big-numeric">--</div>
-            </div>
+         <div class="telemetry-card obstacle-radar-card">
+
+    <h4 class="panel-title">Distancia de Obstáculo</h4>
+
+    <div class="radar-container">
+
+        <div class="radar-circle radar-1"></div>
+        <div class="radar-circle radar-2"></div>
+        <div class="radar-circle radar-3"></div>
+
+        <div class="radar-sweep"></div>
+
+        <div class="radar-center">
+            <div id="val-dist" class="radar-value">-- cm</div>
+            <div class="radar-label">HC-SR04</div>
+        </div>
+
+    </div>
+
+</div>
             
             <div class="telemetry-card">
                 <h4 class="panel-title">Tacómetro (RPM)</h4>
