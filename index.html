@@ -417,21 +417,20 @@
 }
 
 .math-display {
-    font-size: 1.8rem; /* Tamaño más grande y legible */
-    padding: 30px;
+    font-size: 1.6rem; /* Un punto medio exacto */
+    padding: 25px;
     background: rgba(0,0,0,0.4);
     border-radius: 4px;
     font-family: 'Courier New', monospace;
     margin: 20px auto;
-    max-width: 900px; /* Un poco más de margen lateral */
+    max-width: 850px; 
     border: 1px solid rgba(255,255,255,0.03);
     
-    /* Mantenemos la estructura sin encoger el texto */
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
-    white-space: nowrap; /* Evita que el + 0.10 salte de línea */
+    gap: 12px; /* Espaciado controlado para que el 0.10 no se amontone */
+    text-align: center;
 }
 
 .big-numeric {
