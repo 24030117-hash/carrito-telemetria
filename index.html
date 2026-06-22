@@ -307,84 +307,89 @@
             color: var(--border-cyan);
             box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
         }
-/* ==========================
-   RADAR DE DISTANCIA
-========================== */
+/* ==================================
+   DISTANCIA DE OBSTÁCULO
+================================== */
 
-.obstacle-radar-card{
-    overflow:hidden;
-}
-
-.radar-container{
-    position:relative;
+.distance-widget{
     flex-grow:1;
     display:flex;
+    flex-direction:column;
     justify-content:center;
-    align-items:center;
 }
 
-.radar-circle{
-    position:absolute;
-    border-radius:50%;
-    border:1px solid rgba(0,240,255,.25);
-}
-
-.radar-1{
-    width:220px;
-    height:220px;
-}
-
-.radar-2{
-    width:160px;
-    height:160px;
-}
-
-.radar-3{
-    width:100px;
-    height:100px;
-}
-
-.radar-sweep{
-    position:absolute;
-    width:220px;
-    height:220px;
-    border-radius:50%;
-    background:conic-gradient(
-        transparent 0deg,
-        transparent 320deg,
-        rgba(0,240,255,.55) 360deg
-    );
-
-    animation:radarSpin 3s linear infinite;
-}
-
-@keyframes radarSpin{
-    from{
-        transform:rotate(0deg);
-    }
-    to{
-        transform:rotate(360deg);
-    }
-}
-
-.radar-center{
-    z-index:10;
+.distance-readout{
     text-align:center;
-}
-
-.radar-value{
-    color:#00f0ff;
-    font-size:2.8rem;
+    font-size:3rem;
     font-weight:900;
+    color:var(--border-cyan);
     font-family:'Courier New', monospace;
-    text-shadow:0 0 12px rgba(0,240,255,.7);
+    text-shadow:0 0 15px rgba(0,240,255,.6);
 }
 
-.radar-label{
-    color:#6b7c96;
-    letter-spacing:2px;
+.distance-sensor-label{
+    text-align:center;
+    color:var(--text-muted);
     font-size:.8rem;
-    margin-top:6px;
+    letter-spacing:2px;
+    margin-bottom:30px;
+}
+
+.distance-bar-container{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.distance-sensor{
+    color:var(--accent-red);
+    font-weight:bold;
+    font-size:1rem;
+}
+
+.distance-bar{
+    position:relative;
+    flex:1;
+    height:8px;
+    border-radius:10px;
+    background:rgba(255,255,255,.08);
+    overflow:visible;
+}
+
+.distance-bar::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        to right,
+        var(--accent-red),
+        #ffd000,
+        var(--border-cyan)
+    );
+    opacity:.7;
+}
+
+#distance-marker{
+    position:absolute;
+    top:50%;
+    left:0%;
+    transform:translate(-50%,-50%);
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    background:white;
+    box-shadow:
+        0 0 10px white,
+        0 0 20px var(--border-cyan);
+    transition:left .3s ease;
+}
+
+.distance-scale{
+    display:flex;
+    justify-content:space-between;
+    margin-top:12px;
+    color:var(--text-muted);
+    font-size:.75rem;
 }
         /* --- PESTAÑA 3: ANÁLISIS --- */
         .formula-container {
@@ -492,21 +497,37 @@
 
     <div id="tab-1" class="tab-content">
         <div class="telemetry-grid">
-         <div class="telemetry-card obstacle-radar-card">
+       <div class="telemetry-card">
 
     <h4 class="panel-title">Distancia de Obstáculo</h4>
 
-    <div class="radar-container">
+    <div class="distance-widget">
 
-        <div class="radar-circle radar-1"></div>
-        <div class="radar-circle radar-2"></div>
-        <div class="radar-circle radar-3"></div>
+        <div id="val-dist" class="distance-readout">
+            -- cm
+        </div>
 
-        <div class="radar-sweep"></div>
+        <div class="distance-sensor-label">
+            HC-SR04
+        </div>
 
-        <div class="radar-center">
-            <div id="val-dist" class="radar-value">-- cm</div>
-            <div class="radar-label">HC-SR04</div>
+        <div class="distance-bar-container">
+
+            <div class="distance-sensor">
+                [S]
+            </div>
+
+            <div class="distance-bar">
+
+                <div id="distance-marker"></div>
+
+            </div>
+
+        </div>
+
+        <div class="distance-scale">
+            <span>0 cm</span>
+            <span>200 cm</span>
         </div>
 
     </div>
@@ -683,6 +704,27 @@
             if(raw.length >= 5) {
                 const d = parseInt(raw[0]), s = parseInt(raw[1]), il = parseInt(raw[2]), ir = parseInt(raw[3]), r = parseInt(raw[4]);
                 document.getElementById('val-dist').innerText = d + " cm";
+
+const marker = document.getElementById('distance-marker');
+
+if(marker){
+
+    let distance = Math.max(0, Math.min(d, 200));
+
+    let percentage = (distance / 200) * 100;
+
+    marker.style.left = percentage + "%";
+
+    if(distance < 20){
+        marker.style.background = "#ff2a2a";
+    }
+    else if(distance < 60){
+        marker.style.background = "#ffd000";
+    }
+    else{
+        marker.style.background = "#00f0ff";
+    }
+}
                 currentRPMValue = r; 
                 document.getElementById('val-servo').innerText = s + "°";
                 document.getElementById('ir-izq').className = il ? 'ir-sensor active-line' : 'ir-sensor';
