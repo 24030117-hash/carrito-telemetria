@@ -417,14 +417,19 @@
 }
 
 .math-display {
-    font-size: 2.5rem; /* Aumentamos el tamaño de la fórmula */
-    padding: 40px;
+    font-size: 1.4rem; /* Reducimos ligeramente el tamaño para dar espacio al 0.10 */
+    padding: 20px;
     background: rgba(0,0,0,0.4);
-    border-radius: 8px;
+    border-radius: 4px;
     font-family: 'Courier New', monospace;
     margin: 20px auto;
-    max-width: 800px;
-    border: 1px solid rgba(255,255,255,0.05);
+    max-width: 800px; /* Aumentamos un poco el ancho permitido */
+    border: 1px solid rgba(255,255,255,0.03);
+    display: flex;       /* Usamos flex para alinear todo en una línea */
+    align-items: center; /* Alinea verticalmente los elementos */
+    justify-content: center;
+    flex-wrap: wrap;     /* Permite que se ajuste si la pantalla es muy pequeña */
+    gap: 10px;           /* Espacio entre los términos de la ecuación */
 }
 
 .big-numeric {
@@ -585,14 +590,14 @@
             <h4 class="panel-title">Cálculo Cinemático de Frenado (ISO)</h4>
             <p style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">Evaluación de distancia mínima de parada basada en velocidad periférica.</p>
             
-            <div class="math-display">
-                S<sub>b</sub> = (<span id="iso-f1" style="color:var(--border-cyan)">v</span> &middot; <span style="color:rgba(255,255,255,0.6)">0.05</span>) + 
-                <div class="fraccion">
-                    <div class="numerador">(<span id="iso-f2" style="color:var(--border-cyan)">v</span>)<sup>2</sup></div>
-                    <div>2 &middot; <span style="color:var(--accent-red)">1.50</span></div>
-                </div>
-                + <span style="color:rgba(0, 240, 255, 0.6)">0.10</span>
-            </div>
+           <div class="math-display">
+    S<sub>b</sub> = (<span id="iso-f1" style="color:var(--border-cyan)">v</span> &middot; 0.05) + 
+    <div class="fraccion">
+        <div class="numerador">(<span id="iso-f2" style="color:var(--border-cyan)">v</span>)<sup>2</sup></div>
+        <div>2 &middot; <span style="color:var(--accent-red)">1.50</span></div>
+    </div>
+    + <span style="color:rgba(0, 240, 255, 0.6)">0.10</span>
+</div>
 
             <div class="specs-panel" style="margin: 20px auto;">
                 <h4 class="panel-title">Parámetros de Entrada Activos</h4>
