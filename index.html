@@ -271,102 +271,7 @@
             display: flex;
             flex-direction: column;
         }
-/* ===== SENSOR ULTRASÓNICO ESTILO HUD ===== */
 
-.distance-card {
-    overflow: hidden;
-}
-
-.distance-display {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    position: relative;
-}
-
-.distance-track {
-    position: relative;
-    width: 100%;
-    height: 120px;
-    margin-top: 10px;
-}
-
-.distance-line {
-    position: absolute;
-    left: 10%;
-    right: 10%;
-    top: 50%;
-    height: 2px;
-    background: rgba(255,255,255,0.15);
-}
-
-.distance-sensor {
-    position: absolute;
-    left: 10%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--border-cyan);
-    box-shadow: 0 0 15px var(--border-cyan);
-}
-
-.distance-obstacle {
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--accent-red);
-    box-shadow: 0 0 15px var(--accent-red);
-    transition: left 0.3s ease;
-}
-
-.distance-value {
-    text-align: center;
-    font-size: 3.5rem;
-    font-weight: 900;
-    font-family: 'Courier New', monospace;
-    color: var(--border-cyan);
-    margin-bottom: 15px;
-}
-
-.distance-labels {
-    display: flex;
-    justify-content: space-between;
-    margin: 0 10%;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    margin-top: 15px;
-}
-
-.distance-zone {
-    position: absolute;
-    top: 46%;
-    height: 10px;
-    transform: translateY(-50%);
-}
-
-.zone-danger {
-    right: 10%;
-    width: 20%;
-    background: rgba(255,42,42,0.25);
-}
-
-.zone-warning {
-    right: 30%;
-    width: 20%;
-    background: rgba(255,180,0,0.15);
-}
-
-.zone-safe {
-    left: 10%;
-    width: 40%;
-    background: rgba(0,240,255,0.08);
-}
         .big-numeric {
             font-size: 3rem;
             font-weight: 800;
@@ -509,10 +414,10 @@
 
     <div id="tab-1" class="tab-content">
         <div class="telemetry-grid">
-      <div class="telemetry-card">
-    <h4 class="panel-title">Distancia de Obstáculo</h4>
-    <div id="val-dist" class="big-numeric">--</div>
-</div>
+            <div class="telemetry-card">
+                <h4 class="panel-title">Distancia de Obstáculo</h4>
+                <div id="val-dist" class="big-numeric">--</div>
+            </div>
             
             <div class="telemetry-card">
                 <h4 class="panel-title">Tacómetro (RPM)</h4>
@@ -615,37 +520,6 @@
         }
 
         function drawGauge(id, value, maxVal) {
-            function updateObstaclePosition(distance) {
-
-    const obstacle = document.getElementById('distance-obstacle');
-
-    if (!obstacle) return;
-
-    // Limitar rango visual
-    let d = distance;
-
-    if (d < 0) d = 0;
-    if (d > 200) d = 200;
-
-    // Convertir distancia a posición
-    const percent = 10 + (d / 200) * 80;
-
-    obstacle.style.left = percent + "%";
-
-    // Cambio de color según proximidad
-    if (d <= 20) {
-        obstacle.style.background = "#ff2a2a";
-        obstacle.style.boxShadow = "0 0 20px #ff2a2a";
-    }
-    else if (d <= 50) {
-        obstacle.style.background = "#ffb000";
-        obstacle.style.boxShadow = "0 0 20px #ffb000";
-    }
-    else {
-        obstacle.style.background = "#00f0ff";
-        obstacle.style.boxShadow = "0 0 20px #00f0ff";
-    }
-}
             const canvas = document.getElementById(id);
             if (!canvas || canvas.width === 0) return;
             const ctx = canvas.getContext('2d');
@@ -714,8 +588,7 @@
             const raw = msg.toString().split(',');
             if(raw.length >= 5) {
                 const d = parseInt(raw[0]), s = parseInt(raw[1]), il = parseInt(raw[2]), ir = parseInt(raw[3]), r = parseInt(raw[4]);
-               document.getElementById('val-dist').innerText = d + " cm";
-updateObstaclePosition(d);
+                document.getElementById('val-dist').innerText = d + " cm";
                 currentRPMValue = r; 
                 document.getElementById('val-servo').innerText = s + "°";
                 document.getElementById('ir-izq').className = il ? 'ir-sensor active-line' : 'ir-sensor';
