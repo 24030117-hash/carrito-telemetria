@@ -541,10 +541,14 @@
                 </div>
             </div>
             
-            <div class="telemetry-card">
-                <h4 class="panel-title">Ángulo Servo</h4>
-                <div id="val-servo" class="big-numeric" style="color: var(--accent-red)">90&deg;</div>
-            </div>
+          <div class="telemetry-card">
+    <h4 class="panel-title">Ángulo Servo</h4>
+
+    <div class="gauge-box">
+        <canvas id="servo-gauge"></canvas>
+    </div>
+
+</div>
             <div class="telemetry-card">
                 <h4 class="panel-title">Detección Infrarroja (Piso)</h4>
                 <div class="ir-row">
@@ -625,14 +629,24 @@
             }
         }
 
-        function resizeCharts() {
-            const canvas = document.getElementById('gauge-rpm');
-            if(canvas && canvas.parentElement) {
-                canvas.width = canvas.parentElement.clientWidth;
-                canvas.height = canvas.parentElement.clientHeight;
-                drawGauge('gauge-rpm', currentRPMValue, 250);
-            }
-        }
+     function resizeCharts() {
+
+    const rpmCanvas = document.getElementById('gauge-rpm');
+
+    if(rpmCanvas && rpmCanvas.parentElement){
+        rpmCanvas.width = rpmCanvas.parentElement.clientWidth;
+        rpmCanvas.height = rpmCanvas.parentElement.clientHeight;
+        drawGauge('gauge-rpm', currentRPMValue, 250);
+    }
+
+    const servoCanvas = document.getElementById('servo-gauge');
+
+    if(servoCanvas && servoCanvas.parentElement){
+        servoCanvas.width = servoCanvas.parentElement.clientWidth;
+        servoCanvas.height = servoCanvas.parentElement.clientHeight;
+        drawServoGauge(90);
+    }
+}
 
         function drawGauge(id, value, maxVal) {
             const canvas = document.getElementById(id);
@@ -672,7 +686,93 @@
                 ctx.strokeStyle = i >= 5 ? '#ff2a2a' : '#6b7c96';
                 ctx.stroke();
             }
+function drawServoGauge(angle){
 
+    const canvas = document.getElementById('servo-gauge');
+
+    if(!canvas || canvas.width === 0) return;
+
+    const ctx = canvas.getContext('2d');
+
+    const W = canvas.width;
+    const H = canvas.height;
+
+    ctx.clearRect(0,0,W,H);
+
+    const cx = W/2;
+    const cy = H*0.75;
+    const radius = Math.min(W/2,H)*0.75;
+
+    // arco exterior
+
+    ctx.beginPath();
+    ctx.arc(cx,cy,radius,Math.PI,2*Math.PI,false);
+    ctx.lineWidth = 8;
+    ctx.strokeStyle = 'rgba(255,255,255,.1)';
+    ctx.stroke();
+
+    // marcas
+
+    for(let i=0;i<=6;i++){
+
+        const a = Math.PI + (Math.PI*(i/6));
+
+        const x1 = cx + (radius-10)*Math.cos(a);
+        const y1 = cy + (radius-10)*Math.sin(a);
+
+        const x2 = cx + (radius+10)*Math.cos(a);
+        const y2 = cy + (radius+10)*Math.sin(a);
+
+        ctx.beginPath();
+        ctx.moveTo(x1,y1);
+        ctx.lineTo(x2,y2);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#6b7c96';
+        ctx.stroke();
+    }
+
+    // aguja
+
+    const ratio = angle / 180;
+
+    const needleAngle = Math.PI + (Math.PI * ratio);
+
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+
+    ctx.lineTo(
+        cx + (radius-15)*Math.cos(needleAngle),
+        cy + (radius-15)*Math.sin(needleAngle)
+    );
+
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = '#ff2a2a';
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // centro
+
+    ctx.beginPath();
+    ctx.arc(cx,cy,8,0,2*Math.PI);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+
+    // texto grados
+
+    ctx.fillStyle = '#ff2a2a';
+    ctx.font = 'bold 26px "Courier New"';
+    ctx.textAlign = 'center';
+    ctx.fillText(angle + "°", cx, cy + 40);
+
+    // etiquetas
+
+    ctx.fillStyle = '#6b7c96';
+    ctx.font = '12px Arial';
+
+    ctx.fillText("0°", cx-radius+20, cy+15);
+    ctx.fillText("90°", cx, cy-radius-10);
+    ctx.fillText("180°", cx+radius-20, cy+15);
+}
             const needleAngle = Math.PI + (Math.PI * valueRatio);
             ctx.beginPath();
             ctx.moveTo(cx, cy);
@@ -726,7 +826,7 @@ if(marker){
     }
 }
                 currentRPMValue = r; 
-                document.getElementById('val-servo').innerText = s + "°";
+            drawServoGauge(s);
                 document.getElementById('ir-izq').className = il ? 'ir-sensor active-line' : 'ir-sensor';
                 document.getElementById('ir-der').className = ir ? 'ir-sensor active-line' : 'ir-sensor';
                 const v = r * 0.003455;
