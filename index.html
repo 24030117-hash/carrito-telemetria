@@ -290,23 +290,33 @@
         }
 
         .ir-row { display: flex; justify-content: space-between; gap: 15px; margin-top: auto; }
-        .ir-sensor {
-            flex: 1;
-            padding: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.05);
-            color: var(--text-muted);
-            border-radius: 4px;
-            text-align: center;
-        }
-        .ir-sensor.active-line {
-            background: rgba(0, 240, 255, 0.1);
-            border-color: var(--border-cyan);
-            color: var(--border-cyan);
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
-        }
+      .ir-sensor {
+    flex: 1;
+    padding: 30px 15px; /* Aumentamos el alto vertical */
+    font-size: 1rem;    /* Texto un poco más grande */
+    font-weight: bold;
+    background: rgba(255, 255, 255, 0.05); /* Fondo base oscuro */
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+    border-radius: 8px;
+    text-align: center;
+    transition: all 0.3s ease; /* Transición suave de color */
+}
+
+/* Clases para estados dinámicos */
+.ir-sensor.detect-dark {
+    background: rgba(255, 42, 42, 0.2); /* Rojo claro para oscuro */
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+    box-shadow: 0 0 15px rgba(255, 42, 42, 0.3);
+}
+
+.ir-sensor.detect-light {
+    background: rgba(76, 255, 42, 0.2); /* Verde claro para claro/blanco */
+    border-color: #4cff2a;
+    color: #4cff2a;
+    box-shadow: 0 0 15px rgba(76, 255, 42, 0.3);
+}
 /* ==================================
    DISTANCIA DE OBSTÁCULO
 ================================== */
@@ -768,8 +778,8 @@ if(marker){
                 document.getElementById('val-servo').innerText = s + "°";
 drawRadar(s); // <--- ESTO DIBUJARÁ EL RADAR
                 drawGauge('gauge-rpm', r, 250);
-                document.getElementById('ir-izq').className = il ? 'ir-sensor active-line' : 'ir-sensor';
-                document.getElementById('ir-der').className = ir ? 'ir-sensor active-line' : 'ir-sensor';
+          document.getElementById('ir-izq').className = il ? 'ir-sensor detect-light' : 'ir-sensor detect-dark';
+document.getElementById('ir-der').className = ir ? 'ir-sensor detect-light' : 'ir-sensor detect-dark';
                 const v = r * 0.003455;
                 const sb = ((v * 0.05) + (Math.pow(v, 2) / (2 * 1.5)) + 0.10) * 100;
                 const vStr = v.toFixed(2);
